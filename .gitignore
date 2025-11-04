@@ -1,0 +1,23 @@
+# Flutter/Dart specific
+.dart_tool/
+.buildlog/
+.packages
+pubspec.lock
+build/
+ios/Pods/
+android/.gradle/
+android/.idea/
+**/GeneratedPluginRegistrant.dart
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# VS Code and IntelliJ
+.vscode/
+.idea/
+
+# Mac/Windows/Linux system files
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
