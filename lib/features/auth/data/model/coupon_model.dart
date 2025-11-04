@@ -2,26 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/coupon_entity.dart';
 
 class CouponModel extends CouponEntity {
-  CouponModel(
-      {required String id,
-      required String name,
-      double? amount,
-      double? percentage,
-      required double minOrderValue,
-      required String imageurl,
-      required int usageLimit,
-      required bool isActive,
-      required DateTime expiryDate})
-      : super(
-            id: id,
-            name: name,
-            amount: amount,
-            percentage: percentage,
-            minOrderValue: minOrderValue,
-            imageurl: imageurl,
-            usageLimit: usageLimit,
-            isActive: isActive,
-            expiryDate: expiryDate);
+ const CouponModel(
+      {required super.id,
+      required super.name,
+      super.amount,
+      super.percentage,
+      required super.minOrderValue,
+      required super.imageurl,
+      required super.usageLimit,
+      required super.isActive,
+      required super.expiryDate});
 
   factory CouponModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;

@@ -1,0 +1,25 @@
+2025/10/15-14:36:18.261 80c4 Reusing MANIFEST C:\Users\SHADIL\AppData\Local\Temp\flutter_tools.98638236\flutter_tools_chrome_device.756a45de\Default\IndexedDB\http_localhost_57040.indexeddb.leveldb/MANIFEST-000001
+2025/10/15-14:36:18.265 80c4 Recovering log #4
+2025/10/15-14:36:18.266 80c4 Reusing old log C:\Users\SHADIL\AppData\Local\Temp\flutter_tools.98638236\flutter_tools_chrome_device.756a45de\Default\IndexedDB\http_localhost_57040.indexeddb.leveldb/000004.log 
+2025/10/15-14:36:18.284 7968 Level-0 table #8: started
+2025/10/15-14:36:18.287 7968 Level-0 table #8: 4588 bytes OK
+2025/10/15-14:36:18.289 7968 Delete type=0 #4
+2025/10/15-14:36:18.290 7d60 Manual compaction at level-0 from '\x00\x04\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x05\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/10/15-14:36:23.797 7968 Manual compaction at level-0 from '\x00\x05\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x06\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/10/15-14:36:31.315 7968 Level-0 table #10: started
+2025/10/15-14:36:31.318 7968 Level-0 table #10: 7697 bytes OK
+2025/10/15-14:36:31.320 7968 Delete type=0 #7
+2025/10/15-14:36:31.321 7d60 Manual compaction at level-0 from '\x00\x06\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x07\x00\x00\x00' @ 0 : 0; will stop at '\x00\x06\x00\x00\x05' @ 244 : 1
+2025/10/15-14:36:31.321 7d60 Compacting 1@0 + 1@1 files
+2025/10/15-14:36:31.324 7d60 Generated table #11@0: 77 keys, 3339 bytes
+2025/10/15-14:36:31.324 7d60 Compacted 1@0 + 1@1 files => 3339 bytes
+2025/10/15-14:36:31.326 7d60 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/10/15-14:36:31.327 7d60 Delete type=2 #10
+2025/10/15-14:36:31.327 7d60 Manual compaction at level-0 from '\x00\x06\x00\x00\x05' @ 244 : 1 .. '\x00\x07\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/10/15-14:37:52.128 80c4 Compacting 1@1 + 1@2 files
+2025/10/15-14:37:52.131 80c4 Generated table #12@1: 41 keys, 2994 bytes
+2025/10/15-14:37:52.131 80c4 Compacted 1@1 + 1@2 files => 2994 bytes
+2025/10/15-14:37:52.133 80c4 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/10/15-14:37:52.134 80c4 Delete type=2 #5
+2025/10/15-14:37:52.134 80c4 Delete type=2 #8
+2025/10/15-14:37:52.134 80c4 Delete type=2 #11

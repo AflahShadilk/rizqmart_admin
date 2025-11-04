@@ -4,7 +4,7 @@ import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.da
 
 class BrandModel extends BrandEntity {
   // ignore: use_super_parameters
-  BrandModel(
+  const BrandModel(
       {required String id,
       required String name,
       required String logourl,

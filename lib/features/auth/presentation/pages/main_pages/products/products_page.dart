@@ -148,12 +148,12 @@ class _ProductsPageState extends State<ProductsPage> {
             List<AddProductEntity> allProducts = [];
             if (state is LoadedProductState) {
               allProducts = state.product;
+              
             }
 
             List<AddProductEntity> productsToDisplay = filterProducts.isEmpty
                 ? filterProductsbySearch(allProducts, _searchController.text)
                 : filterProducts;
-
             return Column(
               children: [
                 // Header Section with Add Button
@@ -225,7 +225,7 @@ class _ProductsPageState extends State<ProductsPage> {
                 ),
 
                 // Search Bar
-                if (allProducts.isNotEmpty)
+                
 
                 // Filter Section
                 if (allProducts.isNotEmpty)
@@ -307,7 +307,7 @@ class _ProductsPageState extends State<ProductsPage> {
                               ),
                             )
                           : state is LoadedProductState
-                              ? productsToDisplay.isEmpty
+                              ? allProducts.isEmpty
                                   ? Center(
                                       child: Column(
                                         mainAxisAlignment:
@@ -485,7 +485,7 @@ class __ProductCardState extends State<_ProductCard>
                 padding: const EdgeInsets.all(12),
                 child: Row(
                   children: [
-                    // Product Image
+                    // Product Images---
                     Container(
                       width: 80,
                       height: 80,
@@ -507,7 +507,7 @@ class __ProductCardState extends State<_ProductCard>
                       ),
                     ),
                     const SizedBox(width: 16),
-                    // Product Details
+                    // Product Details----
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -526,7 +526,7 @@ class __ProductCardState extends State<_ProductCard>
                           Row(
                             children: [
                               Text(
-                                '₹${widget.product.price.toStringAsFixed(2)}',
+                                '₹${widget.product.mrp.toStringAsFixed(2)}',
                                 style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,

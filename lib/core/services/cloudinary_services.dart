@@ -35,7 +35,6 @@ Future<String?>uploadToCloudinary(FilePickerResult? filePickerResult)async{
     return data['secure_url'];
    
   }else{
-    print("❌ Cloudinary upload failed: ${response.statusCode}|$responseBody");
     return null;
   }
 

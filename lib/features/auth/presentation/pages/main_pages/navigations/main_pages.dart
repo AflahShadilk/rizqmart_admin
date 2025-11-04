@@ -21,6 +21,7 @@ class _MainPagesState extends State<MainPages> {
     {'icon': Icons.home, 'title': 'Dashboard', 'route': '/dashBoard'},
     {'icon': Icons.shopping_bag, 'title': 'Products', 'route': '/products'},
     {'icon': Icons.category, 'title': 'Categories', 'route': '/category'},
+    {'icon': Icons.select_all, 'title': 'Variants', 'route': '/unitPage'},
     {'icon': Icons.branding_watermark, 'title': 'Brands', 'route': '/brand'},
     {'icon': Icons.bar_chart, 'title': 'Sales Report', 'route': '/sales'},
     {'icon': Icons.people, 'title': 'Users', 'route': '/users'},

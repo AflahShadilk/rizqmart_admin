@@ -40,6 +40,7 @@ class _FormProductsState extends State<FormProducts> {
   final TextEditingController _stockKey = TextEditingController();
   bool _status = true;
   String? selectedBrandId;
+  String? selectedCategoryName;
   String? selectedCategoryId;
   List<String> selectedVariant = ['', ''];
   List<String> imageUrls = ["", ""];
@@ -64,10 +65,23 @@ class _FormProductsState extends State<FormProducts> {
     _mrp.text = product.mrp.toString();
     _description.text = product.description!;
     _stockKey.text = product.quantity.toString();
-
     _status = product.status!;
     selectedBrandId = product.brand;
     selectedCategoryId = product.category;
+
+    final categoryState = context.read<CategoryBloc>().state;
+    if (categoryState is CategoryLoadedState) {
+      try {
+        final categoryObj = categoryState.cotegories.firstWhere(
+          (cat) => cat.name == product.category,
+        );
+        selectedCategoryId = categoryObj.id;
+      } catch (e) {
+        selectedCategoryId = null;
+      }
+    } else {
+      selectedCategoryId = null;
+    }
     selectedVariant = List.from(product.variant);
     imageUrls = List.from(product.imageUrls);
     setState(() {});
@@ -155,24 +169,6 @@ class _FormProductsState extends State<FormProducts> {
                   validator: ProductTextValidators.name,
                 ),
                 const SizedBox(height: 20),
-                WebTextField(
-                  label: 'Mrp Price',
-                  hintText: 'Enter price',
-                  controller: _mrp,
-                  keyboardType: TextInputType.number,
-                  maxLines: 1,
-                  validator: ProductTextValidators.price,
-                ),
-                const SizedBox(height: 20),
-                WebTextField(
-                  label: 'Price',
-                  hintText: 'Enter price',
-                  controller: _price,
-                  keyboardType: TextInputType.number,
-                  maxLines: 1,
-                  validator: ProductTextValidators.price,
-                ),
-                const SizedBox(height: 20),
                 WebTextArea(
                   label: 'Description',
                   hintText: 'Enter description',
@@ -192,7 +188,7 @@ class _FormProductsState extends State<FormProducts> {
                     } else if (state is BrandLoadedState) {
                       brandItems = state.brand.map((brand) {
                         return DropdownMenuItem<String>(
-                          value: brand.id,
+                          value: brand.name,
                           child: Text(brand.name),
                         );
                       }).toList();
@@ -203,7 +199,7 @@ class _FormProductsState extends State<FormProducts> {
                     }
 
                     return SizedBox(
-                      width: MediaQuery.of(context).size.width*0.42,
+                      width: MediaQuery.of(context).size.width * 0.42,
                       child: WebTextFields(
                         label: 'Brand',
                         hintText: 'Select Brand',
@@ -240,7 +236,7 @@ class _FormProductsState extends State<FormProducts> {
                         } else if (state is CategoryLoadedState) {
                           categoryItems = state.cotegories.map((cat) {
                             return DropdownMenuItem<String>(
-                              value: cat.id,
+                              value: cat.id, //changed heere///////
                               child: Text(cat.name),
                             );
                           }).toList();
@@ -278,12 +274,16 @@ class _FormProductsState extends State<FormProducts> {
                   Expanded(child: BlocBuilder<CategoryBloc, CategoryState>(
                       builder: (context, state) {
                     List<String> variants1 = [];
-                    if (state is CategoryLoadedState &&
+                    if (state is CategoryLoadingState) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is CategoryLoadedState &&
                         selectedCategoryId != null) {
                       try {
                         final selectedCategory = state.cotegories.firstWhere(
-                          (cat) => cat.id == selectedCategoryId,
-                        );
+                            (cat) =>
+                                cat.id ==
+                                selectedCategoryId //modified herewwwwwwwwww
+                            );
                         variants1 =
                             sortVariant(selectedCategory.variants ?? []);
                       } catch (e) {
@@ -444,11 +444,10 @@ class _FormProductsState extends State<FormProducts> {
                 const SizedBox(height: 20),
                 //----------------------------Quantity
                 Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                   
-                      width: MediaQuery.of(context).size.width*0.42,
+                      width: MediaQuery.of(context).size.width * 0.42,
                       child: WebTextField(
                         label: 'Stock',
                         hintText: 'Enter product quantity',
@@ -458,22 +457,20 @@ class _FormProductsState extends State<FormProducts> {
                       ),
                     ),
                     Row(
-                                          
-                                          children: [
-                    const Text('Status:'),
-                    const SizedBox(width: 8),
-                    Switch(
-                      focusColor: Colors.green,
-                      value: _status,
-                      onChanged: (val) {
-                        setState(() {
-                          _status = val;
-                        });
-                      },
+                      children: [
+                        const Text('Status:'),
+                        const SizedBox(width: 8),
+                        Switch(
+                          focusColor: Colors.green,
+                          value: _status,
+                          onChanged: (val) {
+                            setState(() {
+                              _status = val;
+                            });
+                          },
+                        ),
+                      ],
                     ),
-                                          ],
-                                        ),
-                    
                   ],
                 ),
 
@@ -558,6 +555,22 @@ class _FormProductsState extends State<FormProducts> {
                                 );
                                 return;
                               }
+                              final categoryState =
+                                  context.read<CategoryBloc>().state;
+                              String categoryNameToSave =
+                                  selectedCategoryId ?? '';
+
+                              if (categoryState is CategoryLoadedState) {
+                                try {
+                                  final selectedCat =
+                                      categoryState.cotegories.firstWhere(
+                                    (cat) => cat.id == selectedCategoryId,
+                                  );
+                                  categoryNameToSave = selectedCat.name;
+                                } catch (e) {
+                                  categoryNameToSave = selectedCategoryId ?? '';
+                                }
+                              }
                               if (_formKey.currentState!.validate()) {
                                 final product = AddProductEntity(
                                   id: isEditMode
@@ -568,8 +581,8 @@ class _FormProductsState extends State<FormProducts> {
                                       0.0,
                                   mrp: double.tryParse(_mrp.text.trim()) ?? 0.0,
                                   description: _description.text.trim(),
-                                  category: selectedCategoryId!,
-                                  brand: selectedBrandId!,
+                                  category: categoryNameToSave,
+                                  brand: selectedBrandId ?? '',
                                   quantity:
                                       double.tryParse(_stockKey.text.trim()) ??
                                           0.0,

@@ -8,7 +8,6 @@ import 'package:rizqmartadmin/features/auth/domain/usecases/main/brand/get_brand
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/brand/update_brand_usecase.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_state.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_event.dart';
 
 class BrandBloc extends Bloc<BrandEvent, BrandState> {
   final GetBrandUsecases getBrandUsecase;
