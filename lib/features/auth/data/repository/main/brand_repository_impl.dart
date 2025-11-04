@@ -8,7 +8,7 @@ class BrandRepositoryImpl implements BrandRepository{
   BrandRepositoryImpl(this.firestoreSource);
 
   @override
-  Stream<List<BrandEntity>>getBrands(){
+  Stream<List<BrandEntity>>getBrands(){ 
     return firestoreSource.getBrands();
   }
   @override

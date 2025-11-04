@@ -98,7 +98,9 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                       child: TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.label_outline),
                           labelText: 'Brand Name',
+                          
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -207,16 +209,36 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        "Cancel",
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey.shade600,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey.shade100,
+                            foregroundColor: Colors.grey.shade700,
+                            padding: const EdgeInsets.symmetric(vertical: 14,horizontal: 20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            'Cancel',
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                     ),
                     const SizedBox(width: 12),
                     ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14,horizontal: 30),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 2,
+                            shadowColor: AppColors.green.withOpacity(0.4),
+                            disabledBackgroundColor: AppColors.green.withOpacity(0.6),
+                          ),
                       icon: const Icon(Icons.save),
                       label: Text(
                         isEditMode ? 'Update Brand' : "Save Brand",
@@ -226,16 +248,7 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.blueAccent,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
+                     
                       onPressed: submitFunc,
                     ),
                   ],

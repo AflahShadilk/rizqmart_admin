@@ -51,7 +51,7 @@ class _CategoryPageState extends State<CategoryPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.green,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -59,7 +59,7 @@ class _CategoryPageState extends State<CategoryPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.error),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.red,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -76,9 +76,9 @@ class _CategoryPageState extends State<CategoryPage> {
               ),
             ),
             elevation: 0,
-            backgroundColor: Colors.blueAccent[50],
+            backgroundColor: AppColors.backgroundColor,
           ),
-          backgroundColor: Colors.blueAccent[50],
+          backgroundColor:AppColors.backgroundColor,
           body: Builder(
             builder: (context) {
               if (state is CategoryLoadingState) {
