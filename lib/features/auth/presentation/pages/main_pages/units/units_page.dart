@@ -6,6 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/units_entity.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_event.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_state.dart';
@@ -28,9 +31,15 @@ class _UnitsPageState extends State<UnitsPage> {
   List<UnitsEntity> filterVariant(List<UnitsEntity> units, String query) {
     if (query.isEmpty) return units;
     return units
-        .where((unit) =>
-            unit.unitName.toLowerCase().contains(query.toLowerCase()))
+        .where(
+            (unit) => unit.unitName.toLowerCase().contains(query.toLowerCase()))
         .toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<CategoryBloc>().add(LoadingCategoryEvent());
   }
 
   @override
@@ -117,7 +126,6 @@ class _UnitsPageState extends State<UnitsPage> {
               final display = filterVariant(allUnits, _searchController.text);
               return Column(
                 children: [
-                  
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -256,14 +264,68 @@ class _UnitsPageState extends State<UnitsPage> {
                                     showDialog(
                                       context: context,
                                       barrierDismissible: false,
-                                      builder: (_) => BlocProvider.value(
-                                        value:
-                                            BlocProvider.of<UnitBloc>(context),
-                                        child: UnitDialog(
-                                          existingUnits: allUnits,
-                                          existingUnit: unit,
-                                        ),
-                                      ),
+                                      builder: (_) => MultiBlocProvider(
+                                          providers: [
+                                            BlocProvider.value(
+                                              value: BlocProvider.of<UnitBloc>(
+                                                  context),
+                                            ),
+                                            BlocProvider.value(
+                                              value:
+                                                  BlocProvider.of<CategoryBloc>(
+                                                      context),
+                                            ),
+                                          ],
+                                          child: BlocBuilder<CategoryBloc,
+                                                  CategoryState>(
+                                              builder: (context, state) {
+                                            List<String> categories = [];
+                                            String? selectedCatName;
+                                            if (state is CategoryLoadedState) {
+                                              categories = state.cotegories
+                                                  .map((cate) => cate.name)
+                                                  .toList();
+                                              if (unit.category.isNotEmpty) {
+                                                try {
+                                                  final matchingCategory = state
+                                                      .cotegories
+                                                      .firstWhere((cat) =>
+                                                          cat.id ==
+                                                          unit.category);
+                                                  selectedCatName =
+                                                      matchingCategory.name;
+                                                } catch (e) {
+                                                  
+                                                  selectedCatName = null;
+                                                }
+                                              }
+                                            } else if (state
+                                                is CategoryLoadingState) {
+                                              return const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              );
+                                            } else if (state
+                                                is CategoryFailureState) {
+                                              return AlertDialog(
+                                                title: const Text('Error'),
+                                                content: Text(state.error),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                    child: const Text('Close'),
+                                                  ),
+                                                ],
+                                              );
+                                            }
+                                            return UnitDialog(
+                                              existingUnits: allUnits,
+                                              existingUnit: unit,
+                                              categories: categories,
+                                              selectedCategory: selectedCatName,
+                                            );
+                                          })),
                                     );
                                   },
                                   onDelete: () {
@@ -307,6 +369,7 @@ class _UnitsPageState extends State<UnitsPage> {
 
       if (products.isNotEmpty) {
         isUsed = products.whereType<AddProductEntity>().any((product) {
+          // ignore: unrelated_type_equality_checks
           bool matches = product.variant == unit.id;
           return matches;
         });
@@ -315,7 +378,8 @@ class _UnitsPageState extends State<UnitsPage> {
       if (isUsed) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Cannot delete! This unit is used in products.'),
+            content:
+                const Text('Cannot delete! This unit is used in products.'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 3),
@@ -416,12 +480,44 @@ class _UnitsPageState extends State<UnitsPage> {
       onPressed: () {
         showDialog(
           context: context,
-          builder: (_) => BlocProvider.value(
-            value: BlocProvider.of<UnitBloc>(context),
-            child: UnitDialog(
-              existingUnits: units,
-            ),
-          ),
+          builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider.value(
+                  value: BlocProvider.of<UnitBloc>(context),
+                ),
+                BlocProvider.value(
+                  value: BlocProvider.of<CategoryBloc>(context),
+                ),
+              ],
+              child: BlocBuilder<CategoryBloc, CategoryState>(
+                  builder: (context, state) {
+                List<String> categories = [];
+
+                if (state is CategoryLoadedState) {
+                  categories = state.cotegories
+                      .map((category) => category.name)
+                      .toList();
+                } else if (state is CategoryLoadingState) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is CategoryFailureState) {
+                  return AlertDialog(
+                    title: const Text('Error'),
+                    content: Text(state.error),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  );
+                }
+                return UnitDialog(
+                  existingUnits: units,
+                  categories: categories,
+                );
+              })),
         );
       },
       icon: const Icon(Icons.add_circle_outline, size: 20),
@@ -448,4 +544,3 @@ class _UnitsPageState extends State<UnitsPage> {
     );
   }
 }
-

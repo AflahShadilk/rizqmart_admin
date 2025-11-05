@@ -14,13 +14,13 @@ class UnitsRepositoryImple implements UnitsRepository{
 
  @override
   Future<void>addUnit(UnitsEntity unit)async{
-  final model=UnitsModel(id: unit.id, unitName:unit. unitName, unitType:unit. unitType, wieght:unit. wieght);
+  final model=UnitsModel(id: unit.id, unitName:unit. unitName, unitType:unit. unitType, wieght:unit. wieght,category: unit.category);
   await unitFirestoreSource.addUnits(model);
  }
 
  @override
   Future<void>updateUnits(UnitsEntity unit)async{
-  final model=UnitsModel(id: unit.id, unitName:unit. unitName, unitType:unit. unitType, wieght:unit. wieght);
+  final model=UnitsModel(id: unit.id, unitName:unit. unitName, unitType:unit. unitType, wieght:unit. wieght,category: unit.category);
   await unitFirestoreSource.updateUnits(model);
  }
 

@@ -5,14 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_state.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_event.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/add_brand_form_web.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/delete_config.dart';
 
 class BrandCardWeb extends StatefulWidget {
   final BrandEntity? brand;
@@ -281,7 +277,7 @@ class _BrandCardWebState extends State<BrandCardWeb>
                               ),
                               child: ElevatedButton.icon(
                                 onPressed: () {
-                                   _handleDlete(context, widget.brand!);
+                                   handleDelete(context, widget.brand!);
                                   
                                 },
                                 icon: const Icon(Icons.delete,
@@ -320,128 +316,5 @@ class _BrandCardWebState extends State<BrandCardWeb>
     );
   }
 
-  void _handleDlete(BuildContext context, BrandEntity brand) {
-    try {
-      final productB = context.read<ProductBloc>();
-      final productState = productB.state;
-
-      List<dynamic> products = [];
-
-      if (productState is LoadingProductState) {
-        productB.add(LoadingProductEvent());
-        return;
-      }
-
-      if (productState is LoadedProductState) {
-        products = productState.product ?? [];
-      } else {
-        products = [];
-      }
-
-      bool isUsed = false;
-
-      if (products.isNotEmpty) {
-        isUsed = products.whereType<AddProductEntity>().any((product) {
-          bool match = product.brand == brand.id;
-          return match;
-        });
-      } else {}
-      if (isUsed) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                const Text('Cannot delete! This Brand is used in products.'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      } else {
-        showDeleteconform(context, brand);
-      }
-    } catch (e) {
-      showDeleteconform(context, brand);
-    }
-  }
-
-  void showDeleteconform(BuildContext context, BrandEntity brand) {
-    final brandBloc = context.read<BrandBloc>();
-    showDialog(
-        context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Icon(Icons.warning_amber_rounded,
-                    color: Colors.orange.shade700),
-                const SizedBox(width: 12),
-                Text(
-                  'Delete Brand',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
-            ),
-            content: Text(
-              'Are you sure you want to delete "${brand.name}"? This action cannot be undone.',
-              style: GoogleFonts.poppins(fontSize: 14),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
-                ),
-                child: Text(
-                  'Cancel',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade700,
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: () {
-                  brandBloc.add(DeleteBrandEvent(brand.id));
-                  Navigator.pop(dialogContext);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Brand deleted successfully'),
-                      backgroundColor: Colors.green,
-                      behavior: SnackBarBehavior.floating,
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
-                child: Text(
-                  'Delete',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          );
-        });
-  }
+  
 }

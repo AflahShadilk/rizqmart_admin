@@ -12,11 +12,15 @@ import 'package:uuid/uuid.dart';
 class UnitDialog extends StatefulWidget {
   final List<UnitsEntity> existingUnits;
   final UnitsEntity? existingUnit;
+  final List<String> categories; 
+  final String? selectedCategory;
 
   const UnitDialog({
     super.key,
     required this.existingUnits,
     this.existingUnit,
+    required this.categories,
+    this.selectedCategory,
   });
 
   @override
@@ -27,12 +31,15 @@ class _UnitDialogState extends State<UnitDialog> {
   late TextEditingController _unitNameController;
   late TextEditingController _unitTypeController;
   late TextEditingController _weightController;
+   String? _selectedCategory;
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+      
+   _selectedCategory=widget.existingUnit?.category;
     _unitNameController = TextEditingController(
       text: widget.existingUnit?.unitName ?? '',
     );
@@ -42,6 +49,8 @@ class _UnitDialogState extends State<UnitDialog> {
     _weightController = TextEditingController(
       text: widget.existingUnit?.wieght.toString() ?? '',
     );
+    
+  
   }
 
   @override
@@ -54,6 +63,13 @@ class _UnitDialogState extends State<UnitDialog> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      if (_selectedCategory == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select a category')),
+        );
+        return;
+      }
+
       _formKey.currentState!.save();
 
       setState(() {
@@ -65,7 +81,9 @@ class _UnitDialogState extends State<UnitDialog> {
         id: widget.existingUnit?.id ?? const Uuid().v4(),
         unitName: _unitNameController.text.trim(),
         unitType: _unitTypeController.text.trim(),
-        wieght: double.parse(_weightController.text),
+        wieght: double.parse(_weightController.text), 
+        category: _selectedCategory!,
+
       );
 
       if (widget.existingUnit == null) {
@@ -116,7 +134,7 @@ class _UnitDialogState extends State<UnitDialog> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Header
+         
                   Row(
                     children: [
                       Container(
@@ -177,6 +195,9 @@ class _UnitDialogState extends State<UnitDialog> {
                   const SizedBox(height: 28),
 
               
+                  _buildCategoryDropdown(),
+                  const SizedBox(height: 20),
+
                   _buildInputField(
                     label: 'Unit Name',
                     hint: 'e.g., Small Pack, 1kg Bag, Bundle',
@@ -191,7 +212,6 @@ class _UnitDialogState extends State<UnitDialog> {
                   ),
                   const SizedBox(height: 20),
 
-              
                   _buildInputField(
                     label: 'Unit Type',
                     hint: 'e.g., kg, gram, liter, ml, piece, box, pack',
@@ -227,10 +247,6 @@ class _UnitDialogState extends State<UnitDialog> {
                   ),
                   const SizedBox(height: 32),
 
-                 
-                  const SizedBox(height: 32),
-
-     
                   Row(
                     children: [
                       Expanded(
@@ -303,6 +319,106 @@ class _UnitDialogState extends State<UnitDialog> {
       ),
     );
   }
+
+  Widget _buildCategoryDropdown() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        'Category',
+        style: GoogleFonts.poppins(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: AppColors.blackHeading,
+        ),
+      ),
+      
+      const SizedBox(height: 8),
+      
+      DropdownButtonFormField<String>(
+        isExpanded: true,
+        value: _selectedCategory,
+        
+        onChanged: (String? newValue) {
+          setState(() {
+            _selectedCategory = newValue;
+          });
+        },
+        
+        items: widget.categories.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(
+              value,
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                color: AppColors.blackHeading,
+              ),
+            ),
+          );
+        }).toList(),
+        decoration: InputDecoration(
+          hintText: 'Select a category',
+          hintStyle: GoogleFonts.poppins(
+            color: Colors.grey.shade400,
+            fontSize: 13,
+          ),
+          prefixIcon: Icon(
+            Icons.category_outlined,
+            color: AppColors.blueAccent,
+            size: 20,
+          ),
+          // suffixIcon: Icon(
+          //   Icons.arrow_drop_down,
+          //   color: AppColors.blueAccent,
+          //   size: 24,
+          // ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.grey.shade200,
+              width: 1.5,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.grey.shade200,
+              width: 1.5,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(
+              color: AppColors.blueAccent,
+              width: 2,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.red.shade400,
+              width: 1.5,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.red.shade600,
+              width: 2,
+            ),
+          ),
+          filled: true,
+          fillColor: Colors.grey.shade50,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
+        ),
+      ),
+    ],
+  );
+}
 
   Widget _buildInputField({
     required String label,

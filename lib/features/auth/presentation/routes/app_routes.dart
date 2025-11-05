@@ -291,6 +291,22 @@ class AppRoutes {
                     ),
 
                   ),
+                  BlocProvider<CategoryBloc>(
+                    create: (_) => CategoryBloc(
+                      getCategoryUsecases:
+                          GetCategoryUsecases(sl<CategoryRepositoryImpl>()),
+                      addCategoryUsecases:
+                          AddCategoryUsecases(sl<CategoryRepositoryImpl>()),
+                      addVariantUsecase:
+                          AddVariantUsecase(sl<CategoryRepositoryImpl>()),
+                      updateCategoryUsecase:
+                          UpdateCategoryUsecase(sl<CategoryRepositoryImpl>()),
+                      deleteCategoryUsecase:
+                          DeleteCategoryUsecase(sl<CategoryRepositoryImpl>()),
+                      deleteVariantusecase:
+                          DeleteVariantUsecase(sl<CategoryRepositoryImpl>()),
+                    ),
+                  ),
                   BlocProvider<UnitBloc>(
                     create: (_) => UnitBloc(
                         getUnitsUsecase: GetUnitsUsecase(sl<UnitsRepositoryImple>()),
