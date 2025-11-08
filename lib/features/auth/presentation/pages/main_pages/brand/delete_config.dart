@@ -36,7 +36,7 @@ void handleDelete(BuildContext context, BrandEntity brandEntity) {
     if (products.isNotEmpty) {
       
       isUsed = products.whereType<AddProductEntity>().any((product) {
-        bool matches = product.brand == brandEntity.id;
+        bool matches = product.brand == brandEntity.name;
         return matches;
       });
       

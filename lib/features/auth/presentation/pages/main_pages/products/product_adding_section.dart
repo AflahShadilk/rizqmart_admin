@@ -128,6 +128,7 @@ class _FormProductsState extends State<FormProducts> {
   }
 
   void initializeVariantForCategory(List<UnitsEntity> units) {
+
     _variantPriceController.forEach((_, controller) => controller.dispose());
     _variantMrpController.forEach((_, controller) => controller.dispose());
     _variantStockController.forEach((_, controller) => controller.dispose());
@@ -296,6 +297,7 @@ class _FormProductsState extends State<FormProducts> {
                   ),
                 ),
                 const SizedBox(height: 20),
+                                                                              //Brand section 
                 BlocBuilder<BrandBloc, BrandState>(
                   builder: (context, state) {
                     List<DropdownMenuItem<String>> brandItems = [];
@@ -338,6 +340,7 @@ class _FormProductsState extends State<FormProducts> {
                   },
                 ),
                 const SizedBox(height: 20),
+                                                                                   //Category section
                 Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                   BlocBuilder<CategoryBloc, CategoryState>(
                     builder: (context, state) {
@@ -398,6 +401,7 @@ class _FormProductsState extends State<FormProducts> {
                     },
                   ),
                   const SizedBox(width: 20),
+                                                                      //Status
                   Row(
                     children: [
                       Column(
@@ -430,8 +434,10 @@ class _FormProductsState extends State<FormProducts> {
                   ),
                 ]),
                 const SizedBox(height: 20),
+                                                                     //Variant section
                 if (selectedCategoryId != null &&
                     selectedCategoryId!.isNotEmpty)
+
                   BlocBuilder<UnitBloc, UnitState>(builder: (context, state) {
                     if (state is UnitLoadingState) {
                       return const Center(
@@ -455,10 +461,10 @@ class _FormProductsState extends State<FormProducts> {
                       return Container(
                         width: MediaQuery.of(context).size.width * 0.95,
                         decoration: BoxDecoration(
-                          color: AppColors.blueAccent.withOpacity(0.1),
+                          color: AppColors.charcoal.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: AppColors.blueAccent,
+                            color: AppColors.lightBlue,
                             width: 2,
                           ),
                         ),
@@ -502,6 +508,7 @@ class _FormProductsState extends State<FormProducts> {
                       },
                     ),
                     const SizedBox(width: 20),
+                                                                           //Validate
                     elevatedButtonForSave(
                       text: isEditMode ? 'Update Product' : 'Save Product',
                       onPressed: () {

@@ -13,7 +13,6 @@ void handleDeleteCategory(BuildContext context, CategoryModel category) {
   
   try {
     final productBloc = context.read<ProductBloc>();
-    
     final productState = productBloc.state;
 
     List<dynamic> products = [];
@@ -30,13 +29,13 @@ void handleDeleteCategory(BuildContext context, CategoryModel category) {
     } else {
       products = [];
     }
-
+  
     bool isUsed = false;
     
     if (products.isNotEmpty) {
       
       isUsed = products.whereType<AddProductEntity>().any((product) {
-        bool matches = product.category == category.id;
+        bool matches = product.category == category.name;
         return matches;
       });
       
