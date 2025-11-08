@@ -18,7 +18,13 @@ final List<UnitsEntity>unit;
   @override
   List<Object?> get props => [unit];
 }
-
+class GetUnitbyCategoryEvent extends UnitEvent{
+  final String categoryId;
+ const GetUnitbyCategoryEvent(this.categoryId);
+ @override
+  
+  List<Object?> get props => [categoryId];
+}
 class UnitAddingEvent extends UnitEvent{
   final UnitsEntity unitsEntity;
  const UnitAddingEvent(this.unitsEntity);

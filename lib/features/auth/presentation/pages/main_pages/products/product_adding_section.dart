@@ -1,22 +1,25 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use, prefer_final_fields
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
 import 'package:rizqmartadmin/features/auth/data/model/add_product_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/units_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_event.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_event.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/fields_products.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/image_picker_file.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/widgets.dart';
 import 'package:rizqmartadmin/features/auth/presentation/validators/text_field_validator.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/buttons/buttons.dart';
@@ -34,20 +37,18 @@ class FormProducts extends StatefulWidget {
 class _FormProductsState extends State<FormProducts> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _productName = TextEditingController();
-  final TextEditingController _price = TextEditingController();
-  final TextEditingController _mrp = TextEditingController();
   final TextEditingController _description = TextEditingController();
-  final TextEditingController _stockKey = TextEditingController();
+  Map<int, TextEditingController> _variantPriceController = {};
+  Map<int, TextEditingController> _variantMrpController = {};
+  Map<int, TextEditingController> _variantStockController = {};
+  Map<int, List<String>> _variantImageUrls = {};
+  List<UnitsEntity> _currentUnits = [];
   bool _status = true;
   String? selectedBrandId;
-  String? selectedCategoryName;
   String? selectedCategoryId;
-  List<String> selectedVariant = ['', ''];
-  List<String> imageUrls = ["", ""];
-  List<bool> isUploading = [false, false];
   String? productId;
-  bool isLoading = false;
   bool isEditMode = false;
+
   @override
   void initState() {
     super.initState();
@@ -61,11 +62,8 @@ class _FormProductsState extends State<FormProducts> {
     final product = widget.model!;
     productId = product.id;
     _productName.text = product.name;
-    _price.text = product.price.toString();
-    _mrp.text = product.mrp.toString();
-    _description.text = product.description!;
-    _stockKey.text = product.quantity.toString();
-    _status = product.status!;
+    _description.text = product.description ?? '';
+    _status = product.status ?? true;
     selectedBrandId = product.brand;
     selectedCategoryId = product.category;
 
@@ -82,15 +80,72 @@ class _FormProductsState extends State<FormProducts> {
     } else {
       selectedCategoryId = null;
     }
-    selectedVariant = List.from(product.variant);
-    imageUrls = List.from(product.imageUrls);
+
+    if (product.variantDetails != null && product.variantDetails!.isNotEmpty) {
+      _currentUnits = product.variantDetails!.map((detail) {
+        return UnitsEntity(
+          id: detail['unitId'] ?? '',
+          unitName: detail['unitName'] ?? '',
+          unitType: detail['unitType'] ?? '',
+          wieght: 0,
+          category: product.category,
+        );
+      }).toList();
+
+      _variantPriceController.clear();
+      _variantMrpController.clear();
+      _variantStockController.clear();
+      _variantImageUrls.clear();
+
+      for (int i = 0; i < product.variantDetails!.length; i++) {
+        final detail = product.variantDetails![i];
+
+        _variantPriceController[i] = TextEditingController(
+          text: detail['price']?.toString() ?? '',
+        );
+        _variantMrpController[i] = TextEditingController(
+          text: detail['mrp']?.toString() ?? '',
+        );
+        _variantStockController[i] = TextEditingController(
+          text: detail['quantity']?.toString() ?? '',
+        );
+        _variantImageUrls[i] = List<String>.from(detail['imageUrls'] ?? []);
+      }
+    } else {
+      _variantPriceController[0] = TextEditingController(
+        text: product.price.toString(),
+      );
+      _variantMrpController[0] = TextEditingController(
+        text: product.mrp.toString(),
+      );
+      _variantStockController[0] = TextEditingController(
+        text: product.quantity.toString(),
+      );
+      _variantImageUrls[0] = List.from(product.imageUrls);
+    }
+
     setState(() {});
   }
 
-  Future<void> _pickImage(int imageIndex) async {
-    setState(() {
-      isUploading[imageIndex] = true;
-    });
+  void initializeVariantForCategory(List<UnitsEntity> units) {
+    _variantPriceController.forEach((_, controller) => controller.dispose());
+    _variantMrpController.forEach((_, controller) => controller.dispose());
+    _variantStockController.forEach((_, controller) => controller.dispose());
+    _variantMrpController.clear();
+    _variantPriceController.clear();
+    _variantStockController.clear();
+    _variantImageUrls.clear();
+
+    _currentUnits = units;
+    for (int i = 0; i < units.length; i++) {
+      _variantPriceController[i] = TextEditingController();
+      _variantMrpController[i] = TextEditingController();
+      _variantStockController[i] = TextEditingController();
+      _variantImageUrls[i] = ['', '', ''];
+    }
+  }
+
+  Future<void> _pickVariantImage(int variantIndex, int imageIndex) async {
     try {
       final res = await FilePicker.platform.pickFiles(
         type: FileType.image,
@@ -99,48 +154,107 @@ class _FormProductsState extends State<FormProducts> {
       if (res != null && res.files.isNotEmpty) {
         final file = res.files.first;
         final result = FilePickerResult([file]);
-        final url = await uploadToCloudinary(
-          result,
-        );
+        final url = await uploadToCloudinary(result);
+
         setState(() {
-          while (imageUrls.length <= imageIndex) {
-            imageUrls.add('');
+          if (_variantImageUrls[variantIndex] != null) {
+            _variantImageUrls[variantIndex]![imageIndex] = url ?? '';
           }
-          imageUrls[imageIndex] = url!;
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Failed to upload image: $e')));
-    } finally {
-      setState(() {
-        isUploading[imageIndex] = false;
-      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload image: $e')),
+      );
     }
   }
 
-// remove imge
-  void removeImage(int imageIndex) {
-    setState(() {
-      if (imageIndex < imageUrls.length) {
-        imageUrls[imageIndex] = '';
+  bool validateVariants() {
+    if (_currentUnits.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a category and variants'),
+        ),
+      );
+      return false;
+    }
+
+    for (int i = 0; i < _currentUnits.length; i++) {
+      final price = _variantPriceController[i]?.text.trim() ?? '';
+      final mrp = _variantMrpController[i]?.text.trim() ?? '';
+      final quantity = _variantStockController[i]?.text.trim() ?? '';
+
+      if (price.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Variant ${i + 1}: Please enter regular price')),
+        );
+        return false;
       }
-    });
-  }
 
-  bool validateImage() {
-    if (imageUrls.isEmpty || imageUrls.length <= 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please upload at least 1 images')),
-      );
-      return false;
+      final priceValue = double.tryParse(price);
+      if (priceValue == null || priceValue <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Variant ${i + 1}: Price must be greater than 0'),
+          ),
+        );
+        return false;
+      }
+
+      if (mrp.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Variant ${i + 1}: Please enter selling price')),
+        );
+        return false;
+      }
+
+      final mrpValue = double.tryParse(mrp);
+      if (mrpValue == null || mrpValue <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Variant ${i + 1}: Selling price must be greater than 0'),
+          ),
+        );
+        return false;
+      }
+
+      if (mrpValue <= priceValue) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Variant ${i + 1}: Selling price must be > regular price'),
+          ),
+        );
+        return false;
+      }
+
+      if (quantity.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Variant ${i + 1}: Please enter quantity')),
+        );
+        return false;
+      }
+
+      final quantityValue = double.tryParse(quantity);
+      if (quantityValue == null || quantityValue <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Variant ${i + 1}: Quantity must be greater than 0'),
+          ),
+        );
+        return false;
+      }
+
+      final hasImage = (_variantImageUrls[i] ?? []).any((img) => img.isNotEmpty);
+      if (!hasImage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Variant ${i + 1}: Please upload at least one image'),
+          ),
+        );
+        return false;
+      }
     }
-    if (imageUrls[0].isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please upload 1 images')),
-      );
-      return false;
-    }
+
     return true;
   }
 
@@ -159,26 +273,29 @@ class _FormProductsState extends State<FormProducts> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Common_sizedBox_height10(),
-
-                WebTextField(
-                  label: 'Product name',
-                  hintText: 'Enter product name',
-                  controller: _productName,
-                  keyboardType: TextInputType.name,
-                  maxLines: 1,
-                  validator: ProductTextValidators.name,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: WebTextField(
+                    label: 'Product name',
+                    hintText: 'Enter product name',
+                    controller: _productName,
+                    keyboardType: TextInputType.name,
+                    maxLines: 1,
+                    validator: ProductTextValidators.name,
+                  ),
                 ),
                 const SizedBox(height: 20),
-                WebTextArea(
-                  label: 'Description',
-                  hintText: 'Enter description',
-                  controller: _description,
-                  maxLines: 10,
-                  validator: ProductTextValidators.description,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: WebTextArea(
+                    label: 'Description',
+                    hintText: 'Enter description',
+                    controller: _description,
+                    maxLines: 10,
+                    validator: ProductTextValidators.description,
+                  ),
                 ),
                 const SizedBox(height: 20),
-
-                //-----------------             -------Brand
                 BlocBuilder<BrandBloc, BrandState>(
                   builder: (context, state) {
                     List<DropdownMenuItem<String>> brandItems = [];
@@ -220,32 +337,29 @@ class _FormProductsState extends State<FormProducts> {
                     );
                   },
                 ),
-                //                                  --------- category section
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Expanded(
-                    child: BlocBuilder<CategoryBloc, CategoryState>(
-                      builder: (context, state) {
-                        List<DropdownMenuItem<String>> categoryItems = [];
+                const SizedBox(height: 20),
+                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                  BlocBuilder<CategoryBloc, CategoryState>(
+                    builder: (context, state) {
+                      List<DropdownMenuItem<String>> categoryItems = [];
 
-                        if (state is CategoryLoadingState) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (state is CategoryLoadedState) {
-                          categoryItems = state.cotegories.map((cat) {
-                            return DropdownMenuItem<String>(
-                              value: cat.id, //changed heere///////
-                              child: Text(cat.name),
-                            );
-                          }).toList();
-                        } else if (state is CategoryFailureState) {
-                          return const Center(
-                              child: Text('Failed to load categories'));
-                        }
+                      if (state is CategoryLoadingState) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is CategoryLoadedState) {
+                        categoryItems = state.cotegories.map((cat) {
+                          return DropdownMenuItem<String>(
+                            value: cat.id,
+                            child: Text(cat.name),
+                          );
+                        }).toList();
+                      } else if (state is CategoryFailureState) {
+                        return const Center(
+                            child: Text('Failed to load categories'));
+                      }
 
-                        return WebTextFields(
+                      return SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.42,
+                        child: WebTextFields(
                           label: 'Category',
                           hintText: 'Select category',
                           isDropdown: true,
@@ -254,10 +368,23 @@ class _FormProductsState extends State<FormProducts> {
                           onDropdownChanged: (value) {
                             setState(() {
                               selectedCategoryId = value;
-                              if (!isEditMode) {
-                                selectedVariant = ['', ''];
-                              }
                             });
+                            final categorystate =
+                                context.read<CategoryBloc>().state;
+                            if (categorystate is CategoryLoadedState) {
+                              try {
+                                final selectedCategory = categorystate.cotegories
+                                    .firstWhere((cat) => cat.id == value);
+                                context
+                                    .read<UnitBloc>()
+                                    .add(GetUnitbyCategoryEvent(
+                                        selectedCategory.name));
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Category not found: $e')),
+                                );
+                              }
+                            }
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -266,369 +393,255 @@ class _FormProductsState extends State<FormProducts> {
                             return null;
                           },
                           prefixIcon: Icons.category,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 20),
+                  Row(
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Status',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const SizedBox(width: 12),
+                              Switch(
+                                value: _status,
+                                onChanged: (val) {
+                                  setState(() {
+                                    _status = val;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ]),
+                const SizedBox(height: 20),
+                if (selectedCategoryId != null &&
+                    selectedCategoryId!.isNotEmpty)
+                  BlocBuilder<UnitBloc, UnitState>(builder: (context, state) {
+                    if (state is UnitLoadingState) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is UnitFailureState) {
+                      return Center(
+                          child:
+                              Text('Error loading variants: ${state.message}'));
+                    } else if (state is UnitLoadedState) {
+                      final units = state.unit;
+                      if (units.isNotEmpty &&
+                          _variantPriceController.length != units.length) {
+                        initializeVariantForCategory(units);
+                      }
+                      if (units.isEmpty) {
+                        return const Center(
+                            child: Text(
+                                'No variants available for this category'));
+                      }
+                      return Container(
+                        width: MediaQuery.of(context).size.width * 0.95,
+                        decoration: BoxDecoration(
+                          color: AppColors.blueAccent.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.blueAccent,
+                            width: 2,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Product Variants (${units.length} available)',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.blueAccent,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: units.length,
+                              itemBuilder: (context, index) {
+                                final unit = units[index];
+                                return _buildVariantCard(index, unit);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  }),
+                const SizedBox(height: 20),
+                const SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SecondaryButton(
+                      label: 'Cancel',
+                      onPressed: () {
+                        context.go('/products');
+                      },
+                    ),
+                    const SizedBox(width: 20),
+                    elevatedButtonForSave(
+                      text: isEditMode ? 'Update Product' : 'Save Product',
+                      onPressed: () {
+                        if (!_formKey.currentState!.validate()) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Please fill all required fields'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (selectedCategoryId == null ||
+                            selectedCategoryId!.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please select a category'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (selectedBrandId == null ||
+                            selectedBrandId!.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please select a brand'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (!validateVariants()) {
+                          return;
+                        }
+
+                        List<Map<String, dynamic>> variantDetails = [];
+
+                        for (int i = 0; i < _currentUnits.length; i++) {
+                          variantDetails.add({
+                            'unitId': _currentUnits[i].id,
+                            'unitName': _currentUnits[i].unitName,
+                            'unitType': _currentUnits[i].unitType,
+                            'price': double.tryParse(
+                                    _variantPriceController[i]?.text ?? '') ??
+                                0.0,
+                            'mrp': double.tryParse(
+                                    _variantMrpController[i]?.text ?? '') ??
+                                0.0,
+                            'quantity': double.tryParse(
+                                    _variantStockController[i]?.text ?? '') ??
+                                0.0,
+                            'imageUrls': _variantImageUrls[i] ?? [],
+                          });
+                        }
+
+                        final categoryState =
+                            context.read<CategoryBloc>().state;
+                        String categoryNameToSave = selectedCategoryId ?? '';
+
+                        if (categoryState is CategoryLoadedState) {
+                          try {
+                            final selectedCat =
+                                categoryState.cotegories.firstWhere(
+                              (cat) => cat.id == selectedCategoryId,
+                            );
+                            categoryNameToSave = selectedCat.name;
+                          } catch (e) {
+                            categoryNameToSave = selectedCategoryId ?? '';
+                          }
+                        }
+
+                        double price = double.tryParse(
+                                _variantPriceController[0]?.text ?? '') ??
+                            0.0;
+                        double mrp = double.tryParse(
+                                _variantMrpController[0]?.text ?? '') ??
+                            0.0;
+                        double quantity = double.tryParse(
+                                _variantStockController[0]?.text ?? '') ??
+                            0.0;
+
+                        final product = AddProductEntity(
+                          id: isEditMode
+                              ? productId!
+                              : const Uuid().v4(),
+                          name: _productName.text.trim(),
+                          price: price,
+                          mrp: mrp,
+                          description: _description.text.trim(),
+                          category: categoryNameToSave,
+                          brand: selectedBrandId ?? '',
+                          quantity: quantity,
+                          variant: _currentUnits
+                              .map((unit) => unit.unitName)
+                              .toList(),
+                          imageUrls: _variantImageUrls[0] ?? [],
+                          createdAt: DateTime.now(),
+                          features: false,
+                          status: _status,
+                          variantDetails: variantDetails,
+                        );
+
+                        if (isEditMode) {
+                          context.read<ProductBloc>().add(
+                              UpdatingProductEvent(product));
+                        } else {
+                          context.read<ProductBloc>().add(
+                              AddingProductEvent(product));
+                        }
+
+                        _formKey.currentState!.reset();
+                        if (!isEditMode) {
+                          setState(() {
+                            _productName.clear();
+                            _description.clear();
+                            _variantPriceController
+                                .forEach((_, c) => c.clear());
+                            _variantMrpController.forEach((_, c) => c.clear());
+                            _variantStockController
+                                .forEach((_, c) => c.clear());
+                            selectedBrandId = null;
+                            selectedCategoryId = null;
+                          });
+                        }
+
+                        context.go('/products');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(isEditMode
+                                ? 'Product updated successfully'
+                                : 'Product added successfully'),
+                            duration: const Duration(seconds: 2),
+                          ),
                         );
                       },
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(child: BlocBuilder<CategoryBloc, CategoryState>(
-                      builder: (context, state) {
-                    List<String> variants1 = [];
-                    if (state is CategoryLoadingState) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is CategoryLoadedState &&
-                        selectedCategoryId != null) {
-                      try {
-                        final selectedCategory = state.cotegories.firstWhere(
-                            (cat) =>
-                                cat.id ==
-                                selectedCategoryId //modified herewwwwwwwwww
-                            );
-                        variants1 =
-                            sortVariant(selectedCategory.variants ?? []);
-                      } catch (e) {
-                        variants1 = [];
-                      }
-                    } else if (state is CategoryFailureState) {
-                      return const Center(
-                          child: Text('Failed to load variants'));
-                    }
-
-                    return Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: WebTextFields(
-                                label: 'Variant',
-                                hintText: selectedCategoryId == null
-                                    ? 'Select category first'
-                                    : 'Select variant',
-                                isDropdown: true,
-                                dropdownItems: variants1.map((variant) {
-                                  return DropdownMenuItem<String>(
-                                    value: variant,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(variant),
-                                        IconButton(
-                                            onPressed: () {
-                                              showDeleteVariantDialog(
-                                                  context, variant);
-                                            },
-                                            icon: const Icon(
-                                              Icons.cancel,
-                                              color: AppColors.red,
-                                            )),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                                selectedItemBuilder: (context) {
-                                  return variants1.map((variant) {
-                                    return Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        variant,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    );
-                                  }).toList();
-                                },
-                                selectedValue: selectedVariant[0].isNotEmpty
-                                    ? selectedVariant[0]
-                                    : null,
-                                onDropdownChanged: (val) {
-                                  setState(() {
-                                    selectedVariant[0] = val ?? '';
-                                  });
-                                },
-                                validator: (val) {
-                                  if (selectedCategoryId == null) {
-                                    return 'Please select Category';
-                                  }
-                                  if (val == null || val.isEmpty) {
-                                    return 'Please select variant';
-                                  }
-                                  return null;
-                                },
-                                prefixIcon: Icons.widgets_outlined,
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            Expanded(
-                              child: WebTextFields(
-                                label: 'Variant (Optional)',
-                                hintText: selectedCategoryId == null
-                                    ? 'Select category'
-                                    : 'Select variant',
-                                isDropdown: true,
-                                dropdownItems: variants1.map((vari) {
-                                  return DropdownMenuItem<String>(
-                                    value: vari,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(vari),
-                                        IconButton(
-                                            onPressed: () {
-                                              showDeleteVariantDialog(
-                                                  context, vari);
-                                            },
-                                            icon: Icon(
-                                              Icons.cancel,
-                                              color: AppColors.red,
-                                            ))
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                                selectedItemBuilder: (context) {
-                                  return variants1.map((variant) {
-                                    return Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        variant,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    );
-                                  }).toList();
-                                },
-                                selectedValue: selectedVariant[1].isNotEmpty
-                                    ? selectedVariant[1]
-                                    : null,
-                                onDropdownChanged: (val) {
-                                  setState(() {
-                                    selectedVariant[1] = val ?? '';
-                                  });
-                                },
-                                validator: (val) {
-                                  return null;
-                                },
-                                prefixIcon: Icons.widgets_outlined,
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: IconButton(
-                                onPressed: () {
-                                  if (selectedCategoryId == null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                            "Please select a category first"),
-                                      ),
-                                    );
-                                    return;
-                                  }
-                                  _showAddVariantDialog(context);
-                                },
-                                icon: const Icon(
-                                  Icons.add_circle_outline,
-                                  color: Colors.blue,
-                                ),
-                                tooltip: 'Add new variant',
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    );
-                  }))
-                ]),
-                //--------
-                const SizedBox(height: 20),
-                //----------------------------Quantity
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.42,
-                      child: WebTextField(
-                        label: 'Stock',
-                        hintText: 'Enter product quantity',
-                        controller: _stockKey,
-                        keyboardType: const TextInputType.numberWithOptions(),
-                        validator: ProductTextValidators.stock,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        const Text('Status:'),
-                        const SizedBox(width: 8),
-                        Switch(
-                          focusColor: Colors.green,
-                          value: _status,
-                          onChanged: (val) {
-                            setState(() {
-                              _status = val;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
                   ],
                 ),
-
-                const SizedBox(height: 20),
-                //-------------------       Image field
-                imageAddingSection(
-                    isUploading: isUploading,
-                    imageUrls: imageUrls,
-                    onPickImage: (index) => _pickImage(index),
-                    onRemoveImage: (index) {
-                      setState(() {
-                        imageUrls[index] = '';
-                      });
-                    }),
-
-                //--------
-
-                const SizedBox(height: 40),
-                Align(
-                    alignment: Alignment.centerRight,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SecondaryButton(
-                          label: 'Cancel',
-                          onPressed: () {
-                            context.go('/products');
-                          },
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        elevatedButtonForSave(
-                            text:
-                                isEditMode ? 'Update Product' : 'Save Product',
-                            onPressed: () {
-                              if (imageUrls.isEmpty || imageUrls[0].isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Please atleast 1 image')),
-                                );
-                                return;
-                              }
-                              if (!_formKey.currentState!.validate()) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'Please fill all required fields')),
-                                );
-                                return;
-                              }
-                              if (double.parse(_mrp.text) <=
-                                  double.parse(_price.text)) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'Please try to add price more than actual price')),
-                                );
-                                return;
-                              }
-                              if (selectedCategoryId == null ||
-                                  selectedCategoryId!.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text('Please select a category')),
-                                );
-                                return;
-                              }
-                              if (selectedBrandId == null ||
-                                  selectedBrandId!.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Please select a brand')),
-                                );
-                                return;
-                              }
-                              if (selectedVariant.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Please select a variant')),
-                                );
-                                return;
-                              }
-                              final categoryState =
-                                  context.read<CategoryBloc>().state;
-                              String categoryNameToSave =
-                                  selectedCategoryId ?? '';
-
-                              if (categoryState is CategoryLoadedState) {
-                                try {
-                                  final selectedCat =
-                                      categoryState.cotegories.firstWhere(
-                                    (cat) => cat.id == selectedCategoryId,
-                                  );
-                                  categoryNameToSave = selectedCat.name;
-                                } catch (e) {
-                                  categoryNameToSave = selectedCategoryId ?? '';
-                                }
-                              }
-                              if (_formKey.currentState!.validate()) {
-                                final product = AddProductEntity(
-                                  id: isEditMode
-                                      ? productId!
-                                      : const Uuid().v4(),
-                                  name: _productName.text.trim(),
-                                  price: double.tryParse(_price.text.trim()) ??
-                                      0.0,
-                                  mrp: double.tryParse(_mrp.text.trim()) ?? 0.0,
-                                  description: _description.text.trim(),
-                                  category: categoryNameToSave,
-                                  brand: selectedBrandId ?? '',
-                                  quantity:
-                                      double.tryParse(_stockKey.text.trim()) ??
-                                          0.0,
-                                  variant: selectedVariant,
-                                  imageUrls: imageUrls,
-                                  createdAt: DateTime.now(),
-                                  features: false,
-                                  status: _status,
-                                );
-                                if (isEditMode) {
-                                  context
-                                      .read<ProductBloc>()
-                                      .add(UpdatingProductEvent(product));
-                                } else {
-                                  context
-                                      .read<ProductBloc>()
-                                      .add(AddingProductEvent(product));
-                                }
-
-                                _formKey.currentState!.reset();
-                                if (!isEditMode) {
-                                  setState(() {
-                                    imageUrls = ["", ""];
-                                    _productName.clear();
-                                    _price.clear();
-                                    _mrp.clear();
-                                    _description.clear();
-                                    _stockKey.clear();
-                                    selectedBrandId = null;
-                                    selectedCategoryId = null;
-                                    selectedVariant = ['', ''];
-                                  });
-                                }
-                                context.go('/products');
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(isEditMode
-                                        ? 'Product updating successful'
-                                        : 'Product added successfully'),
-                                    duration: const Duration(seconds: 2),
-                                  ),
-                                );
-                              }
-                            }),
-                      ],
-                    )),
               ],
             ),
           ),
@@ -637,144 +650,155 @@ class _FormProductsState extends State<FormProducts> {
     );
   }
 
-  @override
-  void dispose() {
-    _productName.dispose();
-    _price.dispose();
-    _description.dispose();
-    _stockKey.dispose();
-    super.dispose();
-  }
+  Widget _buildVariantCard(int index, UnitsEntity unit) {
+    final priceController = _variantPriceController[index];
+    final mrpController = _variantMrpController[index];
+    final stockController = _variantStockController[index];
 
-  // add new variant show dialoge
-  void _showAddVariantDialog(BuildContext context) {
-    final controller = TextEditingController();
+    if (priceController == null ||
+        mrpController == null ||
+        stockController == null) {
+      return const SizedBox.shrink();
+    }
 
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierColor: Colors.black54,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text("Add New Variant"),
-          content: SizedBox(
-            width: 400,
-            child: TextField(
-              controller: controller,
-              autofocus: true,
-              decoration: InputDecoration(
-                hintText: "Enter variant name",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 16,
-                ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.white,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Variant ${index + 1}: ${unit.unitName} (${unit.wieght}${unit.unitType})',
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                controller.dispose();
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final newVariant = controller.text.trim();
-
-                if (newVariant.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Please enter a variant name"),
-                    ),
-                  );
-                  return;
-                }
-
-                if (selectedCategoryId == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Please select a category first"),
-                    ),
-                  );
-                  return;
-                }
-
-                context.read<CategoryBloc>().add(
-                      AddVariantEvent(selectedCategoryId!, newVariant),
-                    );
-
-                controller.dispose();
-                Navigator.of(dialogContext).pop();
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Variant added successfully"),
+            const SizedBox(height: 15),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      WebTextField(
+                        label: 'Regular Price',
+                        hintText: 'e.g., 50',
+                        keyboardType: TextInputType.number,
+                        controller: _variantPriceController[index]!,
+                      ),
+                      const SizedBox(height: 15),
+                      WebTextField(
+                        label: 'Selling Price',
+                        hintText: 'e.g., 100',
+                        keyboardType: TextInputType.number,
+                        controller: _variantMrpController[index]!,
+                      ),
+                      const SizedBox(height: 15),
+                      WebTextField(
+                        label: 'Stock Quantity',
+                        hintText: 'e.g., 50',
+                        keyboardType: TextInputType.number,
+                        controller: _variantStockController[index]!,
+                      ),
+                    ],
                   ),
-                );
-              },
-              child: const Text("Add"),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: _buildVariantImages(index),
+                ),
+              ],
             ),
           ],
-        );
-      },
-    ).then((_) {
-      controller.dispose();
-    });
-  }
-
-  //Delete variant :
-
-  void showDeleteVariantDialog(BuildContext context, String variant) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text("Delete Variant"),
-          content: Text("Are you sure you want to delete '$variant'?"),
-          actions: [
-            SecondaryButton(
-                label: 'cancel',
-                onPressed: () => Navigator.of(dialogContext).pop()),
-            DangerButton(
-                label: 'Delete',
-                onPressed: () {
-                  context.read<CategoryBloc>().add(
-                        DeleteVariantEvent(selectedCategoryId!, variant),
-                      );
-
-                  Navigator.of(dialogContext).pop();
-
-                  setState(() {
-                    if (selectedVariant.contains(variant)) {
-                      selectedVariant = ['', ''];
-                    }
-                  });
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Variant deleted successfully")),
-                  );
-                })
-          ],
-        );
-      },
+        ),
+      ),
     );
   }
 
-  List<String> sortVariant(List<String> variants) {
-    final sortedVariants = variants.toList();
+  Widget _buildVariantImages(int variantIndex) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text(
+        'Images',
+        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      ),
+      const SizedBox(height: 10),
+      Row(
+          children: List.generate(2, (imageIndex) {
+        return Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: GestureDetector(
+                onTap: () => _pickVariantImage(variantIndex, imageIndex),
+                child: Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: _variantImageUrls[variantIndex]![imageIndex].isNotEmpty
+                      ? Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.network(
+                              _variantImageUrls[variantIndex]![imageIndex],
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned(
+                              top: 5,
+                              right: 5,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _variantImageUrls[variantIndex]![
+                                        imageIndex] = '';
+                                  });
+                                },
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  padding: const EdgeInsets.all(4),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Center(
+                          child: Icon(
+                            Icons.add_photo_alternate,
+                            size: 30,
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                )),
+          ),
+        );
+      }))
+    ]);
+  }
 
-    sortedVariants.sort((a, b) {
-      final numA = int.tryParse(a.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-      final numB = int.tryParse(b.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-      return numA.compareTo(numB);
-    });
+  @override
+  void dispose() {
+    _productName.dispose();
+    _description.dispose();
 
-    return sortedVariants;
+    _variantPriceController.forEach((_, controller) => controller.dispose());
+    _variantMrpController.forEach((_, controller) => controller.dispose());
+    _variantStockController.forEach((_, controller) => controller.dispose());
+
+    super.dispose();
   }
 }

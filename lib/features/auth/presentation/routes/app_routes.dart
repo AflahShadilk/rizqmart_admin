@@ -181,6 +181,12 @@ class AppRoutes {
                         deleteBrandUsecase:
                             DeleteBrandUsecase(sl<BrandRepositoryImpl>())),
                   ),
+                   BlocProvider<UnitBloc>(
+                    create: (_) => UnitBloc(
+                        getUnitsUsecase: GetUnitsUsecase(sl<UnitsRepositoryImple>()),
+                        addUnitUsecase: AddUnitUsecase(sl<UnitsRepositoryImple>()),
+                        updateUnitUsecase: UpdateUnitUsecase(sl<UnitsRepositoryImple>()),
+                        deleteUnitUsecase: DeleteUnitUsecase(sl<UnitsRepositoryImple>())),),
                 ],
                 child: AddProduct(
                   model: product,

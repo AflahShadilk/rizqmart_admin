@@ -28,7 +28,9 @@ class ProductRepositoryImpl implements ProductRepository {
         imageUrls: entities.imageUrls,
         createdAt: entities.createdAt,
         features: entities.features,
-        status: entities.status
+        status: entities.status,
+        variantDetails: entities.variantDetails
+
         );
     await fireStore.addProduct(data);
   }
@@ -49,7 +51,8 @@ class ProductRepositoryImpl implements ProductRepository {
         imageUrls: entities.imageUrls,
         createdAt: entities.createdAt,
         features: entities.features,
-        status: entities.status
+        status: entities.status,
+        variantDetails:entities.variantDetails
         );
     await fireStore.updateProduct(data);
   }

@@ -16,6 +16,7 @@ class AddProductEntity extends Equatable {
   final DateTime? updateAt;
   final bool ?features;
   final bool ? status;
+  final List<Map<String,dynamic>>? variantDetails;
  const AddProductEntity(
       {
         required this.id,
@@ -32,10 +33,11 @@ class AddProductEntity extends Equatable {
       required this.createdAt,
       this.updateAt,
       this.features,
-      this.status
+      this.status,
+      this.variantDetails
       });
 
   @override
 
-  List<Object?> get props => [id,name,price,description,category,brand,quantity,discount,variant,imageUrls,createdAt,updateAt,features,status];    
+  List<Object?> get props => [id,name,price,description,category,brand,quantity,discount,variant,imageUrls,createdAt,updateAt,features,status,variantDetails];    
 }
