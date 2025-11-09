@@ -13,49 +13,6 @@ import 'package:rizqmartadmin/features/auth/data/repository/main/category_reposi
 import 'package:rizqmartadmin/features/auth/data/repository/main/product_repository_impl.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/units_repository_imple.dart';
 
-
-// class RepositoryProvidersPage extends StatelessWidget {
-//   const RepositoryProvidersPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MultiRepositoryProvider(
-//         providers: [
-//           //create account repository injected
-//           RepositoryProvider<CreateAuthRepositoryImpl>(
-//               create: (_) => CreateAuthRepositoryImpl(
-//                   createAuthRemoteDatasource: CreateAuthRemoteDatasourceImpl(
-//                       firebaseAuth: FirebaseAuth.instance,
-//                       fireStore: FirebaseFirestore.instance))),
-
-//           RepositoryProvider<ForgotAuthRepository>(
-//               create: (_) => ForgotAuthRepositoryImpl(
-//                   firebaseAuth: FirebaseAuth.instance)),
-
-//           RepositoryProvider<LoginRepository>(
-//               create: (_) => LoginAuthRepositoryImpl(
-//                   loginAccDatasource:
-//                       LoginAccDatasource(firebaseAuth: FirebaseAuth.instance)))
-//         ],
-//         //providers bloc
-//         child: MultiBlocProvider(providers: [
-//           BlocProvider<AuthBloc>(
-//               create: (context) => AuthBloc(
-//                   createAccountUsecases: CreateAccountUsecases(
-//                       context.read<CreateAuthRepositoryImpl>()))),
-
-//           BlocProvider<ForgotPasswordBloc>(
-//               create: (context) => ForgotPasswordBloc(
-//                   forgotPasswordUseCase: ForgotPasswordUseCase(
-//                       context.read<ForgotAuthRepository>()))),
-
-//           BlocProvider<LoginBloc>(
-//               create: (context) => LoginBloc(
-//                   loginAccUseCases:
-//                       LoginAccUseCases(context.read<LoginRepository>())))
-//         ], child: const MyApp()));
-//   }
-// }
 final sl=GetIt.instance;
 
 void register(){

@@ -128,7 +128,6 @@ class _FormProductsState extends State<FormProducts> {
   }
 
   void initializeVariantForCategory(List<UnitsEntity> units) {
-
     _variantPriceController.forEach((_, controller) => controller.dispose());
     _variantMrpController.forEach((_, controller) => controller.dispose());
     _variantStockController.forEach((_, controller) => controller.dispose());
@@ -170,94 +169,92 @@ class _FormProductsState extends State<FormProducts> {
     }
   }
 
-  bool validateVariants() {
-    if (_currentUnits.isEmpty) {
+ bool validateVariants() {
+  if (_currentUnits.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please select at least one variant'),
+      ),
+    );
+    return false;
+  }
+
+  bool hasAtLeastOneFilledVariant = false;
+
+  for (int i = 0; i < _currentUnits.length; i++) {
+    final price = _variantPriceController[i]?.text.trim() ?? '';
+    final mrp = _variantMrpController[i]?.text.trim() ?? '';
+    final quantity = _variantStockController[i]?.text.trim() ?? '';
+
+    // Skip empty variants
+    if (price.isEmpty || mrp.isEmpty || quantity.isEmpty) {
+      continue;
+    }
+
+    // Validate only filled variants
+    final priceValue = double.tryParse(price);
+    if (priceValue == null || priceValue <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a category and variants'),
+        SnackBar(
+          content: Text('Variant ${i + 1}: Price must be greater than 0'),
         ),
       );
       return false;
     }
 
-    for (int i = 0; i < _currentUnits.length; i++) {
-      final price = _variantPriceController[i]?.text.trim() ?? '';
-      final mrp = _variantMrpController[i]?.text.trim() ?? '';
-      final quantity = _variantStockController[i]?.text.trim() ?? '';
-
-      if (price.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Variant ${i + 1}: Please enter regular price')),
-        );
-        return false;
-      }
-
-      final priceValue = double.tryParse(price);
-      if (priceValue == null || priceValue <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Variant ${i + 1}: Price must be greater than 0'),
-          ),
-        );
-        return false;
-      }
-
-      if (mrp.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Variant ${i + 1}: Please enter selling price')),
-        );
-        return false;
-      }
-
-      final mrpValue = double.tryParse(mrp);
-      if (mrpValue == null || mrpValue <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Variant ${i + 1}: Selling price must be greater than 0'),
-          ),
-        );
-        return false;
-      }
-
-      if (mrpValue <= priceValue) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Variant ${i + 1}: Selling price must be > regular price'),
-          ),
-        );
-        return false;
-      }
-
-      if (quantity.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Variant ${i + 1}: Please enter quantity')),
-        );
-        return false;
-      }
-
-      final quantityValue = double.tryParse(quantity);
-      if (quantityValue == null || quantityValue <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Variant ${i + 1}: Quantity must be greater than 0'),
-          ),
-        );
-        return false;
-      }
-
-      final hasImage = (_variantImageUrls[i] ?? []).any((img) => img.isNotEmpty);
-      if (!hasImage) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Variant ${i + 1}: Please upload at least one image'),
-          ),
-        );
-        return false;
-      }
+    final mrpValue = double.tryParse(mrp);
+    if (mrpValue == null || mrpValue <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Variant ${i + 1}: Selling price must be greater than 0'),
+        ),
+      );
+      return false;
     }
 
-    return true;
+    if (mrpValue <= priceValue) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Variant ${i + 1}: Selling price must be > regular price'),
+        ),
+      );
+      return false;
+    }
+
+    final quantityValue = double.tryParse(quantity);
+    if (quantityValue == null || quantityValue <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Variant ${i + 1}: Quantity must be greater than 0'),
+        ),
+      );
+      return false;
+    }
+
+    final hasImage = (_variantImageUrls[i] ?? []).any((img) => img.isNotEmpty);
+    if (!hasImage) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Variant ${i + 1}: Please upload at least one image'),
+        ),
+      );
+      return false;
+    }
+
+    hasAtLeastOneFilledVariant = true;
   }
+
+  if (!hasAtLeastOneFilledVariant) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please fill at least one complete variant'),
+      ),
+    );
+    return false;
+  }
+
+  return true;
+}
 
   @override
   Widget build(BuildContext context) {
@@ -297,7 +294,7 @@ class _FormProductsState extends State<FormProducts> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                                                                              //Brand section 
+                //Brand section
                 BlocBuilder<BrandBloc, BrandState>(
                   builder: (context, state) {
                     List<DropdownMenuItem<String>> brandItems = [];
@@ -340,7 +337,7 @@ class _FormProductsState extends State<FormProducts> {
                   },
                 ),
                 const SizedBox(height: 20),
-                                                                                   //Category section
+                //Category section
                 Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                   BlocBuilder<CategoryBloc, CategoryState>(
                     builder: (context, state) {
@@ -376,15 +373,16 @@ class _FormProductsState extends State<FormProducts> {
                                 context.read<CategoryBloc>().state;
                             if (categorystate is CategoryLoadedState) {
                               try {
-                                final selectedCategory = categorystate.cotegories
+                                final selectedCategory = categorystate
+                                    .cotegories
                                     .firstWhere((cat) => cat.id == value);
-                                context
-                                    .read<UnitBloc>()
-                                    .add(GetUnitbyCategoryEvent(
+                                context.read<UnitBloc>().add(
+                                    GetUnitbyCategoryEvent(
                                         selectedCategory.name));
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Category not found: $e')),
+                                  SnackBar(
+                                      content: Text('Category not found: $e')),
                                 );
                               }
                             }
@@ -401,7 +399,7 @@ class _FormProductsState extends State<FormProducts> {
                     },
                   ),
                   const SizedBox(width: 20),
-                                                                      //Status
+                  //Status
                   Row(
                     children: [
                       Column(
@@ -434,10 +432,9 @@ class _FormProductsState extends State<FormProducts> {
                   ),
                 ]),
                 const SizedBox(height: 20),
-                                                                     //Variant section
+                //Variant section
                 if (selectedCategoryId != null &&
                     selectedCategoryId!.isNotEmpty)
-
                   BlocBuilder<UnitBloc, UnitState>(builder: (context, state) {
                     if (state is UnitLoadingState) {
                       return const Center(
@@ -508,15 +505,14 @@ class _FormProductsState extends State<FormProducts> {
                       },
                     ),
                     const SizedBox(width: 20),
-                                                                           //Validate
+                    //Validate
                     elevatedButtonForSave(
                       text: isEditMode ? 'Update Product' : 'Save Product',
                       onPressed: () {
                         if (!_formKey.currentState!.validate()) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text(
-                                  'Please fill all required fields'),
+                              content: Text('Please fill all required fields'),
                             ),
                           );
                           return;
@@ -549,6 +545,18 @@ class _FormProductsState extends State<FormProducts> {
                         List<Map<String, dynamic>> variantDetails = [];
 
                         for (int i = 0; i < _currentUnits.length; i++) {
+                          final price =
+                              _variantPriceController[i]?.text.trim() ?? '';
+                          final mrp =
+                              _variantMrpController[i]?.text.trim() ?? '';
+                          final quantity =
+                              _variantStockController[i]?.text.trim() ?? '';
+
+                          if (price.isEmpty ||
+                              mrp.isEmpty ||
+                              quantity.isEmpty) {
+                            continue;
+                          }
                           variantDetails.add({
                             'unitId': _currentUnits[i].id,
                             'unitName': _currentUnits[i].unitName,
@@ -593,9 +601,7 @@ class _FormProductsState extends State<FormProducts> {
                             0.0;
 
                         final product = AddProductEntity(
-                          id: isEditMode
-                              ? productId!
-                              : const Uuid().v4(),
+                          id: isEditMode ? productId! : const Uuid().v4(),
                           name: _productName.text.trim(),
                           price: price,
                           mrp: mrp,
@@ -614,11 +620,13 @@ class _FormProductsState extends State<FormProducts> {
                         );
 
                         if (isEditMode) {
-                          context.read<ProductBloc>().add(
-                              UpdatingProductEvent(product));
+                          context
+                              .read<ProductBloc>()
+                              .add(UpdatingProductEvent(product));
                         } else {
-                          context.read<ProductBloc>().add(
-                              AddingProductEvent(product));
+                          context
+                              .read<ProductBloc>()
+                              .add(AddingProductEvent(product));
                         }
 
                         _formKey.currentState!.reset();

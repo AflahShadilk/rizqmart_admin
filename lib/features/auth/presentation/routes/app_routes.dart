@@ -45,7 +45,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/produc
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/units/units_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/splash_screen.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/welcome_screen.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/repository_providers_page.dart';
+import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
 
 class AppRoutes {
   static final GoRouter router = GoRouter(initialLocation: '/', routes: [

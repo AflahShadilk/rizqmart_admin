@@ -434,6 +434,17 @@ class __ProductCardState extends State<_ProductCard>
   late Animation<double> _scaleAnimation;
   late Animation<double> _elevationAnimation;
 
+  String _getFirstVariantImage() {
+  if (widget.product.variantDetails != null && 
+      widget.product.variantDetails!.isNotEmpty) {
+    final imageUrls = widget.product.variantDetails![0]['imageUrls'] as List?;
+    if (imageUrls != null && imageUrls.isNotEmpty) {
+      return imageUrls.first ?? '';
+    }
+  }
+  return '';
+}
+
   @override
   void initState() {
     super.initState();
@@ -495,9 +506,9 @@ class __ProductCardState extends State<_ProductCard>
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: widget.product.imageUrls.isNotEmpty
+                        child: _getFirstVariantImage().isNotEmpty
                             ? Image.network(
-                                widget.product.imageUrls.first,
+                                _getFirstVariantImage(),
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return const Icon(Icons.image_not_supported);
