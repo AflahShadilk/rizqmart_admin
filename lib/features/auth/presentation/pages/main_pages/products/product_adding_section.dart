@@ -111,17 +111,6 @@ class _FormProductsState extends State<FormProducts> {
         );
         _variantImageUrls[i] = List<String>.from(detail['imageUrls'] ?? []);
       }
-    } else {
-      _variantPriceController[0] = TextEditingController(
-        text: product.price.toString(),
-      );
-      _variantMrpController[0] = TextEditingController(
-        text: product.mrp.toString(),
-      );
-      _variantStockController[0] = TextEditingController(
-        text: product.quantity.toString(),
-      );
-      _variantImageUrls[0] = List.from(product.imageUrls);
     }
 
     setState(() {});
@@ -169,92 +158,95 @@ class _FormProductsState extends State<FormProducts> {
     }
   }
 
- bool validateVariants() {
-  if (_currentUnits.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Please select at least one variant'),
-      ),
-    );
-    return false;
+  bool validateVariants() {
+    if (_currentUnits.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select at least one variant'),
+        ),
+      );
+      return false;
+    }
+
+    bool hasAtLeastOneFilledVariant = false;
+
+    for (int i = 0; i < _currentUnits.length; i++) {
+      final price = _variantPriceController[i]?.text.trim() ?? '';
+      final mrp = _variantMrpController[i]?.text.trim() ?? '';
+      final quantity = _variantStockController[i]?.text.trim() ?? '';
+
+      // Skip empty variants
+      if (price.isEmpty || mrp.isEmpty || quantity.isEmpty) {
+        continue;
+      }
+
+      // Validate only filled variants
+      final priceValue = double.tryParse(price);
+      if (priceValue == null || priceValue <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Variant ${i + 1}: Price must be greater than 0'),
+          ),
+        );
+        return false;
+      }
+
+      final mrpValue = double.tryParse(mrp);
+      if (mrpValue == null || mrpValue <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Variant ${i + 1}: Selling price must be greater than 0'),
+          ),
+        );
+        return false;
+      }
+
+      if (mrpValue <= priceValue) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Variant ${i + 1}: Selling price must be > regular price'),
+          ),
+        );
+        return false;
+      }
+
+      final quantityValue = double.tryParse(quantity);
+      if (quantityValue == null || quantityValue <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Variant ${i + 1}: Quantity must be greater than 0'),
+          ),
+        );
+        return false;
+      }
+
+      final hasImage =
+          (_variantImageUrls[i] ?? []).any((img) => img.isNotEmpty);
+      if (!hasImage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Variant ${i + 1}: Please upload at least one image'),
+          ),
+        );
+        return false;
+      }
+
+      hasAtLeastOneFilledVariant = true;
+    }
+
+    if (!hasAtLeastOneFilledVariant) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill at least one complete variant'),
+        ),
+      );
+      return false;
+    }
+
+    return true;
   }
-
-  bool hasAtLeastOneFilledVariant = false;
-
-  for (int i = 0; i < _currentUnits.length; i++) {
-    final price = _variantPriceController[i]?.text.trim() ?? '';
-    final mrp = _variantMrpController[i]?.text.trim() ?? '';
-    final quantity = _variantStockController[i]?.text.trim() ?? '';
-
-    // Skip empty variants
-    if (price.isEmpty || mrp.isEmpty || quantity.isEmpty) {
-      continue;
-    }
-
-    // Validate only filled variants
-    final priceValue = double.tryParse(price);
-    if (priceValue == null || priceValue <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Variant ${i + 1}: Price must be greater than 0'),
-        ),
-      );
-      return false;
-    }
-
-    final mrpValue = double.tryParse(mrp);
-    if (mrpValue == null || mrpValue <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Variant ${i + 1}: Selling price must be greater than 0'),
-        ),
-      );
-      return false;
-    }
-
-    if (mrpValue <= priceValue) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Variant ${i + 1}: Selling price must be > regular price'),
-        ),
-      );
-      return false;
-    }
-
-    final quantityValue = double.tryParse(quantity);
-    if (quantityValue == null || quantityValue <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Variant ${i + 1}: Quantity must be greater than 0'),
-        ),
-      );
-      return false;
-    }
-
-    final hasImage = (_variantImageUrls[i] ?? []).any((img) => img.isNotEmpty);
-    if (!hasImage) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Variant ${i + 1}: Please upload at least one image'),
-        ),
-      );
-      return false;
-    }
-
-    hasAtLeastOneFilledVariant = true;
-  }
-
-  if (!hasAtLeastOneFilledVariant) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Please fill at least one complete variant'),
-      ),
-    );
-    return false;
-  }
-
-  return true;
-}
 
   @override
   Widget build(BuildContext context) {
@@ -590,30 +582,19 @@ class _FormProductsState extends State<FormProducts> {
                           }
                         }
 
-                        double price = double.tryParse(
-                                _variantPriceController[0]?.text ?? '') ??
-                            0.0;
-                        double mrp = double.tryParse(
-                                _variantMrpController[0]?.text ?? '') ??
-                            0.0;
-                        double quantity = double.tryParse(
-                                _variantStockController[0]?.text ?? '') ??
-                            0.0;
+              
 
                         final product = AddProductEntity(
                           id: isEditMode ? productId! : const Uuid().v4(),
                           name: _productName.text.trim(),
-                          price: price,
-                          mrp: mrp,
                           description: _description.text.trim(),
                           category: categoryNameToSave,
                           brand: selectedBrandId ?? '',
-                          quantity: quantity,
-                          variant: _currentUnits
-                              .map((unit) => unit.unitName)
-                              .toList(),
-                          imageUrls: _variantImageUrls[0] ?? [],
-                          createdAt: DateTime.now(),
+                          discount: 0.0,
+                          createdAt: isEditMode
+                              ? widget.model!.createdAt
+                              : DateTime.now(),
+                          updateAt: DateTime.now(),
                           features: false,
                           status: _status,
                           variantDetails: variantDetails,

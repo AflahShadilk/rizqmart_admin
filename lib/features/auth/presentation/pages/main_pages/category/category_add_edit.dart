@@ -1,10 +1,11 @@
 // ignore_for_file: deprecated_member_use
-
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/category_model.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_event.dart';
@@ -13,7 +14,6 @@ import 'package:uuid/uuid.dart';
 class CategoryDialog extends StatefulWidget {
   final CategoryModel? existingCategory;
   final List<CategoryModel>? existingCategories;
-
   const CategoryDialog({
     super.key,
     this.existingCategory,
@@ -27,7 +27,9 @@ class CategoryDialog extends StatefulWidget {
 class _CategoryDialogState extends State<CategoryDialog> {
   final formKey = GlobalKey<FormState>();
   late TextEditingController nameController;
+  String? _imageUrl;
   final uuid = const Uuid();
+  bool isUploading = false;
 
   @override
   void initState() {
@@ -35,16 +37,32 @@ class _CategoryDialogState extends State<CategoryDialog> {
     nameController = TextEditingController(
       text: widget.existingCategory?.name ?? '',
     );
+    _imageUrl = widget.existingCategory?.logoUrl;
+  }
+
+  Future<void> _pickImage() async {
+    setState(() {
+      isUploading = true;
+    });
+    final result = await FilePicker.platform.pickFiles(type: FileType.image);
+    if (result != null) {
+      final url = await uploadToCloudinary(result);
+      setState(() {
+        _imageUrl = url!;
+      });
+    }
+    setState(() {
+      isUploading = false;
+    });
   }
 
   bool get isEditMode => widget.existingCategory != null;
 
   bool isDuplicate(String name) {
-    if (widget.existingCategories == null || 
+    if (widget.existingCategories == null ||
         widget.existingCategories!.isEmpty) {
       return false;
     }
-
     if (isEditMode) {
       return widget.existingCategories!.any(
         (cat) =>
@@ -52,7 +70,6 @@ class _CategoryDialogState extends State<CategoryDialog> {
             cat.id != widget.existingCategory!.id,
       );
     }
-
     return widget.existingCategories!.any(
       (cat) => cat.name.toLowerCase() == name.toLowerCase(),
     );
@@ -61,11 +78,18 @@ class _CategoryDialogState extends State<CategoryDialog> {
   void handleSubmit() {
     if (!formKey.currentState!.validate()) return;
 
-    final name = nameController.text.trim();
+    if (_imageUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please upload a category logo')),
+      );
+      return;
+    }
 
+    final name = nameController.text.trim();
     final category = CategoryModel(
       id: isEditMode ? widget.existingCategory!.id : uuid.v4(),
       name: name,
+      logoUrl: _imageUrl,
     );
 
     if (isEditMode) {
@@ -73,7 +97,6 @@ class _CategoryDialogState extends State<CategoryDialog> {
     } else {
       context.read<CategoryBloc>().add(AddCategoryEvent(category));
     }
-
     context.pop();
   }
 
@@ -101,7 +124,6 @@ class _CategoryDialogState extends State<CategoryDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
               Row(
                 children: [
                   Container(
@@ -148,8 +170,6 @@ class _CategoryDialogState extends State<CategoryDialog> {
                 ],
               ),
               const SizedBox(height: 32),
-
-              
               Text(
                 'Category Name',
                 style: GoogleFonts.poppins(
@@ -159,71 +179,117 @@ class _CategoryDialogState extends State<CategoryDialog> {
                 ),
               ),
               const SizedBox(height: 8),
-
-             
-              TextFormField(
-                controller: nameController,
-                autofocus: !isEditMode,
-                decoration: InputDecoration(
-                  hintText: 'Enter category name',
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 15,
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade50,
-                  prefixIcon: Icon(
-                    Icons.category_outlined,
-                    color: Colors.grey.shade600,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: isEditMode ? AppColors.blueAccent : Colors.green,
-                      width: 2,
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: nameController,
+                      autofocus: !isEditMode,
+                      decoration: InputDecoration(
+                        hintText: 'Enter category name',
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade400,
+                          fontSize: 15,
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade50,
+                        prefixIcon: Icon(
+                          Icons.category_outlined,
+                          color: Colors.grey.shade600,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade200),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade200),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: isEditMode ? AppColors.blueAccent : Colors.green,
+                            width: 2,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.red, width: 2),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter a category name';
+                        }
+                        if (value.trim().length < 2) {
+                          return 'Category name must be at least 2 characters';
+                        }
+                        if (isDuplicate(value.trim())) {
+                          return 'Category name already exists';
+                        }
+                        return null;
+                      },
                     ),
                   ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.red),
+                  const SizedBox(width: 20),
+                  Column(
+                    children: [
+                      InkWell(
+                        onTap: _pickImage,
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                           decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              border: Border.all(
+                                color: Colors.grey.shade300,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          child: isUploading
+                              ? const Center(child: CircularProgressIndicator())
+                              : _imageUrl != null
+                               ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                 child: Image.network(
+                                          _imageUrl!,
+                                          fit: BoxFit.cover,
+                                         
+                                        ),
+                               )
+                                    : const Icon(
+                                        Icons.add_a_photo,
+                                        color: Colors.grey,
+                                        size: 40,
+                                      ),
+                                  
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Upload Logo *",
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: _imageUrl == null ? Colors.red.shade600 : Colors.grey.shade600,
+                          fontWeight: _imageUrl == null ? FontWeight.w600 : FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.red, width: 2),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a category name';
-                  }
-                  if (value.trim().length < 2) {
-                    return 'Category name must be at least 2 characters';
-                  }
-                  if (isDuplicate(value.trim())) {
-                    return 'Category name already exists';
-                  }
-                  return null;
-                },
+                ],
               ),
               const SizedBox(height: 32),
-
-              // Action Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                
                   TextButton(
                     onPressed: () => context.pop(),
                     style: TextButton.styleFrom(
@@ -245,8 +311,6 @@ class _CategoryDialogState extends State<CategoryDialog> {
                     ),
                   ),
                   const SizedBox(width: 12),
-
-                  
                   ElevatedButton.icon(
                     onPressed: handleSubmit,
                     icon: Icon(
@@ -289,14 +353,3 @@ class _CategoryDialogState extends State<CategoryDialog> {
     super.dispose();
   }
 }
-
-// Usage Examples:
-// 
-// Add new category:
-// showDialog(
-//   context: context,
-//   builder: (context) => CategoryDialog(
-//     existingCategories: categories,
-//   ),
-// );
-//

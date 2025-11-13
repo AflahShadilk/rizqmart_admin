@@ -32,7 +32,14 @@ void handleDeleteUnit(BuildContext context, UnitsEntity unit) {
 
       if (products.isNotEmpty) {
         isUsed = products.whereType<AddProductEntity>().any((product) {
-          return product.variant.contains(unit.unitName);
+          if(product.variantDetails==null&&product.variantDetails!.isEmpty){
+            return false;
+          }
+          return product.variantDetails!.any((variants){
+            final unitId=variants['unitId'];
+            final unitName=variants['unitName'];
+            return unitId==unit.id||unitName==unit.unitName;
+          });
         });
       }
 
