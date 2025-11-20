@@ -166,7 +166,7 @@ class _ProductsPageState extends State<ProductsPage> {
                 : filterProducts;
             return Column(
               children: [
-                // Header Section with Add Button
+                // Header Section
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(

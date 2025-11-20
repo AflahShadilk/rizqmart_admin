@@ -34,6 +34,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/auth/forgotpasswo
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/status/status_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/brand_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/category/category_page.dart';
@@ -187,6 +188,8 @@ class AppRoutes {
                         addUnitUsecase: AddUnitUsecase(sl<UnitsRepositoryImple>()),
                         updateUnitUsecase: UpdateUnitUsecase(sl<UnitsRepositoryImple>()),
                         deleteUnitUsecase: DeleteUnitUsecase(sl<UnitsRepositoryImple>())),),
+                    BlocProvider<StatusCubit>(create:(_)=>StatusCubit() ),
+                
                 ],
                 child: AddProduct(
                   model: product,

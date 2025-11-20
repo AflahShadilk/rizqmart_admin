@@ -13,9 +13,12 @@ import 'package:rizqmartadmin/features/auth/domain/entities/main/units_entity.da
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_event.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/status/status_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/status/status_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_state.dart';
@@ -43,18 +46,23 @@ class _FormProductsState extends State<FormProducts> {
   Map<int, TextEditingController> _variantStockController = {};
   Map<int, List<String>> _variantImageUrls = {};
   List<UnitsEntity> _currentUnits = [];
-  bool _status = true;
+  bool status=true;
   String? selectedBrandId;
   String? selectedCategoryId;
   String? productId;
   bool isEditMode = false;
-
+  
   @override
   void initState() {
     super.initState();
     isEditMode = widget.model != null;
+       context.read<CategoryBloc>().add(LoadingCategoryEvent());
+
     if (isEditMode) {
-      editMode();
+     
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        editMode();
+      });
     }
   }
 
@@ -63,60 +71,74 @@ class _FormProductsState extends State<FormProducts> {
     productId = product.id;
     _productName.text = product.name;
     _description.text = product.description ?? '';
-    _status = product.status ?? true;
+    status = product.status ?? true;
     selectedBrandId = product.brand;
-    selectedCategoryId = product.category;
+      context.read<StatusCubit>().initializeStatus(status);
 
-    final categoryState = context.read<CategoryBloc>().state;
-    if (categoryState is CategoryLoadedState) {
-      try {
-        final categoryObj = categoryState.cotegories.firstWhere(
+    await context.read<CategoryBloc>().stream.firstWhere(
+          (state) => state is CategoryLoadedState,
+          orElse: () => throw Exception('Categories failed to load'),
+        );
+
+    final categoryState =
+        context.read<CategoryBloc>().state as CategoryLoadedState;
+    selectedCategoryId = categoryState.cotegories
+        .firstWhere(
           (cat) => cat.name == product.category,
-        );
-        selectedCategoryId = categoryObj.id;
-      } catch (e) {
-        selectedCategoryId = null;
-      }
-    } else {
-      selectedCategoryId = null;
+        )
+        .id;
+
+    if (selectedCategoryId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Category not found for this product')),
+      );
+      return;
     }
+    context.read<UnitBloc>().add(GetUnitbyCategoryEvent(product.category));
 
-    if (product.variantDetails != null && product.variantDetails!.isNotEmpty) {
-      _currentUnits = product.variantDetails!.map((detail) {
-        return UnitsEntity(
-          id: detail['unitId'] ?? '',
-          unitName: detail['unitName'] ?? '',
-          unitType: detail['unitType'] ?? '',
-          wieght: 0,
-          category: product.category,
+    await context.read<UnitBloc>().stream.firstWhere(
+          (state) => state is UnitLoadedState,
         );
-      }).toList();
+    setUpVariantForEdit(product);
+  }
+  
+  void setUpVariantForEdit(ProductModel product){
+    final  unitState=context.read<UnitBloc>().state;
+    if(unitState is! UnitLoadedState)return;
+    final allUnits=unitState.unit;
+     _variantPriceController.clear();
+  _variantMrpController.clear();
+  _variantStockController.clear();
+  _variantImageUrls.clear();
 
-      _variantPriceController.clear();
-      _variantMrpController.clear();
-      _variantStockController.clear();
-      _variantImageUrls.clear();
-
-      for (int i = 0; i < product.variantDetails!.length; i++) {
-        final detail = product.variantDetails![i];
-
-        _variantPriceController[i] = TextEditingController(
-          text: detail['price']?.toString() ?? '',
-        );
-        _variantMrpController[i] = TextEditingController(
-          text: detail['mrp']?.toString() ?? '',
-        );
-        _variantStockController[i] = TextEditingController(
-          text: detail['quantity']?.toString() ?? '',
-        );
-        _variantImageUrls[i] = List<String>.from(detail['imageUrls'] ?? []);
-      }
+  final savedVaraints=<String,Map<String,dynamic>>{};
+  if (product.variantDetails != null) {
+    for (var variant in product.variantDetails!) {
+      savedVaraints[variant['unitId']] = variant;
     }
-
-    setState(() {});
   }
 
+  for(int i=0;i<allUnits.length;i++){
+    final unit=allUnits[i];
+    final saved=savedVaraints[unit.id];
+
+    _variantPriceController[i]=TextEditingController(text: saved?['price']?.toString()??'');
+     _variantMrpController[i] = TextEditingController(
+      text: saved?['mrp']?.toString() ?? '',
+    );
+    _variantStockController[i] = TextEditingController(
+      text: saved?['quantity']?.toString() ?? '',
+    );
+    final List<String> imageList=saved!=null?List<String>.from(saved['imageUrls']??[]):[];
+    while(imageList.length<3){
+      imageList.add('');
+    }
+    _variantImageUrls[i]=imageList.take(3).toList();
+  }
+  _currentUnits=allUnits;
+  }
   void initializeVariantForCategory(List<UnitsEntity> units) {
+    if (isEditMode) return;
     _variantPriceController.forEach((_, controller) => controller.dispose());
     _variantMrpController.forEach((_, controller) => controller.dispose());
     _variantStockController.forEach((_, controller) => controller.dispose());
@@ -125,13 +147,14 @@ class _FormProductsState extends State<FormProducts> {
     _variantStockController.clear();
     _variantImageUrls.clear();
 
-    _currentUnits = units;
     for (int i = 0; i < units.length; i++) {
       _variantPriceController[i] = TextEditingController();
       _variantMrpController[i] = TextEditingController();
       _variantStockController[i] = TextEditingController();
       _variantImageUrls[i] = ['', '', ''];
     }
+    
+    _currentUnits = units;
   }
 
   Future<void> _pickVariantImage(int variantIndex, int imageIndex) async {
@@ -175,7 +198,6 @@ class _FormProductsState extends State<FormProducts> {
       final mrp = _variantMrpController[i]?.text.trim() ?? '';
       final quantity = _variantStockController[i]?.text.trim() ?? '';
 
-      // Skip empty variants
       if (price.isEmpty || mrp.isEmpty || quantity.isEmpty) {
         continue;
       }
@@ -405,18 +427,24 @@ class _FormProductsState extends State<FormProducts> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              const SizedBox(width: 12),
-                              Switch(
-                                value: _status,
-                                onChanged: (val) {
-                                  setState(() {
-                                    _status = val;
-                                  });
-                                },
-                              ),
-                            ],
+                          BlocBuilder<StatusCubit, StatusState>(
+                            builder: (context, state) {
+                                return Row(
+                                  children: [
+                                    const SizedBox(width: 12),
+                                    Switch(
+                                      value: status,
+                                      onChanged: (val) {
+                                        status=val;
+                                        context.read<StatusCubit>().toggleStatus();
+                                        
+                                      },
+                                    ),
+                                  ],
+                                );
+                              
+                            
+                            },
                           ),
                         ],
                       ),
@@ -447,6 +475,13 @@ class _FormProductsState extends State<FormProducts> {
                             child: Text(
                                 'No variants available for this category'));
                       }
+                      final List<UnitsEntity> displayUnits =
+                          isEditMode ? _currentUnits : units;
+                      if (displayUnits.isEmpty) {
+                        return const Center(
+                            child: Text(
+                                'No variants available for this category'));
+                      }
                       return Container(
                         width: MediaQuery.of(context).size.width * 0.95,
                         decoration: BoxDecoration(
@@ -473,9 +508,9 @@ class _FormProductsState extends State<FormProducts> {
                             ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: units.length,
+                              itemCount: displayUnits.length,
                               itemBuilder: (context, index) {
-                                final unit = units[index];
+                                final unit = displayUnits[index];
                                 return _buildVariantCard(index, unit);
                               },
                             ),
@@ -582,8 +617,6 @@ class _FormProductsState extends State<FormProducts> {
                           }
                         }
 
-              
-
                         final product = AddProductEntity(
                           id: isEditMode ? productId! : const Uuid().v4(),
                           name: _productName.text.trim(),
@@ -596,7 +629,7 @@ class _FormProductsState extends State<FormProducts> {
                               : DateTime.now(),
                           updateAt: DateTime.now(),
                           features: false,
-                          status: _status,
+                          status: status,
                           variantDetails: variantDetails,
                         );
 
@@ -719,6 +752,8 @@ class _FormProductsState extends State<FormProducts> {
   }
 
   Widget _buildVariantImages(int variantIndex) {
+    _variantImageUrls.putIfAbsent(variantIndex, () => ['', '', '']);
+    final images = _variantImageUrls[variantIndex]!;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const Text(
         'Images',
@@ -726,7 +761,8 @@ class _FormProductsState extends State<FormProducts> {
       ),
       const SizedBox(height: 10),
       Row(
-          children: List.generate(2, (imageIndex) {
+          children: List.generate(3, (imageIndex) {
+        final imageUrl = imageIndex < images.length ? images[imageIndex] : '';
         return Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -738,7 +774,7 @@ class _FormProductsState extends State<FormProducts> {
                     border: Border.all(color: Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: _variantImageUrls[variantIndex]![imageIndex].isNotEmpty
+                  child: imageUrl.isNotEmpty
                       ? Stack(
                           fit: StackFit.expand,
                           children: [
@@ -752,8 +788,9 @@ class _FormProductsState extends State<FormProducts> {
                               child: GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    _variantImageUrls[variantIndex]![
-                                        imageIndex] = '';
+                                    final updated = List<String>.from(images);
+                                    updated[imageIndex] = '';
+                                    _variantImageUrls[variantIndex] = updated;
                                   });
                                 },
                                 child: Container(
