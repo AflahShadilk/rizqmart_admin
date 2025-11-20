@@ -5,19 +5,20 @@ class ProductModel extends AddProductEntity {
  const ProductModel(
       {required super.id,
       required super.name,
-      required super.price,
-      required super.mrp,
+      // required super.price,
+      // required super.mrp,
        super.description,
       required super.category,
       required super.brand,
-      required super.quantity,
+  
       super.discount,
-      required super.variant,
-      required super.imageUrls,
+      // required super.variant,
+      // required super.imageUrls,
       required super.createdAt,
       super.updateAt,
        super.features,
-       super.status
+       super.status,
+       super.variantDetails
        });
 
   
@@ -44,24 +45,31 @@ factory ProductModel.fromFirestore(DocumentSnapshot doc) {
   } catch (e) {
     updateAt = null;
   }
-  
+  List<Map<String,dynamic>>variantDetails=[];
+  try{
+    if(data['variantDetails']!=null&&data['variantDetails'] is List){
+      variantDetails=List<Map<String,dynamic>>.from(  data['variantDetails']);
+    }
+  }catch(e){
+   variantDetails=[];
+  }
   
   return ProductModel(
     id: doc.id,
     name: data['name'] ?? 'Unknown',
-    price: (data['price'] ?? 0).toDouble(),
-    mrp: (data['mrp'] ?? 0).toDouble(),
+    // price: (data['price'] ?? 0).toDouble(),
+    // mrp: (data['mrp'] ?? 0).toDouble(),
     description: data['description'] ?? '',
     category: data['category'] ?? '',
     brand: data['brand'] ?? '',
-    quantity: (data['quantity'] ?? 0).toDouble(),
     discount: (data['discount'] ?? 0).toDouble(),
-    variant: List<String>.from(data['variant']??[] ),
-    imageUrls: List<String>.from(data['imageUrls'] ?? []),
+    // variant: List<String>.from(data['variant']??[] ),
+    // imageUrls: List<String>.from(data['imageUrls'] ?? []),
     createdAt: createdAt,
     updateAt: updateAt,
     features: data['features'] ?? false,
     status: data['status'] ?? false,
+    variantDetails: variantDetails
   );
 }
 
@@ -69,19 +77,19 @@ factory ProductModel.fromFirestore(DocumentSnapshot doc) {
     return {
     
       'name': name,
-      'price': price,
-      'mrp'  :mrp,
+      // 'price': price,
+      // 'mrp'  :mrp,
       'description': description,
       'category': category,
       'brand': brand,
-      'quantity': quantity,
       'discount': discount,
-      'variant': variant,
-      'imageUrls': imageUrls,
+      // 'variant': variant,
+      // 'imageUrls': imageUrls,
       'createdAt': createdAt,
       'updateAt': updateAt,
       'features': features,
-      'status'  :status
+      'status'  :status,
+      'variantDetails': variantDetails,
     };
   }
 }

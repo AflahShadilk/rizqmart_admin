@@ -14,12 +14,12 @@ class CategoryRepositoryImpl implements CategoryRepository {
 
   @override
   Future<void>addcategory(CategoryModel category)async{
-    final model=CategoryFirestoreModel(id: category.id, name: category.name,variants: category.variants);
+    final model=CategoryFirestoreModel(id: category.id, name: category.name,logoUrl:category.logoUrl,variants: category.variants);
     await firestoreSource.addcategory(model);
   }
   @override
   Future<void>updateCategory(CategoryModel category)async{
-    final model=CategoryFirestoreModel(id: category.id, name:category.name,variants: category.variants);
+    final model=CategoryFirestoreModel(id: category.id, name:category.name,logoUrl: category.logoUrl,variants: category.variants);
     await firestoreSource.updateCategory(model);
   }
   

@@ -43,14 +43,24 @@ class _ProductsPageState extends State<ProductsPage> {
 
   List<Product> searchProducts(List<AddProductEntity> products) {
     return products
-        .map((prd) => Product(
+        .map((prd){
+          double price=0.0;
+          if(prd.variantDetails!=null&&prd.variantDetails!.isNotEmpty){
+            final mrp=prd.variantDetails![0]['mrp'];
+            price=(mrp is num)?mrp.toDouble():0.0;
+          }
+         return Product(
               id: prd.id,
               name: prd.name,
               category: prd.category,
               brand: prd.brand,
-              price: prd.price,
-            ))
+
+              price: price
+            );})
         .toList();
+         
+        
+       
   }
 
   List<String> getCategory(List<AddProductEntity> products, CategoryState catState) {
@@ -156,7 +166,7 @@ class _ProductsPageState extends State<ProductsPage> {
                 : filterProducts;
             return Column(
               children: [
-                // Header Section with Add Button
+                // Header Section
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -434,6 +444,39 @@ class __ProductCardState extends State<_ProductCard>
   late Animation<double> _scaleAnimation;
   late Animation<double> _elevationAnimation;
 
+  String _getFirstVariantImage() {
+  if (widget.product.variantDetails != null && 
+      widget.product.variantDetails!.isNotEmpty) {
+    final imageUrls = widget.product.variantDetails![0]['imageUrls'] as List?;
+    if (imageUrls != null && imageUrls.isNotEmpty) {
+      final firstImage=imageUrls.first;
+      return (firstImage is String&&firstImage.isNotEmpty)?firstImage:'';
+    }
+  }
+  return '';
+}
+
+double getFirstVariantPrice(){
+  if(widget.product.variantDetails!=null&& widget.product.variantDetails!.isNotEmpty){
+    final price=widget.product.variantDetails![0]['mrp'];
+    return (price is num)?price.toDouble():0.0;
+  }
+  return 0.0;
+}
+double getTotalQuantity() {
+  if (widget.product.variantDetails != null && 
+      widget.product.variantDetails!.isNotEmpty) {
+    double total = 0;
+    for (var variant in widget.product.variantDetails!) {
+      final quantity = variant['quantity'];
+      if (quantity is num) {
+        total += quantity.toDouble();
+      }
+    }
+    return total;
+  }
+  return 0.0;
+}
   @override
   void initState() {
     super.initState();
@@ -495,9 +538,9 @@ class __ProductCardState extends State<_ProductCard>
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: widget.product.imageUrls.isNotEmpty
+                        child: _getFirstVariantImage().isNotEmpty
                             ? Image.network(
-                                widget.product.imageUrls.first,
+                                _getFirstVariantImage(),
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return const Icon(Icons.image_not_supported);
@@ -526,7 +569,7 @@ class __ProductCardState extends State<_ProductCard>
                           Row(
                             children: [
                               Text(
-                                '₹${widget.product.mrp.toStringAsFixed(2)}',
+                                '₹${getFirstVariantPrice().toStringAsFixed(2)}',
                                 style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -535,7 +578,7 @@ class __ProductCardState extends State<_ProductCard>
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                'Stock: ${widget.product.quantity.toInt()}',
+                                'Stock: ${getTotalQuantity().toInt()}',
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   color: Colors.grey.shade600,

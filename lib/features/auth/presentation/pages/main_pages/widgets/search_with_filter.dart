@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/widgets.dart';
 
 // Product model
 class Product {

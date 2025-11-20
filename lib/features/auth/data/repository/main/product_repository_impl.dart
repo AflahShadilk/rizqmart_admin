@@ -17,18 +17,20 @@ class ProductRepositoryImpl implements ProductRepository {
     final data = ProductModel(
         id: entities.id,
         name: entities.name,
-        price: entities.price,
-        mrp: entities.mrp,
+        // price: entities.price,
+        // mrp: entities.mrp,
         description: entities.description,
         category: entities.category,
         brand: entities.brand,
-        quantity: entities.quantity,
+        // quantity: entities.quantity,
         discount: entities.discount,
-        variant: entities.variant,
-        imageUrls: entities.imageUrls,
+        // variant: entities.variant,
+        // imageUrls: entities.imageUrls,
         createdAt: entities.createdAt,
         features: entities.features,
-        status: entities.status
+        status: entities.status,
+        variantDetails: entities.variantDetails
+
         );
     await fireStore.addProduct(data);
   }
@@ -38,18 +40,19 @@ class ProductRepositoryImpl implements ProductRepository {
     final data = ProductModel(
         id: entities.id,
         name: entities.name,
-        price: entities.price,
-        mrp: entities.mrp,
+        // price: entities.price,
+        // mrp: entities.mrp,
         description: entities.description,
         category: entities.category,
         brand: entities.brand,
-        quantity: entities.quantity,
+        // quantity: entities.quantity,
         discount: entities.discount,
-        variant: entities.variant,
-        imageUrls: entities.imageUrls,
+        // variant: entities.variant,
+        // imageUrls: entities.imageUrls,
         createdAt: entities.createdAt,
         features: entities.features,
-        status: entities.status
+        status: entities.status,
+        variantDetails:entities.variantDetails
         );
     await fireStore.updateProduct(data);
   }
