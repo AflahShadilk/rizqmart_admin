@@ -15,10 +15,10 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/b
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_state.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/productadding/form_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/productadding/form_cubit_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_event.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/status/status_cubit.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/status/status_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_state.dart';
@@ -41,123 +41,51 @@ class _FormProductsState extends State<FormProducts> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _productName = TextEditingController();
   final TextEditingController _description = TextEditingController();
-  Map<int, TextEditingController> _variantPriceController = {};
-  Map<int, TextEditingController> _variantMrpController = {};
-  Map<int, TextEditingController> _variantStockController = {};
-  Map<int, List<String>> _variantImageUrls = {};
-  List<UnitsEntity> _currentUnits = [];
-  bool status=true;
-  String? selectedBrandId;
-  String? selectedCategoryId;
-  String? productId;
-  bool isEditMode = false;
-  
+  late FormCubit _formCubit;
+
   @override
   void initState() {
     super.initState();
-    isEditMode = widget.model != null;
-       context.read<CategoryBloc>().add(LoadingCategoryEvent());
+    _formCubit = FormCubit();
+    context.read<CategoryBloc>().add(LoadingCategoryEvent());
 
-    if (isEditMode) {
-     
+    if (widget.model != null) {
+      _formCubit.initializeForEdit(widget.model!);
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        editMode();
+        setupEditMode();
       });
     }
   }
 
-  Future<void> editMode() async {
+  Future<void> setupEditMode() async {
     final product = widget.model!;
-    productId = product.id;
     _productName.text = product.name;
     _description.text = product.description ?? '';
-    status = product.status ?? true;
-    selectedBrandId = product.brand;
-      context.read<StatusCubit>().initializeStatus(status);
 
     await context.read<CategoryBloc>().stream.firstWhere(
           (state) => state is CategoryLoadedState,
           orElse: () => throw Exception('Categories failed to load'),
         );
 
-    final categoryState =
-        context.read<CategoryBloc>().state as CategoryLoadedState;
-    selectedCategoryId = categoryState.cotegories
-        .firstWhere(
-          (cat) => cat.name == product.category,
-        )
-        .id;
+    final categoryState = context.read<CategoryBloc>().state as CategoryLoadedState;
+    final category = categoryState.cotegories.firstWhere(
+      (cat) => cat.name == product.category,
+    );
 
-    if (selectedCategoryId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Category not found for this product')),
-      );
-      return;
-    }
+    _formCubit.selectCategory(category.id);
     context.read<UnitBloc>().add(GetUnitbyCategoryEvent(product.category));
 
     await context.read<UnitBloc>().stream.firstWhere(
           (state) => state is UnitLoadedState,
         );
-    setUpVariantForEdit(product);
-  }
-  
-  void setUpVariantForEdit(ProductModel product){
-    final  unitState=context.read<UnitBloc>().state;
-    if(unitState is! UnitLoadedState)return;
-    final allUnits=unitState.unit;
-     _variantPriceController.clear();
-  _variantMrpController.clear();
-  _variantStockController.clear();
-  _variantImageUrls.clear();
 
-  final savedVaraints=<String,Map<String,dynamic>>{};
-  if (product.variantDetails != null) {
-    for (var variant in product.variantDetails!) {
-      savedVaraints[variant['unitId']] = variant;
+    final unitState = context.read<UnitBloc>().state;
+    if (unitState is UnitLoadedState) {
+      _formCubit.loadEditModeVariants(unitState.unit, product.variantDetails);
     }
   }
 
-  for(int i=0;i<allUnits.length;i++){
-    final unit=allUnits[i];
-    final saved=savedVaraints[unit.id];
-
-    _variantPriceController[i]=TextEditingController(text: saved?['price']?.toString()??'');
-     _variantMrpController[i] = TextEditingController(
-      text: saved?['mrp']?.toString() ?? '',
-    );
-    _variantStockController[i] = TextEditingController(
-      text: saved?['quantity']?.toString() ?? '',
-    );
-    final List<String> imageList=saved!=null?List<String>.from(saved['imageUrls']??[]):[];
-    while(imageList.length<3){
-      imageList.add('');
-    }
-    _variantImageUrls[i]=imageList.take(3).toList();
-  }
-  _currentUnits=allUnits;
-  }
-  void initializeVariantForCategory(List<UnitsEntity> units) {
-    if (isEditMode) return;
-    _variantPriceController.forEach((_, controller) => controller.dispose());
-    _variantMrpController.forEach((_, controller) => controller.dispose());
-    _variantStockController.forEach((_, controller) => controller.dispose());
-    _variantMrpController.clear();
-    _variantPriceController.clear();
-    _variantStockController.clear();
-    _variantImageUrls.clear();
-
-    for (int i = 0; i < units.length; i++) {
-      _variantPriceController[i] = TextEditingController();
-      _variantMrpController[i] = TextEditingController();
-      _variantStockController[i] = TextEditingController();
-      _variantImageUrls[i] = ['', '', ''];
-    }
-    
-    _currentUnits = units;
-  }
-
-  Future<void> _pickVariantImage(int variantIndex, int imageIndex) async {
+  Future<void> pickVariantImage(int variantIndex, int imageIndex) async {
     try {
       final res = await FilePicker.platform.pickFiles(
         type: FileType.image,
@@ -168,11 +96,9 @@ class _FormProductsState extends State<FormProducts> {
         final result = FilePickerResult([file]);
         final url = await uploadToCloudinary(result);
 
-        setState(() {
-          if (_variantImageUrls[variantIndex] != null) {
-            _variantImageUrls[variantIndex]![imageIndex] = url ?? '';
-          }
-        });
+        if (url != null) {
+          _formCubit.updateVariantImage(variantIndex, imageIndex, url);
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -181,34 +107,29 @@ class _FormProductsState extends State<FormProducts> {
     }
   }
 
-  bool validateVariants() {
-    if (_currentUnits.isEmpty) {
+  bool validateVariants(FormCubitState formState) {
+    if (formState.currentUnits.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select at least one variant'),
-        ),
+        const SnackBar(content: Text('Please select at least one variant')),
       );
       return false;
     }
 
     bool hasAtLeastOneFilledVariant = false;
 
-    for (int i = 0; i < _currentUnits.length; i++) {
-      final price = _variantPriceController[i]?.text.trim() ?? '';
-      final mrp = _variantMrpController[i]?.text.trim() ?? '';
-      final quantity = _variantStockController[i]?.text.trim() ?? '';
+    for (int i = 0; i < formState.currentUnits.length; i++) {
+      final price = formState.variantPrices[i]?.trim() ?? '';
+      final mrp = formState.variantMrps[i]?.trim() ?? '';
+      final quantity = formState.variantStocks[i]?.trim() ?? '';
 
       if (price.isEmpty || mrp.isEmpty || quantity.isEmpty) {
         continue;
       }
 
-      // Validate only filled variants
       final priceValue = double.tryParse(price);
       if (priceValue == null || priceValue <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Variant ${i + 1}: Price must be greater than 0'),
-          ),
+          SnackBar(content: Text('Variant ${i + 1}: Price must be greater than 0')),
         );
         return false;
       }
@@ -216,20 +137,14 @@ class _FormProductsState extends State<FormProducts> {
       final mrpValue = double.tryParse(mrp);
       if (mrpValue == null || mrpValue <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text('Variant ${i + 1}: Selling price must be greater than 0'),
-          ),
+          SnackBar(content: Text('Variant ${i + 1}: Selling price must be greater than 0')),
         );
         return false;
       }
 
       if (mrpValue <= priceValue) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text('Variant ${i + 1}: Selling price must be > regular price'),
-          ),
+          SnackBar(content: Text('Variant ${i + 1}: Selling price must be > regular price')),
         );
         return false;
       }
@@ -237,20 +152,15 @@ class _FormProductsState extends State<FormProducts> {
       final quantityValue = double.tryParse(quantity);
       if (quantityValue == null || quantityValue <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Variant ${i + 1}: Quantity must be greater than 0'),
-          ),
+          SnackBar(content: Text('Variant ${i + 1}: Quantity must be greater than 0')),
         );
         return false;
       }
 
-      final hasImage =
-          (_variantImageUrls[i] ?? []).any((img) => img.isNotEmpty);
+      final hasImage = (formState.variantImageUrls[i] ?? []).any((img) => img.isNotEmpty);
       if (!hasImage) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Variant ${i + 1}: Please upload at least one image'),
-          ),
+          SnackBar(content: Text('Variant ${i + 1}: Please upload at least one image')),
         );
         return false;
       }
@@ -260,9 +170,7 @@ class _FormProductsState extends State<FormProducts> {
 
     if (!hasAtLeastOneFilledVariant) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill at least one complete variant'),
-        ),
+        const SnackBar(content: Text('Please fill at least one complete variant')),
       );
       return false;
     }
@@ -270,426 +178,381 @@ class _FormProductsState extends State<FormProducts> {
     return true;
   }
 
+  void handleSaveProduct(FormCubitState formState) {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all required fields')),
+      );
+      return;
+    }
+
+    if (formState.selectedCategoryId == null || formState.selectedCategoryId!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a category')),
+      );
+      return;
+    }
+
+    if (formState.selectedBrandId == null || formState.selectedBrandId!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a brand')),
+      );
+      return;
+    }
+
+    if (!validateVariants(formState)) {
+      return;
+    }
+
+    List<Map<String, dynamic>> variantDetails = [];
+
+    for (int i = 0; i < formState.currentUnits.length; i++) {
+      final price = formState.variantPrices[i]?.trim() ?? '';
+      final mrp = formState.variantMrps[i]?.trim() ?? '';
+      final quantity = formState.variantStocks[i]?.trim() ?? '';
+
+      if (price.isEmpty || mrp.isEmpty || quantity.isEmpty) {
+        continue;
+      }
+
+      variantDetails.add({
+        'unitId': formState.currentUnits[i].id,
+        'unitName': formState.currentUnits[i].unitName,
+        'unitType': formState.currentUnits[i].unitType,
+        'price': double.tryParse(price) ?? 0.0,
+        'mrp': double.tryParse(mrp) ?? 0.0,
+        'quantity': double.tryParse(quantity) ?? 0.0,
+        'imageUrls': formState.variantImageUrls[i] ?? [],
+      });
+    }
+
+    final categoryState = context.read<CategoryBloc>().state;
+    String categoryNameToSave = formState.selectedCategoryId ?? '';
+
+    if (categoryState is CategoryLoadedState) {
+      try {
+        final selectedCat = categoryState.cotegories.firstWhere(
+          (cat) => cat.id == formState.selectedCategoryId,
+        );
+        categoryNameToSave = selectedCat.name;
+      } catch (e) {
+        categoryNameToSave = formState.selectedCategoryId ?? '';
+      }
+    }
+
+    final product = AddProductEntity(
+      id: formState.isEditMode ? formState.productId! : const Uuid().v4(),
+      name: _productName.text.trim(),
+      description: _description.text.trim(),
+      category: categoryNameToSave,
+      brand: formState.selectedBrandId ?? '',
+      discount: 0.0,
+      createdAt: formState.isEditMode ? widget.model!.createdAt : DateTime.now(),
+      updateAt: DateTime.now(),
+      features: false,
+      status: formState.status,
+      variantDetails: variantDetails,
+    );
+
+    if (formState.isEditMode) {
+      context.read<ProductBloc>().add(UpdatingProductEvent(product));
+    } else {
+      context.read<ProductBloc>().add(AddingProductEvent(product));
+    }
+
+    _formKey.currentState!.reset();
+    if (!formState.isEditMode) {
+      _productName.clear();
+      _description.clear();
+      _formCubit.reset();
+    }
+
+    context.go('/products');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(formState.isEditMode
+            ? 'Product updated successfully'
+            : 'Product added successfully'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          pageHeading(isEditMode ? 'Edit Product' : 'Add New Product'),
-          const SizedBox(height: 30),
-          Form(
-            key: _formKey,
+    return BlocProvider.value(
+      value: _formCubit,
+      child: BlocBuilder<FormCubit, FormCubitState>(
+        builder: (context, formState) {
+          return SizedBox(
+            width: MediaQuery.of(context).size.width,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Common_sizedBox_height10(),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: WebTextField(
-                    label: 'Product name',
-                    hintText: 'Enter product name',
-                    controller: _productName,
-                    keyboardType: TextInputType.name,
-                    maxLines: 1,
-                    validator: ProductTextValidators.name,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: WebTextArea(
-                    label: 'Description',
-                    hintText: 'Enter description',
-                    controller: _description,
-                    maxLines: 10,
-                    validator: ProductTextValidators.description,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                //Brand section
-                BlocBuilder<BrandBloc, BrandState>(
-                  builder: (context, state) {
-                    List<DropdownMenuItem<String>> brandItems = [];
-
-                    if (state is BrandLoadingState) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is BrandLoadedState) {
-                      brandItems = state.brand.map((brand) {
-                        return DropdownMenuItem<String>(
-                          value: brand.name,
-                          child: Text(brand.name),
-                        );
-                      }).toList();
-                    } else if (state is BrandFailureState) {
-                      return Center(
-                        child: Text('Failed to load brands'),
-                      );
-                    }
-
-                    return SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.42,
-                      child: WebTextFields(
-                        label: 'Brand',
-                        hintText: 'Select Brand',
-                        isDropdown: true,
-                        dropdownItems: brandItems,
-                        selectedValue: selectedBrandId,
-                        onDropdownChanged: (value) {
-                          setState(() => selectedBrandId = value);
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a brand';
-                          }
-                          return null;
-                        },
-                        prefixIcon: Icons.branding_watermark_outlined,
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-                //Category section
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  BlocBuilder<CategoryBloc, CategoryState>(
-                    builder: (context, state) {
-                      List<DropdownMenuItem<String>> categoryItems = [];
-
-                      if (state is CategoryLoadingState) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (state is CategoryLoadedState) {
-                        categoryItems = state.cotegories.map((cat) {
-                          return DropdownMenuItem<String>(
-                            value: cat.id,
-                            child: Text(cat.name),
-                          );
-                        }).toList();
-                      } else if (state is CategoryFailureState) {
-                        return const Center(
-                            child: Text('Failed to load categories'));
-                      }
-
-                      return SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.42,
-                        child: WebTextFields(
-                          label: 'Category',
-                          hintText: 'Select category',
-                          isDropdown: true,
-                          dropdownItems: categoryItems,
-                          selectedValue: selectedCategoryId,
-                          onDropdownChanged: (value) {
-                            setState(() {
-                              selectedCategoryId = value;
-                            });
-                            final categorystate =
-                                context.read<CategoryBloc>().state;
-                            if (categorystate is CategoryLoadedState) {
-                              try {
-                                final selectedCategory = categorystate
-                                    .cotegories
-                                    .firstWhere((cat) => cat.id == value);
-                                context.read<UnitBloc>().add(
-                                    GetUnitbyCategoryEvent(
-                                        selectedCategory.name));
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text('Category not found: $e')),
-                                );
-                              }
-                            }
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select a category';
-                            }
-                            return null;
-                          },
-                          prefixIcon: Icons.category,
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 20),
-                  //Status
-                  Row(
+                pageHeading(formState.isEditMode ? 'Edit Product' : 'Add New Product'),
+                const SizedBox(height: 30),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Common_sizedBox_height10(),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: WebTextField(
+                          label: 'Product name',
+                          hintText: 'Enter product name',
+                          controller: _productName,
+                          keyboardType: TextInputType.name,
+                          maxLines: 1,
+                          validator: ProductTextValidators.name,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: WebTextArea(
+                          label: 'Description',
+                          hintText: 'Enter description',
+                          controller: _description,
+                          maxLines: 10,
+                          validator: ProductTextValidators.description,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      buildBrandSection(formState),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Status',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          BlocBuilder<StatusCubit, StatusState>(
-                            builder: (context, state) {
-                                return Row(
-                                  children: [
-                                    const SizedBox(width: 12),
-                                    Switch(
-                                      value: status,
-                                      onChanged: (val) {
-                                        status=val;
-                                        context.read<StatusCubit>().toggleStatus();
-                                        
-                                      },
-                                    ),
-                                  ],
-                                );
-                              
-                            
+                          buildCategorySection(formState),
+                          const SizedBox(width: 20),
+                          buildStatusSection(formState),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      if (formState.selectedCategoryId != null &&
+                          formState.selectedCategoryId!.isNotEmpty)
+                        buildVariantSection(formState),
+                      const SizedBox(height: 20),
+                      const SizedBox(height: 40),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SecondaryButton(
+                            label: 'Cancel',
+                            onPressed: () {
+                              context.go('/products');
                             },
+                          ),
+                          const SizedBox(width: 20),
+                          elevatedButtonForSave(
+                            text: formState.isEditMode ? 'Update Product' : 'Save Product',
+                            onPressed: () => handleSaveProduct(formState),
                           ),
                         ],
                       ),
                     ],
                   ),
-                ]),
-                const SizedBox(height: 20),
-                //Variant section
-                if (selectedCategoryId != null &&
-                    selectedCategoryId!.isNotEmpty)
-                  BlocBuilder<UnitBloc, UnitState>(builder: (context, state) {
-                    if (state is UnitLoadingState) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (state is UnitFailureState) {
-                      return Center(
-                          child:
-                              Text('Error loading variants: ${state.message}'));
-                    } else if (state is UnitLoadedState) {
-                      final units = state.unit;
-                      if (units.isNotEmpty &&
-                          _variantPriceController.length != units.length) {
-                        initializeVariantForCategory(units);
-                      }
-                      if (units.isEmpty) {
-                        return const Center(
-                            child: Text(
-                                'No variants available for this category'));
-                      }
-                      final List<UnitsEntity> displayUnits =
-                          isEditMode ? _currentUnits : units;
-                      if (displayUnits.isEmpty) {
-                        return const Center(
-                            child: Text(
-                                'No variants available for this category'));
-                      }
-                      return Container(
-                        width: MediaQuery.of(context).size.width * 0.95,
-                        decoration: BoxDecoration(
-                          color: AppColors.charcoal.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.lightBlue,
-                            width: 2,
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Product Variants (${units.length} available)',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.blueAccent,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: displayUnits.length,
-                              itemBuilder: (context, index) {
-                                final unit = displayUnits[index];
-                                return _buildVariantCard(index, unit);
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  }),
-                const SizedBox(height: 20),
-                const SizedBox(height: 40),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SecondaryButton(
-                      label: 'Cancel',
-                      onPressed: () {
-                        context.go('/products');
-                      },
-                    ),
-                    const SizedBox(width: 20),
-                    //Validate
-                    elevatedButtonForSave(
-                      text: isEditMode ? 'Update Product' : 'Save Product',
-                      onPressed: () {
-                        if (!_formKey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please fill all required fields'),
-                            ),
-                          );
-                          return;
-                        }
-
-                        if (selectedCategoryId == null ||
-                            selectedCategoryId!.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please select a category'),
-                            ),
-                          );
-                          return;
-                        }
-
-                        if (selectedBrandId == null ||
-                            selectedBrandId!.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please select a brand'),
-                            ),
-                          );
-                          return;
-                        }
-
-                        if (!validateVariants()) {
-                          return;
-                        }
-
-                        List<Map<String, dynamic>> variantDetails = [];
-
-                        for (int i = 0; i < _currentUnits.length; i++) {
-                          final price =
-                              _variantPriceController[i]?.text.trim() ?? '';
-                          final mrp =
-                              _variantMrpController[i]?.text.trim() ?? '';
-                          final quantity =
-                              _variantStockController[i]?.text.trim() ?? '';
-
-                          if (price.isEmpty ||
-                              mrp.isEmpty ||
-                              quantity.isEmpty) {
-                            continue;
-                          }
-                          variantDetails.add({
-                            'unitId': _currentUnits[i].id,
-                            'unitName': _currentUnits[i].unitName,
-                            'unitType': _currentUnits[i].unitType,
-                            'price': double.tryParse(
-                                    _variantPriceController[i]?.text ?? '') ??
-                                0.0,
-                            'mrp': double.tryParse(
-                                    _variantMrpController[i]?.text ?? '') ??
-                                0.0,
-                            'quantity': double.tryParse(
-                                    _variantStockController[i]?.text ?? '') ??
-                                0.0,
-                            'imageUrls': _variantImageUrls[i] ?? [],
-                          });
-                        }
-
-                        final categoryState =
-                            context.read<CategoryBloc>().state;
-                        String categoryNameToSave = selectedCategoryId ?? '';
-
-                        if (categoryState is CategoryLoadedState) {
-                          try {
-                            final selectedCat =
-                                categoryState.cotegories.firstWhere(
-                              (cat) => cat.id == selectedCategoryId,
-                            );
-                            categoryNameToSave = selectedCat.name;
-                          } catch (e) {
-                            categoryNameToSave = selectedCategoryId ?? '';
-                          }
-                        }
-
-                        final product = AddProductEntity(
-                          id: isEditMode ? productId! : const Uuid().v4(),
-                          name: _productName.text.trim(),
-                          description: _description.text.trim(),
-                          category: categoryNameToSave,
-                          brand: selectedBrandId ?? '',
-                          discount: 0.0,
-                          createdAt: isEditMode
-                              ? widget.model!.createdAt
-                              : DateTime.now(),
-                          updateAt: DateTime.now(),
-                          features: false,
-                          status: status,
-                          variantDetails: variantDetails,
-                        );
-
-                        if (isEditMode) {
-                          context
-                              .read<ProductBloc>()
-                              .add(UpdatingProductEvent(product));
-                        } else {
-                          context
-                              .read<ProductBloc>()
-                              .add(AddingProductEvent(product));
-                        }
-
-                        _formKey.currentState!.reset();
-                        if (!isEditMode) {
-                          setState(() {
-                            _productName.clear();
-                            _description.clear();
-                            _variantPriceController
-                                .forEach((_, c) => c.clear());
-                            _variantMrpController.forEach((_, c) => c.clear());
-                            _variantStockController
-                                .forEach((_, c) => c.clear());
-                            selectedBrandId = null;
-                            selectedCategoryId = null;
-                          });
-                        }
-
-                        context.go('/products');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(isEditMode
-                                ? 'Product updated successfully'
-                                : 'Product added successfully'),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
                 ),
               ],
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildVariantCard(int index, UnitsEntity unit) {
-    final priceController = _variantPriceController[index];
-    final mrpController = _variantMrpController[index];
-    final stockController = _variantStockController[index];
+  Widget buildBrandSection(FormCubitState formState) {
+    return BlocBuilder<BrandBloc, BrandState>(
+      builder: (context, state) {
+        List<DropdownMenuItem<String>> brandItems = [];
 
-    if (priceController == null ||
-        mrpController == null ||
-        stockController == null) {
-      return const SizedBox.shrink();
-    }
+        if (state is BrandLoadingState) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is BrandLoadedState) {
+          brandItems = state.brand.map((brand) {
+            return DropdownMenuItem<String>(
+              value: brand.name,
+              child: Text(brand.name),
+            );
+          }).toList();
+        } else if (state is BrandFailureState) {
+          return Center(child: Text('Failed to load brands'));
+        }
 
+        return SizedBox(
+          width: MediaQuery.of(context).size.width * 0.42,
+          child: WebTextFields(
+            label: 'Brand',
+            hintText: 'Select Brand',
+            isDropdown: true,
+            dropdownItems: brandItems,
+            selectedValue: formState.selectedBrandId,
+            onDropdownChanged: (value) {
+              _formCubit.selectBrand(value!);
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please select a brand';
+              }
+              return null;
+            },
+            prefixIcon: Icons.branding_watermark_outlined,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildCategorySection(FormCubitState formState) {
+    return BlocBuilder<CategoryBloc, CategoryState>(
+      builder: (context, state) {
+        List<DropdownMenuItem<String>> categoryItems = [];
+
+        if (state is CategoryLoadingState) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is CategoryLoadedState) {
+          categoryItems = state.cotegories.map((cat) {
+            return DropdownMenuItem<String>(
+              value: cat.id,
+              child: Text(cat.name),
+            );
+          }).toList();
+        } else if (state is CategoryFailureState) {
+          return const Center(child: Text('Failed to load categories'));
+        }
+
+        return SizedBox(
+          width: MediaQuery.of(context).size.width * 0.42,
+          child: WebTextFields(
+            label: 'Category',
+            hintText: 'Select category',
+            isDropdown: true,
+            dropdownItems: categoryItems,
+            selectedValue: formState.selectedCategoryId,
+            onDropdownChanged: (value) {
+              final categorystate = context.read<CategoryBloc>().state;
+              if (categorystate is CategoryLoadedState) {
+                try {
+                  final selectedCategory = categorystate.cotegories.firstWhere(
+                    (cat) => cat.id == value,
+                  );
+                  _formCubit.selectCategory(value!);
+                  context.read<UnitBloc>().add(
+                        GetUnitbyCategoryEvent(selectedCategory.name),
+                      );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Category not found: $e')),
+                  );
+                }
+              }
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please select a category';
+              }
+              return null;
+            },
+            prefixIcon: Icons.category,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildStatusSection(FormCubitState formState) {
+    return Row(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Status',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const SizedBox(width: 12),
+                Switch(
+                  value: formState.status,
+                  onChanged: (val) {
+                    _formCubit.toggleStatus();
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget buildVariantSection(FormCubitState formState) {
+    return BlocConsumer<UnitBloc, UnitState>(
+      listener: (context, state) {
+        if (state is UnitLoadedState && !formState.isEditMode) {
+          _formCubit.initializeVariants(state.unit);
+        }
+      },
+      builder: (context, state) {
+        if (state is UnitLoadingState) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is UnitFailureState) {
+          return Center(child: Text('Error loading variants: ${state.message}'));
+        } else if (state is UnitLoadedState) {
+          final displayUnits = formState.currentUnits.isEmpty ? state.unit : formState.currentUnits;
+
+          if (displayUnits.isEmpty) {
+            return const Center(child: Text('No variants available for this category'));
+          }
+
+          return Container(
+            width: MediaQuery.of(context).size.width * 0.95,
+            decoration: BoxDecoration(
+              color: AppColors.charcoal.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.lightBlue,
+                width: 2,
+              ),
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Product Variants (${displayUnits.length} available)',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.blueAccent,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: displayUnits.length,
+                  itemBuilder: (context, index) {
+                    return buildVariantCard(index, displayUnits[index], formState);
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget buildVariantCard(int index, UnitsEntity unit, FormCubitState formState) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Container(
@@ -697,7 +560,7 @@ class _FormProductsState extends State<FormProducts> {
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey.shade300),
           borderRadius: BorderRadius.circular(8),
-          color: Colors.white,
+          color: AppColors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -716,32 +579,47 @@ class _FormProductsState extends State<FormProducts> {
                 Expanded(
                   child: Column(
                     children: [
-                      WebTextField(
-                        label: 'Regular Price',
-                        hintText: 'e.g., 50',
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Regular Price',
+                          hintText: 'e.g., 50',
+                        ),
                         keyboardType: TextInputType.number,
-                        controller: _variantPriceController[index]!,
+                        initialValue: formState.variantPrices[index] ?? '',
+                        onChanged: (value) {
+                          _formCubit.updateVariantPrice(index, value);
+                        },
                       ),
                       const SizedBox(height: 15),
-                      WebTextField(
-                        label: 'Selling Price',
-                        hintText: 'e.g., 100',
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Selling Price',
+                          hintText: 'e.g., 100',
+                        ),
                         keyboardType: TextInputType.number,
-                        controller: _variantMrpController[index]!,
+                        initialValue: formState.variantMrps[index] ?? '',
+                        onChanged: (value) {
+                          _formCubit.updateVariantMrp(index, value);
+                        },
                       ),
                       const SizedBox(height: 15),
-                      WebTextField(
-                        label: 'Stock Quantity',
-                        hintText: 'e.g., 50',
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Stock Quantity',
+                          hintText: 'e.g., 50',
+                        ),
                         keyboardType: TextInputType.number,
-                        controller: _variantStockController[index]!,
+                        initialValue: formState.variantStocks[index] ?? '',
+                        onChanged: (value) {
+                          _formCubit.updateVariantStock(index, value);
+                        },
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(width: 20),
                 Expanded(
-                  child: _buildVariantImages(index),
+                  child: buildVariantImages(index, formState),
                 ),
               ],
             ),
@@ -751,87 +629,83 @@ class _FormProductsState extends State<FormProducts> {
     );
   }
 
-  Widget _buildVariantImages(int variantIndex) {
-    _variantImageUrls.putIfAbsent(variantIndex, () => ['', '', '']);
-    final images = _variantImageUrls[variantIndex]!;
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text(
-        'Images',
-        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-      ),
-      const SizedBox(height: 10),
-      Row(
+  Widget buildVariantImages(int variantIndex, FormCubitState formState) {
+    final images = formState.variantImageUrls[variantIndex] ?? ['', '', ''];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Images',
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        ),
+        const SizedBox(height: 10),
+        Row(
           children: List.generate(3, (imageIndex) {
-        final imageUrl = imageIndex < images.length ? images[imageIndex] : '';
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: GestureDetector(
-                onTap: () => _pickVariantImage(variantIndex, imageIndex),
-                child: Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: imageUrl.isNotEmpty
-                      ? Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image.network(
-                              _variantImageUrls[variantIndex]![imageIndex],
-                              fit: BoxFit.cover,
-                            ),
-                            Positioned(
-                              top: 5,
-                              right: 5,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    final updated = List<String>.from(images);
-                                    updated[imageIndex] = '';
-                                    _variantImageUrls[variantIndex] = updated;
-                                  });
-                                },
-                                child: Container(
-                                  decoration: const BoxDecoration(
-                                    color: Colors.red,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  padding: const EdgeInsets.all(4),
-                                  child: const Icon(
-                                    Icons.close,
-                                    color: Colors.white,
-                                    size: 14,
+            final imageUrl = imageIndex < images.length ? images[imageIndex] : '';
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: GestureDetector(
+                  onTap: () => pickVariantImage(variantIndex, imageIndex),
+                  child: Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.gray.withOpacity(.3)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: imageUrl.isNotEmpty
+                        ? Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Image.network(
+                                imageUrl,
+                                fit: BoxFit.cover,
+                              ),
+                              Positioned(
+                                top: 5,
+                                right: 5,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _formCubit.removeVariantImage(variantIndex, imageIndex);
+                                  },
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    padding: const EdgeInsets.all(4),
+                                    child: const Icon(
+                                      Icons.close,
+                                      color: AppColors.white,
+                                      size: 14,
+                                    ),
                                   ),
                                 ),
                               ),
+                            ],
+                          )
+                        : Center(
+                            child: Icon(
+                              Icons.add_photo_alternate,
+                              size: 30,
+                              color: AppColors.gray.withOpacity(.4),
                             ),
-                          ],
-                        )
-                      : Center(
-                          child: Icon(
-                            Icons.add_photo_alternate,
-                            size: 30,
-                            color: Colors.grey.shade400,
                           ),
-                        ),
-                )),
-          ),
-        );
-      }))
-    ]);
+                  ),
+                ),
+              ),
+            );
+          }),
+        )
+      ],
+    );
   }
 
   @override
   void dispose() {
     _productName.dispose();
     _description.dispose();
-
-    _variantPriceController.forEach((_, controller) => controller.dispose());
-    _variantMrpController.forEach((_, controller) => controller.dispose());
-    _variantStockController.forEach((_, controller) => controller.dispose());
-
+    _formCubit.close();
     super.dispose();
   }
 }

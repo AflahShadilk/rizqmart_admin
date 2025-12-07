@@ -4,17 +4,9 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/produc
 import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/base_container_decoration.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/respnsive_page.dart';
 
-class AddProduct extends StatefulWidget {
+class AddProduct extends StatelessWidget {
   final ProductModel? model;
   const AddProduct({super.key,this.model});
-
-  @override
-  State<AddProduct> createState() => _AddProductState();
-}
-
-class _AddProductState extends State<AddProduct> {
- 
-  
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +31,7 @@ class _AddProductState extends State<AddProduct> {
         width: double.infinity,
         padding: padding,
         child: SingleChildScrollView(
-          child: FormProducts(model: widget.model,),
+          child: FormProducts(model: model,),
         ),
       ),
     );

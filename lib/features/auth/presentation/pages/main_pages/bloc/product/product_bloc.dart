@@ -60,7 +60,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   Future<void> updateProduct(
       UpdatingProductEvent event, Emitter<ProductState> emit) async {
     try {
-          //  emit(SuccessLoadingState('Updating product successfully'));
       add(const LoadingProductEvent());
          await updateProductUsecase(event.product);
  
@@ -73,13 +72,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   Future<void> deleteProduct(
       DeletingProductEvent event, Emitter<ProductState> emit) async {
     try {
-      //  final currentState = state;
-      //  if (currentState is LoadedProductState) {
-      //   final updatedList = currentState.product
-      //       .where((product) => product.id != event.id)
-      //       .toList();
-      //   emit(LoadedProductState(updatedList));
-      // }
       await deleteProductUsecase(event.id);
       await Future.delayed(const Duration(milliseconds: 500));
       add(const LoadingProductEvent());

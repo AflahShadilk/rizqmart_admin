@@ -29,13 +29,13 @@ class SearchWithFilters extends StatefulWidget {
   final bool showFilters;
 
   const SearchWithFilters({
-    Key? key,
+    super.key,
     required this.items,
     required this.onResults,
     this.categories,
     this.brands,
     this.showFilters = true,
-  }) : super(key: key);
+  });
 
   @override
   State<SearchWithFilters> createState() => _SearchWithFiltersState();

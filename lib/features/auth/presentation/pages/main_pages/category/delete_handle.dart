@@ -1,6 +1,7 @@
  import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/category_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
@@ -46,7 +47,7 @@ void handleDeleteCategory(BuildContext context, CategoryModel category) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Cannot delete! This category is used in products.'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.red,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
         ),
@@ -106,7 +107,7 @@ void _showDeleteConfirmDialog(BuildContext context, CategoryModel category) {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.white,
               padding: const EdgeInsets.symmetric(
                 horizontal: 20,
                 vertical: 12,
@@ -122,7 +123,7 @@ void _showDeleteConfirmDialog(BuildContext context, CategoryModel category) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Category deleted successfully'),
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppColors.green,
                   behavior: SnackBarBehavior.floating,
                   duration: Duration(seconds: 2),
                 ),
