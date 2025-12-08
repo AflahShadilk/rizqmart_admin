@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/productpage/product_page_state.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/product/productpage/product_page_state.dart';
 
 
 

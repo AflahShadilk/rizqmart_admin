@@ -7,8 +7,8 @@ import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/category_model.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_state.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/category/category_cubit.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/category/category_cubit_state.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/category/adding/category_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/category/adding/category_cubit_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/category/category_add_edit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/category/delete_handle.dart';
 

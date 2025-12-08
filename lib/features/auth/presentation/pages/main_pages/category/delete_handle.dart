@@ -1,4 +1,4 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
@@ -11,58 +11,49 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/p
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_state.dart';
 
 void handleDeleteCategory(BuildContext context, CategoryModel category) {
-  
   try {
     final productBloc = context.read<ProductBloc>();
     final productState = productBloc.state;
 
-    List<dynamic> products = [];
+    List<AddProductEntity> products = [];
 
     if (productState is LoadingProductState) {
-      productBloc.add(LoadingProductEvent());
-      
-      // _showDeleteConfirmDialog(context, category);
+      productBloc.add(const LoadingProductEvent());
       return;
     }
-    
+
     if (productState is LoadedProductState) {
-      products = productState.product ?? [];
-    } else {
-      products = [];
+      products = productState.product;
     }
-  
+
     bool isUsed = false;
-    
+
     if (products.isNotEmpty) {
-      
-      isUsed = products.whereType<AddProductEntity>().any((product) {
-        bool matches = product.category == category.name;
-        return matches;
+      isUsed = products.any((product) {
+        return product.category == category.name;
       });
-      
-    } else {
     }
 
     if (isUsed) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Cannot delete! This category is used in products.'),
+        const SnackBar(
+          content: Text('Cannot delete! This category is used in products.'),
           backgroundColor: AppColors.red,
           behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 3),
+          duration: Duration(seconds: 3),
         ),
       );
     } else {
-      _showDeleteConfirmDialog(context, category);
+      showDeleteConfirmDialog(context, category);
     }
   } catch (e) {
-    _showDeleteConfirmDialog(context, category);
+    showDeleteConfirmDialog(context, category);
   }
 }
 
-void _showDeleteConfirmDialog(BuildContext context, CategoryModel category) {
+void showDeleteConfirmDialog(BuildContext context, CategoryModel category) {
   final categoryBloc = context.read<CategoryBloc>();
-  
+
   showDialog(
     context: context,
     builder: (BuildContext dialogContext) {
@@ -119,7 +110,7 @@ void _showDeleteConfirmDialog(BuildContext context, CategoryModel category) {
             onPressed: () {
               categoryBloc.add(DeleteCategoryEvent(category.id));
               Navigator.pop(dialogContext);
-              
+
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Category deleted successfully'),

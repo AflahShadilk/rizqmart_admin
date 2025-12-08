@@ -33,6 +33,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/login%2
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/forgotpassword_screen.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/navigation/drawyer_selected_index_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/status/status_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
@@ -66,6 +67,7 @@ class AppRoutes {
         );
       },
     ),
+
     GoRoute(
       path: '/forgotPasswordPage',
       builder: (context, state) {
@@ -81,7 +83,10 @@ class AppRoutes {
     //Main routes
     ShellRoute(
         builder: (context, state, child) {
-          return MainPages(child: child);
+          return BlocProvider(
+            create: (context) => DrawerSelectedIndexCubit(),
+            child: MainPages(child: child),
+          );
         },
         routes: [
           GoRoute(
@@ -197,21 +202,6 @@ class AppRoutes {
               );
             },
           ),
-          // GoRoute(
-          //   path: '/Addcategory',
-          //   builder: (context, state) {
-          //     return BlocProvider(
-          //       create: (_) => CategoryBloc(
-          //            getCategoryUsecases: GetCategoryUsecases(sl<CategoryRepositoryImpl>()),
-          //           addCategoryUsecases: AddCategoryUsecases(sl<CategoryRepositoryImpl>()),
-          //           addVariantUsecase: AddVariantUsecase(sl<CategoryRepositoryImpl>()),
-          //           updateCategoryUsecase: UpdateCategoryUsecase(sl<CategoryRepositoryImpl>()),
-          //           deleteCategoryUsecase: DeleteCategoryUsecase(sl<CategoryRepositoryImpl>()),
-          //           deleteVariantusecase: DeleteVariantUsecase(sl<CategoryRepositoryImpl>()),),
-          //       child: AddCategoryBottomSheet(),
-          //     );
-          //   },
-          // ),
           GoRoute(
             path: '/category',
             builder: (context, state) {

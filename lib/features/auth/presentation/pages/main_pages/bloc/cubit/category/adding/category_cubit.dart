@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/category/category_cubit_state.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/category/adding/category_cubit_state.dart';
 
 class CategoryPageCubit extends Cubit<CategoryPageState> {
   CategoryPageCubit() : super(const CategoryPageState());
