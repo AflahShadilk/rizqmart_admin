@@ -20,6 +20,10 @@ import 'package:rizqmartadmin/features/auth/domain/usecases/main/category/delete
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/category/delete_variant_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/category/get_category_usecases.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/category/update_category_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_new_order_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_order_by_status_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/mark_order_received_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/update_order_status_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/product/add_product_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/product/delete_product_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/product/get_product_usecase.dart';
@@ -34,6 +38,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/auth/forgotpasswo
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/navigation/drawyer_selected_index_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/status/status_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
@@ -42,6 +47,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/catego
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/dashboard_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/login_screen.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/navigations/main_pages.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/order/order_received_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/add_product.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/products_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/units/units_page.dart';
@@ -91,7 +97,7 @@ class AppRoutes {
         routes: [
           GoRoute(
             path: '/dashBoard',
-            builder: (context, state) => DashboardPage(),
+            builder: (context, state) =>const DashboardPage(),
           ),
           GoRoute(
             path: '/products',
@@ -109,7 +115,7 @@ class AppRoutes {
                         DeleteProductUsecase(sl<ProductRepositoryImpl>()),
                   ),
                   child: Builder(
-                    builder: (context) => ProductsPage(),
+                    builder: (context) =>const ProductsPage(),
                   ),
                 ),
                 BlocProvider<CategoryBloc>(
@@ -187,14 +193,18 @@ class AppRoutes {
                         deleteBrandUsecase:
                             DeleteBrandUsecase(sl<BrandRepositoryImpl>())),
                   ),
-                   BlocProvider<UnitBloc>(
+                  BlocProvider<UnitBloc>(
                     create: (_) => UnitBloc(
-                        getUnitsUsecase: GetUnitsUsecase(sl<UnitsRepositoryImple>()),
-                        addUnitUsecase: AddUnitUsecase(sl<UnitsRepositoryImple>()),
-                        updateUnitUsecase: UpdateUnitUsecase(sl<UnitsRepositoryImple>()),
-                        deleteUnitUsecase: DeleteUnitUsecase(sl<UnitsRepositoryImple>())),),
-                    BlocProvider<StatusCubit>(create:(_)=>StatusCubit() ),
-                
+                        getUnitsUsecase:
+                            GetUnitsUsecase(sl<UnitsRepositoryImple>()),
+                        addUnitUsecase:
+                            AddUnitUsecase(sl<UnitsRepositoryImple>()),
+                        updateUnitUsecase:
+                            UpdateUnitUsecase(sl<UnitsRepositoryImple>()),
+                        deleteUnitUsecase:
+                            DeleteUnitUsecase(sl<UnitsRepositoryImple>())),
+                  ),
+                  BlocProvider<StatusCubit>(create: (_) => StatusCubit()),
                 ],
                 child: AddProduct(
                   model: product,
@@ -274,10 +284,11 @@ class AppRoutes {
             },
           ),
           GoRoute(
-              path: '/unitPage',
-              builder: (context, state) {
-                 return MultiBlocProvider(providers: [
-                   BlocProvider<ProductBloc>(
+            path: '/unitPage',
+            builder: (context, state) {
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider<ProductBloc>(
                     create: (_) => ProductBloc(
                       getProductUsecase:
                           GetProductUsecase(sl<ProductRepositoryImpl>()),
@@ -288,7 +299,6 @@ class AppRoutes {
                       deleteProductUsecase:
                           DeleteProductUsecase(sl<ProductRepositoryImpl>()),
                     ),
-
                   ),
                   BlocProvider<CategoryBloc>(
                     create: (_) => CategoryBloc(
@@ -308,16 +318,36 @@ class AppRoutes {
                   ),
                   BlocProvider<UnitBloc>(
                     create: (_) => UnitBloc(
-                        getUnitsUsecase: GetUnitsUsecase(sl<UnitsRepositoryImple>()),
-                        addUnitUsecase: AddUnitUsecase(sl<UnitsRepositoryImple>()),
-                        updateUnitUsecase: UpdateUnitUsecase(sl<UnitsRepositoryImple>()),
-                        deleteUnitUsecase: DeleteUnitUsecase(sl<UnitsRepositoryImple>())),),
-                ],child: UnitsPage(),);
-                
-                
-              },
-              
-              ),
+                        getUnitsUsecase:
+                            GetUnitsUsecase(sl<UnitsRepositoryImple>()),
+                        addUnitUsecase:
+                            AddUnitUsecase(sl<UnitsRepositoryImple>()),
+                        updateUnitUsecase:
+                            UpdateUnitUsecase(sl<UnitsRepositoryImple>()),
+                        deleteUnitUsecase:
+                            DeleteUnitUsecase(sl<UnitsRepositoryImple>())),
+                  ),
+                ],
+                child: UnitsPage(),
+              );
+            },
+          ),
+          GoRoute(
+              path: '/order',
+              builder: (context, state) {
+                return MultiBlocProvider(providers: [
+                  BlocProvider<OrderReceivedBloc>(
+                    create: (_) => OrderReceivedBloc(
+                        getNewOrdersUseCase:
+                            GetNewOrdersUseCase(repository: sl()),
+                        getOrdersByStatusUseCase:
+                            GetOrdersByStatusUseCase(repository: sl()),
+                        updateOrderStatusUseCase:
+                            UpdateOrderStatusUseCase(repository: sl()),
+                        markOrderReceivedUseCase:
+                            MarkOrderReceivedUseCase(repository: sl()))),
+                ], child: OrderReceivedPage());
+              })
         ])
   ]);
 }

@@ -344,6 +344,12 @@
       "languageVersion": "3.6"
     },
     {
+      "name": "intl",
+      "rootUri": "file:///C:/Users/SHADIL/AppData/Local/Pub/Cache/hosted/pub.dev/intl-0.20.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "leak_tracker",
       "rootUri": "file:///C:/Users/SHADIL/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker-10.0.7",
       "packageUri": "lib/",
@@ -486,6 +492,12 @@
       "rootUri": "file:///C:/Users/SHADIL/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.5+1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "responsive_framework",
+      "rootUri": "file:///C:/Users/SHADIL/AppData/Local/Pub/Cache/hosted/pub.dev/responsive_framework-1.5.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
     },
     {
       "name": "shared_preferences",
@@ -656,7 +668,7 @@
       "languageVersion": "3.6"
     }
   ],
-  "generated": "2025-11-20T11:38:31.306531Z",
+  "generated": "2026-01-07T12:42:13.130344Z",
   "generator": "pub",
   "generatorVersion": "3.6.0",
   "flutterRoot": "file:///C:/flutterDev/sdk/flutter",
