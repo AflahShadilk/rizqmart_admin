@@ -40,6 +40,7 @@ class _MainPagesState extends State<MainPages> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarRizq(context),
+      
       drawer: BlocBuilder<DrawerSelectedIndexCubit, int>(
         builder: (context, selectedIndex) {
           return Drawer(
