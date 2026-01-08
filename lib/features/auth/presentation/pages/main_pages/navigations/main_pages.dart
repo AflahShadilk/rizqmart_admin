@@ -27,7 +27,7 @@ class _MainPagesState extends State<MainPages> {
     {'icon': Icons.people, 'title': 'Users', 'route': '/users'},
     {'icon': Icons.account_balance_wallet, 'title': 'Wallets', 'route': '/wallets'},
     {'icon': Icons.confirmation_num, 'title': 'Coupons', 'route': '/coupons'},
-    {'icon': Icons.shopping_cart, 'title': 'Orders', 'route': '/orders'},
+    {'icon': Icons.shopping_cart, 'title': 'Orders', 'route': '/order'},
   ];
 
   void onDrawerItemTap(int index) {

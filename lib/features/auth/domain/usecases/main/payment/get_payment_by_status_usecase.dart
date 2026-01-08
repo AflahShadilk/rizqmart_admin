@@ -1,0 +1,12 @@
+import 'package:rizqmartadmin/features/auth/domain/entities/main/payment_entity.dart';
+import 'package:rizqmartadmin/features/auth/domain/repository/main/payment_repository.dart';
+
+class GetPaymentsByStatusUseCase {
+  final PaymentRepository repository;
+
+  GetPaymentsByStatusUseCase({required this.repository});
+
+  Future<List<PaymentEntity>> call(String status) async {
+    return await repository.getPaymentsByStatus(status);
+  }
+}
