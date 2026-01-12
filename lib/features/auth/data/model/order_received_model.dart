@@ -25,34 +25,62 @@ class OrderReceivedModel extends OrderReceivedEntity {
   factory OrderReceivedModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
+    // Parse items with proper field names
     final itemsList = (data['items'] as List<dynamic>?)
             ?.map((item) => OrderItemEntity(
-                  productId: item['productId'] as String? ?? '',
-                  productName: item['productName'] as String? ?? '',
+                  productId: item['id'] ?? item['productId'] ?? '',
+                  productName: item['name'] ?? item['productName'] ?? 'Unknown Product',
                   price: (item['price'] as num?)?.toDouble() ?? 0.0,
-                  quantity: item['quantity'] as int? ?? 0,
-                  imageUrl: item['imageUrl'] as String? ?? '',
+                  quantity: item['count'] ?? item['quantity'] ?? 0,
+                  imageUrl: item['imageUrl'] ?? item['image'] ?? '',
                 ))
             .toList() ??
         [];
 
+    // Get user details with fallback values
+    final userName = data['userName'] ?? data['customerName'] ?? data['name'] ?? 'Unknown Customer';
+    final userEmail = data['userEmail'] ?? data['email'] ?? 'N/A';
+    final userPhone = data['userPhone'] ?? data['phone'] ?? data['phoneNumber'] ?? 'N/A';
+    
+    // Get delivery address with fallback
+    final deliveryAddress = data['deliveryAddress'] ?? data['address'] ?? 'Not specified';
+    
+    // Get delivery notes
+    final deliveryNotes = data['deliveryNotes'] ?? data['notes'];
+
+    print('📦 Parsing Order: ${doc.id}');
+    print('  Data keys: ${data.keys.toList()}');
+    print('  Full Data: $data'); // DUMP EVERYTHING
+    print('  userName: $userName');
+    print('  userEmail: $userEmail');
+    print('  userPhone: $userPhone');
+    print('  deliveryAddress: $deliveryAddress');
+    print('  itemCount: ${itemsList.length}');
+
     return OrderReceivedModel(
       orderId: doc.id,
-      orderNumber: data['orderNumber'] as String? ?? '',
-      userId: data['userId'] as String? ?? '',
-      userName: data['userName'] as String? ?? 'Unknown',
-      userEmail: data['userEmail'] as String? ?? '',
-      userPhone: data['userPhone'] as String? ?? '',
-      totalAmount: (data['totalAmount'] as num?)?.toDouble() ?? 0.0,
-      currency: data['currency'] as String? ?? 'INR',
-      paymentStatus: data['paymentStatus'] as String? ?? 'pending',
-      orderStatus: data['status'] as String? ?? 'pending',
+      orderNumber: data['orderNumber'] ?? 'ORD-${doc.id.substring(0, 8)}',
+      userId: data['userId'] ?? data['customerId'] ?? '',
+      userName: userName,
+      userEmail: userEmail,
+      userPhone: userPhone,
+      totalAmount: _parseAmount(data['totalAmount'] ?? data['total']),
+      currency: data['currency'] ?? 'INR',
+      paymentStatus: data['paymentStatus'] ?? 'pending',
+      orderStatus: data['orderStatus'] ?? data['status'] ?? 'pending',
       itemCount: itemsList.length,
       items: itemsList,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       paymentCompletedAt: (data['paymentCompletedAt'] as Timestamp?)?.toDate(),
-      deliveryAddress: data['deliveryAddress'] as String? ?? '',
-      deliveryNotes: data['deliveryNotes'] as String?,
+      deliveryAddress: deliveryAddress,
+      deliveryNotes: deliveryNotes,
     );
+  }
+
+  static double _parseAmount(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
   }
 }

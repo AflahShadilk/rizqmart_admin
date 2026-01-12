@@ -24,6 +24,10 @@ import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_new_o
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_order_by_status_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/mark_order_received_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/update_order_status_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_all_payments_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_payment_analitics_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_payment_by_status_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/refund_payment_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/product/add_product_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/product/delete_product_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/product/get_product_usecase.dart';
@@ -39,6 +43,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/b
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/navigation/drawyer_selected_index_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/payment/payment_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/status/status_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
@@ -48,6 +53,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/dashbo
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/login_screen.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/navigations/main_pages.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/order/order_received_page.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/payment/payment_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/add_product.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/products_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/units/units_page.dart';
@@ -97,7 +103,7 @@ class AppRoutes {
         routes: [
           GoRoute(
             path: '/dashBoard',
-            builder: (context, state) =>const DashboardPage(),
+            builder: (context, state) => const DashboardPage(),
           ),
           GoRoute(
             path: '/products',
@@ -115,7 +121,7 @@ class AppRoutes {
                         DeleteProductUsecase(sl<ProductRepositoryImpl>()),
                   ),
                   child: Builder(
-                    builder: (context) =>const ProductsPage(),
+                    builder: (context) => const ProductsPage(),
                   ),
                 ),
                 BlocProvider<CategoryBloc>(
@@ -246,7 +252,7 @@ class AppRoutes {
                     ),
                   ),
                 ],
-                child: CategoryPage(),
+                child:const CategoryPage(),
               );
             },
           ),
@@ -279,7 +285,7 @@ class AppRoutes {
                             DeleteBrandUsecase(sl<BrandRepositoryImpl>())),
                   ),
                 ],
-                child: BrandPage(),
+                child:const BrandPage(),
               );
             },
           ),
@@ -328,7 +334,7 @@ class AppRoutes {
                             DeleteUnitUsecase(sl<UnitsRepositoryImple>())),
                   ),
                 ],
-                child: UnitsPage(),
+                child:const UnitsPage(),
               );
             },
           ),
@@ -337,17 +343,34 @@ class AppRoutes {
               builder: (context, state) {
                 return MultiBlocProvider(providers: [
                   BlocProvider<OrderReceivedBloc>(
-                    create: (_) => OrderReceivedBloc(
-                        getNewOrdersUseCase:
-                            GetNewOrdersUseCase(repository: sl()),
-                        getOrdersByStatusUseCase:
-                            GetOrdersByStatusUseCase(repository: sl()),
-                        updateOrderStatusUseCase:
-                            UpdateOrderStatusUseCase(repository: sl()),
-                        markOrderReceivedUseCase:
-                            MarkOrderReceivedUseCase(repository: sl()))),
-                ], child: OrderReceivedPage());
-              })
+                      create: (_) => OrderReceivedBloc(
+                          getNewOrdersUseCase:
+                              GetNewOrdersUseCase(repository: sl()),
+                          getOrdersByStatusUseCase:
+                              GetOrdersByStatusUseCase(repository: sl()),
+                          updateOrderStatusUseCase:
+                              UpdateOrderStatusUseCase(repository: sl()),
+                          markOrderReceivedUseCase:
+                              MarkOrderReceivedUseCase(repository: sl()))),
+                ], child:const OrderReceivedPage());
+              }),
+          GoRoute(
+            path: '/payment',
+            builder: (context, state) {
+              return MultiBlocProvider(providers: [
+                BlocProvider(
+                    create: (_) => PaymentBloc(
+                        getAllPaymentsUseCase:
+                            GetAllPaymentsUseCase(repository: sl()),
+                        getPaymentsByStatusUseCase:
+                            GetPaymentsByStatusUseCase(repository: sl()),
+                        getPaymentAnalyticsUseCase:
+                            GetPaymentAnalyticsUseCase(repository: sl()),
+                        refundPaymentUseCase:
+                            RefundPaymentUseCase(repository: sl())))
+              ], child: const PaymentPage());
+            },
+          )
         ])
   ]);
 }
