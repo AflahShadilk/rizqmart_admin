@@ -16,6 +16,15 @@ android/app/debug.keystore
 # IDE
 .idea/
 .vscode/
+# Flutter generated (DO NOT COMMIT)
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Platform generated
+linux/flutter/generated_*
+macos/Flutter/GeneratedPluginRegistrant.swift
+windows/flutter/generated_*
 
 # Flutter/Dart specific
 .dart_tool/
