@@ -9,6 +9,7 @@ abstract class PaymentDataSource {
   Future<PaymentModel> getPaymentById(String paymentId);
   Future<PaymentAnalyticsModel> getPaymentAnalytics();
   Future<void> refundPayment(String paymentId, double amount);
+  Future<PaymentModel> getPaymentByOrderId(String orderId);
 }
 
 class PaymentDataSourceImpl implements PaymentDataSource {
@@ -159,6 +160,25 @@ class PaymentDataSourceImpl implements PaymentDataSource {
     } catch (e) {
 
       throw Exception('Failed to refund payment: $e');
+    }
+  }
+
+  @override
+  Future<PaymentModel> getPaymentByOrderId(String orderId) async {
+    try {
+      final snapshot = await firestore
+          .collection('payments')
+          .where('orderId', isEqualTo: orderId)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        throw Exception('Payment not found for Order ID: $orderId');
+      }
+
+      return PaymentModel.fromFirestore(snapshot.docs.first);
+    } catch (e) {
+      throw Exception('Failed to fetch payment by order ID: $e');
     }
   }
 

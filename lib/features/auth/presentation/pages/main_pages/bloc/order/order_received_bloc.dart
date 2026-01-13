@@ -3,6 +3,8 @@ import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_new_o
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_order_by_status_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/mark_order_received_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/update_order_status_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_payment_by_order_id_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/refund_payment_usecase.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_state.dart';
 
@@ -11,12 +13,16 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
   final GetOrdersByStatusUseCase getOrdersByStatusUseCase;
   final UpdateOrderStatusUseCase updateOrderStatusUseCase;
   final MarkOrderReceivedUseCase markOrderReceivedUseCase;
+  final GetPaymentByOrderIdUseCase getPaymentByOrderIdUseCase;
+  final RefundPaymentUseCase refundPaymentUseCase;
 
   OrderReceivedBloc({
     required this.getNewOrdersUseCase,
     required this.getOrdersByStatusUseCase,
     required this.updateOrderStatusUseCase,
     required this.markOrderReceivedUseCase,
+    required this.getPaymentByOrderIdUseCase,
+    required this.refundPaymentUseCase,
   }) : super(const OrderReceivedInitial()) {
     on<FetchNewOrdersEvent>(_onFetchNewOrders);
     on<FetchOrdersByStatusEvent>(_onFetchByStatus);
@@ -62,6 +68,29 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     emit(const OrderReceivedLoading());
 
     try {
+      // Check if status is cancelled or rejected to trigger refund
+      if (event.status.toLowerCase() == 'cancelled' || 
+          event.status.toLowerCase() == 'rejected' || 
+          event.status.toLowerCase() == 'return') {
+          
+        try {
+           final payment = await getPaymentByOrderIdUseCase.call(event.orderId);
+           // Only refund if not already refunded
+           if (payment.status != 'refunded') {
+             await refundPaymentUseCase.call(payment.paymentId, payment.amount);
+             emit(OrderStatusUpdated(
+               orderId: event.orderId, 
+               message: 'Order cancelled and payment refunded successfully'
+             ));
+           }
+        } catch (e) {
+          // Log error but proceed with cancellation? Or fail?
+          // User likely wants to know if refund failed.
+          emit(OrderReceivedError(message: 'Failed to refund payment: ${e.toString()}'));
+          return; 
+        }
+      }
+
       await updateOrderStatusUseCase.call(event.orderId, event.status);
       emit(OrderStatusUpdated(
         orderId: event.orderId,

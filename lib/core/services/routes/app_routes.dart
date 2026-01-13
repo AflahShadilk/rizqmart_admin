@@ -26,6 +26,7 @@ import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/mark_orde
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/update_order_status_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_all_payments_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_payment_analitics_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_payment_by_order_id_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_payment_by_status_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/refund_payment_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/product/add_product_usecase.dart';
@@ -357,7 +358,11 @@ class AppRoutes {
                           updateOrderStatusUseCase:
                               UpdateOrderStatusUseCase(repository: sl()),
                           markOrderReceivedUseCase:
-                              MarkOrderReceivedUseCase(repository: sl()))),
+                              MarkOrderReceivedUseCase(repository: sl()),
+                          getPaymentByOrderIdUseCase:
+                              GetPaymentByOrderIdUseCase(repository: sl()),
+                          refundPaymentUseCase:
+                              RefundPaymentUseCase(repository: sl()))),
                 ], child: const OrderReceivedPage());
               }),
           GoRoute(

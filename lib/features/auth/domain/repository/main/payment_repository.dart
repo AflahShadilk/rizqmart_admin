@@ -8,4 +8,5 @@ abstract class PaymentRepository {
   Future<PaymentEntity> getPaymentById(String paymentId);
   Future<PaymentAnalyticsEntity> getPaymentAnalytics();
   Future<void> refundPayment(String paymentId, double amount);
+  Future<PaymentEntity> getPaymentByOrderId(String orderId);
 }

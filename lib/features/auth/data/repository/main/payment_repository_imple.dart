@@ -45,4 +45,9 @@ class PaymentRepositoryImpl implements PaymentRepository {
   Future<void> refundPayment(String paymentId, double amount) async {
     await dataSource.refundPayment(paymentId, amount);
   }
+
+  @override
+  Future<PaymentEntity> getPaymentByOrderId(String orderId) async {
+    return await dataSource.getPaymentByOrderId(orderId);
+  }
 }
