@@ -57,7 +57,7 @@ class OrderReceivedModel extends OrderReceivedEntity {
       userName: userName,
       userEmail: userEmail,
       userPhone: userPhone,
-      totalAmount: _parseAmount(data['totalAmount'] ?? data['total']),
+      totalAmount: _parseAmount(data['totalAmount'] ?? data['total'] ?? data['totalCost']),
       currency: data['currency'] ?? 'INR',
       paymentStatus: data['paymentStatus'] ?? 'pending',
       orderStatus: data['orderStatus'] ?? data['status'] ?? 'pending',

@@ -23,7 +23,7 @@ class _MainPagesState extends State<MainPages> {
     {'icon': Icons.category, 'title': 'Categories', 'route': '/category'},
     {'icon': Icons.select_all, 'title': 'Variants', 'route': '/unitPage'},
     {'icon': Icons.branding_watermark, 'title': 'Brands', 'route': '/brand'},
-    {'icon': Icons.bar_chart, 'title': 'Sales Report', 'route': '/sales'},
+    {'icon': Icons.bar_chart, 'title': 'Sales Report', 'route': '/salesReport'},
     {'icon': Icons.people, 'title': 'Users', 'route': '/users'},
     {'icon': Icons.account_balance_wallet, 'title': 'Payments', 'route': '/payment'},
     {'icon': Icons.confirmation_num, 'title': 'Coupons', 'route': '/coupons'},

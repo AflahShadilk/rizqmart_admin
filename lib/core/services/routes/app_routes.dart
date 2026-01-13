@@ -50,6 +50,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/c
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/payment/payment_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/sales_report/sales_report_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/status/status_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_bloc.dart';
@@ -57,6 +58,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/category/category_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/dashboard_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/login_screen.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/report/sales_report_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/navigations/main_pages.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/order/order_received_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/payment/payment_page.dart';
@@ -66,6 +68,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/units/
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/user/users_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/splash_screen.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/welcome_screen.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/sales_report/get_sales_report_usecase.dart';
 import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
 
 class AppRoutes {
@@ -394,7 +397,18 @@ class AppRoutes {
                 child: const UsersPage(),
               );
             },
-          )
+          ),
+          GoRoute(
+            path: '/salesReport',
+            builder: (context, state) {
+              return BlocProvider(
+                create: (_) => SalesReportBloc(
+                  getSalesReportUseCase: GetSalesReportUseCase(sl()),
+                ),
+                child: const SalesReportPage(),
+              );
+            },
+          ),
         ])
   ]);
 }
