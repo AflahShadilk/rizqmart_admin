@@ -28,10 +28,7 @@ class PaymentDataSourceImpl implements PaymentDataSource {
           .map((doc) => PaymentModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-      print('❌ Error fetching all payments: $e');
-      if (e.toString().contains('index')) {
-        print('🔗 Index URL: ${_extractIndexUrl(e.toString())}');
-      }
+
       throw Exception('Failed to fetch payments: $e');
     }
   }
@@ -49,10 +46,7 @@ class PaymentDataSourceImpl implements PaymentDataSource {
           .map((doc) => PaymentModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-      print('❌ Error fetching payments by status "$status": $e');
-      if (e.toString().contains('index')) {
-        print('🔗 Index URL: ${_extractIndexUrl(e.toString())}');
-      }
+
       throw Exception('Failed to fetch payments by status: $e');
     }
   }
@@ -74,10 +68,7 @@ class PaymentDataSourceImpl implements PaymentDataSource {
           .map((doc) => PaymentModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-      print('❌ Error fetching payments by date range: $e');
-      if (e.toString().contains('index')) {
-        print('🔗 Index URL: ${_extractIndexUrl(e.toString())}');
-      }
+
       throw Exception('Failed to fetch payments by date range: $e');
     }
   }
@@ -88,7 +79,7 @@ class PaymentDataSourceImpl implements PaymentDataSource {
       final doc = await firestore.collection('payments').doc(paymentId).get();
       return PaymentModel.fromFirestore(doc);
     } catch (e) {
-      print('❌ Error fetching payment by ID: $e');
+
       throw Exception('Failed to fetch payment: $e');
     }
   }
@@ -152,7 +143,7 @@ class PaymentDataSourceImpl implements PaymentDataSource {
         successRate: successRate,
       );
     } catch (e) {
-      print('❌ Error fetching payment analytics: $e');
+
       throw Exception('Failed to fetch payment analytics: $e');
     }
   }
@@ -166,7 +157,7 @@ class PaymentDataSourceImpl implements PaymentDataSource {
         'refundedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      print('❌ Error refunding payment: $e');
+
       throw Exception('Failed to refund payment: $e');
     }
   }

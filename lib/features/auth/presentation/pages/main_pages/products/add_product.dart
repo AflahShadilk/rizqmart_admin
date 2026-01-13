@@ -27,7 +27,7 @@ class AddProduct extends StatelessWidget {
 
     return Scaffold(
       body: Container(
-        decoration: first_container_decoration(),
+        decoration: firstcontainerdecoration(),
         width: double.infinity,
         padding: padding,
         child: SingleChildScrollView(

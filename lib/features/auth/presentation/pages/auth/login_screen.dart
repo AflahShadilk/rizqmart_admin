@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }, builder: (context, state) {
       return Scaffold(
         body: Container(
-          decoration: first_container_decoration(),
+          decoration: firstcontainerdecoration(),
           padding: padding,
           width:
               Responsive.isDesktop(context) ? double.infinity : double.infinity,
@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          HeadingLogin(fontSize, "Login to your account"),
+                          headingLogin(fontSize, "Login to your account"),
                           const SizedBox(height: 24),
                           Form(
                             //form field
@@ -267,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Row(
       children: [
         Image.asset(assetIm, height: 28),
-        CommonSizedboxWidth10(),
+        commonSizedboxWidth10(),
         Text(
           textF,
           maxLines: 2,

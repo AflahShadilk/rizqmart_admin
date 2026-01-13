@@ -23,22 +23,16 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
           .orderBy('createdAt', descending: true)
           .get();
 
-      print('🟢 getNewOrders: Found ${snapshot.docs.length} orders');
+
       
       return snapshot.docs
           .map((doc) {
             final data = doc.data();
-            print('Order Document: ${doc.id}');
-            print('  - userName: ${data['userName']}');
-            print('  - userEmail: ${data['userEmail']}');
-            print('  - userPhone: ${data['userPhone']}');
-            print('  - deliveryAddress: ${data['deliveryAddress']}');
-            print('  - Full data: $data');
             return OrderReceivedModel.fromFirestore(doc);
           })
           .toList();
     } catch (e) {
-      print('🔴 Error in getNewOrders: $e');
+
       throw Exception('Failed to fetch new orders: $e');
     }
   }
@@ -46,7 +40,7 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
   @override
   Future<List<OrderReceivedModel>> getOrdersByStatus(String status) async {
     try {
-      print('🔵 Fetching orders with status: $status');
+
       
       final snapshot = await firestore
           .collection('orders')
@@ -55,20 +49,17 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
           .orderBy('createdAt', descending: true)
           .get();
 
-      print('🟢 getOrdersByStatus($status): Found ${snapshot.docs.length} orders');
+
       
       return snapshot.docs
           .map((doc) {
             final data = doc.data();
-            print('Status Order Document: ${doc.id}');
-            print('  - userName: ${data['userName']}');
-            print('  - userEmail: ${data['userEmail']}');
-            print('  - userPhone: ${data['userPhone']}');
+
             return OrderReceivedModel.fromFirestore(doc);
           })
           .toList();
     } catch (e) {
-      print('🔴 Error in getOrdersByStatus: $e');
+
       throw Exception('Failed to fetch orders by status: $e');
     }
   }
@@ -79,14 +70,14 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
       final doc = await firestore.collection('orders').doc(orderId).get();
       
       if (!doc.exists) {
-        print('🔴 Order not found: $orderId');
+
         throw Exception('Order not found');
       }
       
-      print('🟢 Order found: ${doc.id}');
+
       return OrderReceivedModel.fromFirestore(doc);
     } catch (e) {
-      print('🔴 Error in getOrderById: $e');
+
       throw Exception('Failed to fetch order: $e');
     }
   }
@@ -99,9 +90,9 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
         'updatedAt': FieldValue.serverTimestamp(),
       });
       
-      print('🟢 Order status updated: $orderId -> $status');
+
     } catch (e) {
-      print('🔴 Error updating order status: $e');
+
       throw Exception('Failed to update order status: $e');
     }
   }
@@ -114,9 +105,9 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
         'receivedAt': FieldValue.serverTimestamp(),
       });
       
-      print('🟢 Order marked as received: $orderId');
+
     } catch (e) {
-      print('🔴 Error marking order as received: $e');
+
       throw Exception('Failed to mark order as received: $e');
     }
   }

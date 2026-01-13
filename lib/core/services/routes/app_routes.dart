@@ -36,6 +36,10 @@ import 'package:rizqmartadmin/features/auth/domain/usecases/main/unit/add_unit_u
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/unit/delete_unit_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/unit/get_units_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/unit/update_unit_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/user/delete_user_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/user/get_all_users_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/user/get_users_by_role_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/user/update_user_status_usecase.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/forgot%20password%20bloc/auth_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/login%20bloc/auth_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/forgotpassword_screen.dart';
@@ -47,6 +51,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/p
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/status/status_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/brand_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/category/category_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/dashboard_page.dart';
@@ -57,6 +62,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/paymen
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/add_product.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/products_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/units/units_page.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/user/users_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/splash_screen.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/welcome_screen.dart';
 import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
@@ -252,7 +258,7 @@ class AppRoutes {
                     ),
                   ),
                 ],
-                child:const CategoryPage(),
+                child: const CategoryPage(),
               );
             },
           ),
@@ -285,7 +291,7 @@ class AppRoutes {
                             DeleteBrandUsecase(sl<BrandRepositoryImpl>())),
                   ),
                 ],
-                child:const BrandPage(),
+                child: const BrandPage(),
               );
             },
           ),
@@ -334,7 +340,7 @@ class AppRoutes {
                             DeleteUnitUsecase(sl<UnitsRepositoryImple>())),
                   ),
                 ],
-                child:const UnitsPage(),
+                child: const UnitsPage(),
               );
             },
           ),
@@ -352,7 +358,7 @@ class AppRoutes {
                               UpdateOrderStatusUseCase(repository: sl()),
                           markOrderReceivedUseCase:
                               MarkOrderReceivedUseCase(repository: sl()))),
-                ], child:const OrderReceivedPage());
+                ], child: const OrderReceivedPage());
               }),
           GoRoute(
             path: '/payment',
@@ -369,6 +375,19 @@ class AppRoutes {
                         refundPaymentUseCase:
                             RefundPaymentUseCase(repository: sl())))
               ], child: const PaymentPage());
+            },
+          ),
+          GoRoute(
+            path: '/users',
+            builder: (context, state) {
+              return BlocProvider(
+                create: (_) => UsersBloc(
+                    getAllUsersUseCase: GetAllUsersUseCase(sl()),
+                    getUsersByRoleUseCase: GetUsersByRoleUseCase(sl()),
+                    updateUserStatusUseCase: UpdateUserStatusUseCase(sl()),
+                    deleteUserUseCase: DeleteUserUseCase(sl())),
+                child: const UsersPage(),
+              );
             },
           )
         ])

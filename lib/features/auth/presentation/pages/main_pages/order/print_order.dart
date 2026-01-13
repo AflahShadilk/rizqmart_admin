@@ -18,7 +18,7 @@ Future<void> saveOrderPdf(BuildContext context, OrderReceivedEntity order) async
       );
     }
   } catch (e) {
-    debugPrint('Error saving PDF: $e');
+
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error saving PDF: $e'), backgroundColor: Colors.red),
@@ -36,7 +36,7 @@ Future<void> printOrderDetail(BuildContext context, OrderReceivedEntity order) a
     );
      // Note: Printing.layoutPdf doesn't return a "success" status easily, but if we get here, it launched.
   } catch (e) {
-    debugPrint('Error printing PDF: $e');
+
      if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error printing PDF: $e'), backgroundColor: Colors.red),

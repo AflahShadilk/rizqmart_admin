@@ -296,7 +296,7 @@ class _FormProductsState extends State<FormProducts> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Common_sizedBox_height10(),
+                      commonsizedBoxheight10(),
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.8,
                         child: WebTextField(

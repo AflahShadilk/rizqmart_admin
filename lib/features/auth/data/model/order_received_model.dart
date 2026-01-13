@@ -48,14 +48,7 @@ class OrderReceivedModel extends OrderReceivedEntity {
     // Get delivery notes
     final deliveryNotes = data['deliveryNotes'] ?? data['notes'];
 
-    print('📦 Parsing Order: ${doc.id}');
-    print('  Data keys: ${data.keys.toList()}');
-    print('  Full Data: $data'); // DUMP EVERYTHING
-    print('  userName: $userName');
-    print('  userEmail: $userEmail');
-    print('  userPhone: $userPhone');
-    print('  deliveryAddress: $deliveryAddress');
-    print('  itemCount: ${itemsList.length}');
+
 
     return OrderReceivedModel(
       orderId: doc.id,
