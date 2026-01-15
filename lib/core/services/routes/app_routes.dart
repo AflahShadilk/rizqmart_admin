@@ -10,6 +10,7 @@ import 'package:rizqmartadmin/features/auth/data/repository/main/product_reposit
 import 'package:rizqmartadmin/features/auth/data/repository/main/units_repository_imple.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/auth/send_password_rest.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/auth/login_acc_use_cases.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/auth/logout_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/brand/add_brand_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/brand/delete_brand_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/brand/get_brand_usecase.dart';
@@ -43,7 +44,9 @@ import 'package:rizqmartadmin/features/auth/domain/usecases/main/user/get_users_
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/user/update_user_status_usecase.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/forgot%20password%20bloc/auth_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/login%20bloc/auth_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/login%20bloc/auth_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/forgotpassword_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/navigation/drawyer_selected_index_cubit.dart';
@@ -56,7 +59,9 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/u
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/brand_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/category/category_page.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/dashboard_page.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/dashboard/dashboard_bloc.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/dashboard/get_dashboard_stats_usecase.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/dashboard/dashboard_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/login_screen.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/report/sales_report_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/navigations/main_pages.dart';
@@ -80,6 +85,7 @@ class AppRoutes {
     GoRoute(
         path: '/welcomePage', builder: (context, state) => const WelcomePage()),
     GoRoute(
+      name: 'loginPage',
       path: '/loginPage',
       builder: (context, state) {
         return BlocProvider(
@@ -106,14 +112,56 @@ class AppRoutes {
     ShellRoute(
         builder: (context, state, child) {
           return BlocProvider(
-            create: (context) => DrawerSelectedIndexCubit(),
-            child: MainPages(child: child),
+            create: (context) => LoginBloc(
+              loginAccUseCases: LoginAccUseCases(sl<LoginRepositoryImpl>()),
+              logoutUseCase: LogoutUseCase(sl<LoginRepositoryImpl>()),
+            ),
+            child: BlocListener<LoginBloc, LoginState>(
+              listener: (context, state) async {
+                if (state is LogoutSuccess) {
+                  final pref = await SharedPreferences.getInstance();
+                  await pref.setBool('isLoggedIn', false); 
+                  if (context.mounted) {
+                     context.goNamed('loginPage');
+                  }
+                }
+              },
+              child: BlocProvider(
+                create: (context) => DrawerSelectedIndexCubit(),
+                child: MainPages(child: child),
+              ),
+            ),
           );
         },
         routes: [
-          GoRoute(
+                    GoRoute(
             path: '/dashBoard',
-            builder: (context, state) => const DashboardPage(),
+            builder: (context, state) {
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (_) => DashboardBloc(
+                      getDashboardStatsUseCase: GetDashboardStatsUseCase(repository: sl()),
+                    ),
+                  ),
+                  BlocProvider(
+                     create: (_) => OrderReceivedBloc(
+                          getNewOrdersUseCase:
+                              GetNewOrdersUseCase(repository: sl()),
+                          getOrdersByStatusUseCase:
+                              GetOrdersByStatusUseCase(repository: sl()),
+                          updateOrderStatusUseCase:
+                              UpdateOrderStatusUseCase(repository: sl()),
+                          markOrderReceivedUseCase:
+                              MarkOrderReceivedUseCase(repository: sl()),
+                          getPaymentByOrderIdUseCase:
+                              GetPaymentByOrderIdUseCase(repository: sl()),
+                          refundPaymentUseCase:
+                              RefundPaymentUseCase(repository: sl()))),
+                ],
+                child: const DashboardPage(),
+              );
+            },
           ),
           GoRoute(
             path: '/products',
@@ -409,6 +457,6 @@ class AppRoutes {
               );
             },
           ),
-        ])
+        ]),
   ]);
 }

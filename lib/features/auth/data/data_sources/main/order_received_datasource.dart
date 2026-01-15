@@ -3,6 +3,7 @@ import 'package:rizqmartadmin/features/auth/data/model/order_received_model.dart
 
 abstract class OrderReceivedDataSource {
   Future<List<OrderReceivedModel>> getNewOrders();
+  Stream<List<OrderReceivedModel>> getNewOrdersStream();
   Future<List<OrderReceivedModel>> getOrdersByStatus(String status);
   Future<OrderReceivedModel> getOrderById(String orderId);
   Future<void> updateOrderStatus(String orderId, String status);
@@ -35,6 +36,20 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
 
       throw Exception('Failed to fetch new orders: $e');
     }
+  }
+
+  @override
+  Stream<List<OrderReceivedModel>> getNewOrdersStream() {
+    return firestore
+        .collection('orders')
+        .where('paymentStatus', isEqualTo: 'succeeded')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) => OrderReceivedModel.fromFirestore(doc))
+          .toList();
+    });
   }
 
   @override

@@ -9,4 +9,8 @@ class GetNewOrdersUseCase {
   Future<List<OrderReceivedEntity>> call() async {
     return await repository.getNewOrders();
   }
+
+  Stream<List<OrderReceivedEntity>> callStream() {
+    return repository.getNewOrdersStream();
+  }
 }

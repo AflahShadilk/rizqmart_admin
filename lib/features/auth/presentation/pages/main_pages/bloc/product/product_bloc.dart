@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/product/add_product_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/product/delete_product_usecase.dart';
@@ -30,6 +31,23 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     emit(LoadingProductState());
     subscription?.cancel();
     subscription = getProductUsecase().listen((product) {
+      // Check for low stock
+      for (var p in product) {
+        if (p.variantDetails != null) {
+          for (var variant in p.variantDetails!) {
+            final quantity = (variant['quantity'] as num?)?.toDouble() ?? 0;
+            if (quantity < 5) {
+               WebMessagingService.triggerLocalNotification(
+                'Low Stock Alert', 
+                'Product ${p.name} (Variant: ${variant['unitName'] ?? 'Unknown'}) is running low on stock ($quantity).',
+                data: {'type': 'product', 'id': p.id}
+              );
+              // Break after finding one low variant to avoid spamming for the same product
+              break; 
+            }
+          }
+        }
+      }
       add(LoadedProductEvent(product));
     }, onError: (error) { 
       emit(FailureLoadingState(error.toString()));
@@ -73,6 +91,11 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       DeletingProductEvent event, Emitter<ProductState> emit) async {
     try {
       await deleteProductUsecase(event.id);
+      WebMessagingService.triggerLocalNotification(
+        'Product Deleted', 
+        'Product has been removed from inventory.',
+        data: {'type': 'product', 'id': event.id}
+      );
       await Future.delayed(const Duration(milliseconds: 500));
       add(const LoadingProductEvent());
         

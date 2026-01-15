@@ -21,6 +21,15 @@ class LoginRepositoryImpl implements LoginRepository {
     }
   }
 
+  @override
+  Future<void> logout() async {
+    try {
+      await loginAccDatasource.logout();
+    } catch (e) {
+      throw Exception('Logout failed: ${e.toString()}');
+    }
+  }
+
   Exception _handleFirebaseAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
 import 'package:rizqmartadmin/core/services/routes/app_routes.dart';
+import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
 import 'package:rizqmartadmin/firebase_options.dart';
 
 void main() async {
@@ -11,7 +12,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+     WebMessagingService.initialize();
   register();
   runApp(const MyApp());
 }

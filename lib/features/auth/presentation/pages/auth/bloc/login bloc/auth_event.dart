@@ -13,3 +13,5 @@ class LoginTryEvent extends LoginEvent{
   
   List<Object?> get props => [email,password];
 }
+
+class LogoutEvent extends LoginEvent {}

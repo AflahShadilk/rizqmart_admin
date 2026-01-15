@@ -8,6 +8,7 @@ import 'package:rizqmartadmin/features/auth/data/data_sources/main/payment_data_
 import 'package:rizqmartadmin/features/auth/data/data_sources/main/product_firestore_source.dart';
 import 'package:rizqmartadmin/features/auth/data/data_sources/main/unit_firestore_source.dart';
 import 'package:rizqmartadmin/features/auth/data/data_sources/main/sales_report_datasource.dart';
+import 'package:rizqmartadmin/features/auth/data/data_sources/main/dashboard_datasource.dart';
 import 'package:rizqmartadmin/features/auth/data/data_sources/main/user_data_source.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/forgot_pass_impliment/auth_repository_impl.dart';
 import 'package:rizqmartadmin/features/auth/data/data_sources/auth/login_account/login_acc_datasource.dart';
@@ -20,10 +21,13 @@ import 'package:rizqmartadmin/features/auth/data/repository/main/product_reposit
 import 'package:rizqmartadmin/features/auth/data/repository/main/units_repository_imple.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/sales_report_repository_impl.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/user_repository_imple.dart';
+import 'package:rizqmartadmin/features/auth/data/repository/main/user_repository_imple.dart';
+import 'package:rizqmartadmin/features/auth/data/repository/main/dashboard_repository_impl.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/sales_report_repository.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/order_received_repository.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/payment_repository.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/user_repository.dart';
+import 'package:rizqmartadmin/features/auth/domain/repository/main/dashboard_repository.dart';
 
 final sl=GetIt.instance;
 
@@ -41,6 +45,7 @@ void register(){
   sl.registerLazySingleton<PaymentDataSource>(()=>PaymentDataSourceImpl(firestore: sl()));
   sl.registerLazySingleton<UserDataSource>(()=>UserDataSourceImpl(firestore: sl()));
   sl.registerLazySingleton<SalesReportDataSource>(()=>SalesReportDataSourceImpl(firestore: sl()));
+  sl.registerLazySingleton<DashboardDataSource>(()=>DashboardDataSourceImpl(firestore: sl()));
 
   //repository
   sl.registerLazySingleton<LoginRepositoryImpl>(()=>LoginRepositoryImpl(loginAccDatasource: sl()));
@@ -53,6 +58,7 @@ void register(){
   sl.registerLazySingleton<PaymentRepository>(()=>PaymentRepositoryImpl(dataSource: sl()));
   sl.registerLazySingleton<UserRepository>(()=>UserRepositoryImpl(dataSource: sl()));
   sl.registerLazySingleton<SalesReportRepository>(()=>SalesReportRepositoryImpl(dataSource: sl()));
+  sl.registerLazySingleton<DashboardRepository>(()=>DashboardRepositoryImpl(dataSource: sl()));
   
 
 } 

@@ -8,6 +8,11 @@ class OrderReceivedRepositoryImpl implements OrderReceivedRepository {
   OrderReceivedRepositoryImpl({required this.dataSource});
 
   @override
+  Stream<List<OrderReceivedEntity>> getNewOrdersStream() {
+    return dataSource.getNewOrdersStream();
+  }
+
+  @override
   Future<List<OrderReceivedEntity>> getNewOrders() async {
     final models = await dataSource.getNewOrders();
     return models;

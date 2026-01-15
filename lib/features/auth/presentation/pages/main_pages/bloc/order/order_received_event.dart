@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/order_recieved_entity.dart';
 
 abstract class OrderReceivedEvent extends Equatable {
   const OrderReceivedEvent();
@@ -40,4 +41,13 @@ class MarkOrderAsReceivedEvent extends OrderReceivedEvent {
 
   @override
   List<Object?> get props => [orderId];
+}
+
+class NewOrdersStreamUpdate extends OrderReceivedEvent {
+  final List<OrderReceivedEntity> orders;
+
+  const NewOrdersStreamUpdate(this.orders);
+
+  @override
+  List<Object?> get props => [orders];
 }

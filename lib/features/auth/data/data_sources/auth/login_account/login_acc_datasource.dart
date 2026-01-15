@@ -10,4 +10,7 @@ class LoginAccDatasource {
     final user=result.user!;
     return LoginUserEntity(uid: user.uid, email: user.email??'');
   }
+  Future<void> logout() async {
+    await firebaseAuth.signOut();
+  }
 }

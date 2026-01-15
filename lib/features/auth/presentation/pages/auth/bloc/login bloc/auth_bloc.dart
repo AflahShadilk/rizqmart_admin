@@ -1,14 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/auth/login_acc_use_cases.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/auth/logout_usecase.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/login%20bloc/auth_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/login%20bloc/auth_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginAccUseCases loginAccUseCases;
+  final LogoutUseCase? logoutUseCase;
 
-  LoginBloc({required this.loginAccUseCases}) : super(LoginInitial()) {
+  LoginBloc({required this.loginAccUseCases, this.logoutUseCase}) : super(LoginInitial()) {
     on<LoginTryEvent>(_onLoginto);
+    on<LogoutEvent>(_onLogout);
   }
 
   Future<void> _onLoginto(
@@ -25,6 +28,24 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       emit(LoginError(e.toString().replaceFirst('Exception: ', '')));
     } catch (e) {
       emit(LoginError('Something went wrong. Please try again.'));
+    }
+  }
+
+  Future<void> _onLogout(
+    LogoutEvent event,
+    Emitter<LoginState> emit,
+  ) async {
+    emit(LoginLoading());
+    try {
+      if (logoutUseCase != null) {
+        await logoutUseCase!.call();
+        emit(LogoutSuccess());
+      } else {
+       
+        emit(LogoutSuccess());
+      }
+    } catch (e) {
+      emit(LoginError('Logout failed: $e'));
     }
   }
 

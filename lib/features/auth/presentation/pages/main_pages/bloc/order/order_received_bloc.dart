@@ -1,4 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
+import 'dart:async';
+
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_new_order_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_order_by_status_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/mark_order_received_usecase.dart';
@@ -28,6 +31,49 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     on<FetchOrdersByStatusEvent>(_onFetchByStatus);
     on<UpdateOrderStatusEvent>(_onUpdateStatus);
     on<MarkOrderAsReceivedEvent>(_onMarkAsReceived);
+    on<NewOrdersStreamUpdate>(_onNewOrdersStreamUpdate);
+
+    // Subscribe to stream immediately
+    _subscribeToNewOrders();
+  }
+
+  StreamSubscription? _orderSubscription;
+
+  void _subscribeToNewOrders() {
+    _orderSubscription?.cancel();
+    _orderSubscription = getNewOrdersUseCase.callStream().listen(
+      (orders) {
+        add(NewOrdersStreamUpdate(orders));
+      },
+      onError: (error) {
+        // Handle stream error if necessary
+      },
+    );
+  }
+  
+  Future<void> _onNewOrdersStreamUpdate(
+    NewOrdersStreamUpdate event,
+    Emitter<OrderReceivedState> emit,
+  ) async {
+    // Notify if new order added (simple check: compare length or ID)
+    // For now, just emitting loaded state which updates UI
+    if (state is NewOrdersLoaded) {
+       final oldOrders = (state as NewOrdersLoaded).orders;
+       if (event.orders.length > oldOrders.length) {
+          WebMessagingService.triggerLocalNotification(
+            'New Order Received', 
+            'You have received a new order!',
+            data: {'type': 'order'}
+          );
+       }
+    }
+    emit(NewOrdersLoaded(orders: event.orders));
+  }
+
+  @override
+  Future<void> close() {
+    _orderSubscription?.cancel();
+    return super.close();
   }
 
   Future<void> _onFetchNewOrders(
@@ -78,6 +124,11 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
            // Only refund if not already refunded
            if (payment.status != 'refunded') {
              await refundPaymentUseCase.call(payment.paymentId, payment.amount);
+             WebMessagingService.triggerLocalNotification(
+              'Order Cancelled', 
+              'Order ${event.orderId} has been cancelled and refunded.',
+              data: {'type': 'order', 'id': event.orderId}
+             );
              emit(OrderStatusUpdated(
                orderId: event.orderId, 
                message: 'Order cancelled and payment refunded successfully'
@@ -114,6 +165,11 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
         orderId: event.orderId,
         message: 'Order marked as received',
       ));
+      WebMessagingService.triggerLocalNotification(
+        'Order Received', 
+        'Order ${event.orderId} has been marked as received.',
+        data: {'type': 'order', 'id': event.orderId}
+      );
       add(const FetchNewOrdersEvent());
     } catch (e) {
       emit(OrderReceivedError(message: e.toString()));
