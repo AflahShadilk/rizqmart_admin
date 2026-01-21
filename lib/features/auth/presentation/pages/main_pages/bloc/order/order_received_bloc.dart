@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_new_order_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_order_by_status_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_orders_by_user_id_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/mark_order_received_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/update_order_status_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_payment_by_order_id_usecase.dart';
@@ -18,6 +19,7 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
   final MarkOrderReceivedUseCase markOrderReceivedUseCase;
   final GetPaymentByOrderIdUseCase getPaymentByOrderIdUseCase;
   final RefundPaymentUseCase refundPaymentUseCase;
+  final GetOrdersByUserIdUseCase? getOrdersByUserIdUseCase;
 
   OrderReceivedBloc({
     required this.getNewOrdersUseCase,
@@ -26,12 +28,14 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     required this.markOrderReceivedUseCase,
     required this.getPaymentByOrderIdUseCase,
     required this.refundPaymentUseCase,
+    this.getOrdersByUserIdUseCase,
   }) : super(const OrderReceivedInitial()) {
     on<FetchNewOrdersEvent>(_onFetchNewOrders);
     on<FetchOrdersByStatusEvent>(_onFetchByStatus);
     on<UpdateOrderStatusEvent>(_onUpdateStatus);
     on<MarkOrderAsReceivedEvent>(_onMarkAsReceived);
     on<NewOrdersStreamUpdate>(_onNewOrdersStreamUpdate);
+    on<FetchOrdersByUserIdEvent>(_onFetchOrdersByUserId);
 
     // Subscribe to stream immediately
     _subscribeToNewOrders();
@@ -171,6 +175,23 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
         data: {'type': 'order', 'id': event.orderId}
       );
       add(const FetchNewOrdersEvent());
+    } catch (e) {
+      emit(OrderReceivedError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onFetchOrdersByUserId(
+    FetchOrdersByUserIdEvent event,
+    Emitter<OrderReceivedState> emit,
+  ) async {
+    emit(const OrderReceivedLoading());
+    try {
+      if (getOrdersByUserIdUseCase != null) {
+        final orders = await getOrdersByUserIdUseCase!.call(event.userId);
+        emit(OrdersByUserIdLoaded(orders));
+      } else {
+        emit(const OrderReceivedError(message: 'UseCase not initialized'));
+      }
     } catch (e) {
       emit(OrderReceivedError(message: e.toString()));
     }

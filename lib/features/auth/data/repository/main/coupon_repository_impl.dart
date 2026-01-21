@@ -23,7 +23,8 @@ class CouponRepositoryImpl implements CouponsRepository {
         imageurl: coupon.imageurl,
         usageLimit: coupon.usageLimit,
         isActive: coupon.isActive,
-        expiryDate: coupon.expiryDate);
+        expiryDate: coupon.expiryDate,
+        applicableProductIds: coupon.applicableProductIds);
     await couponFirestoreSource.addCoupons(model);
   }
 
@@ -38,7 +39,8 @@ class CouponRepositoryImpl implements CouponsRepository {
         imageurl: coupon.imageurl,
         usageLimit: coupon.usageLimit,
         isActive: coupon.isActive,
-        expiryDate: coupon.expiryDate);
+        expiryDate: coupon.expiryDate,
+        applicableProductIds: coupon.applicableProductIds);
     await couponFirestoreSource.updateCoupons(model);
   }
 

@@ -8,6 +8,7 @@ abstract class OrderReceivedDataSource {
   Future<OrderReceivedModel> getOrderById(String orderId);
   Future<void> updateOrderStatus(String orderId, String status);
   Future<void> markOrderAsReceived(String orderId);
+  Future<List<OrderReceivedModel>> getOrdersByUserId(String userId);
 }
 
 class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
@@ -124,6 +125,24 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
     } catch (e) {
 
       throw Exception('Failed to mark order as received: $e');
+    }
+  }
+
+  @override
+  Future<List<OrderReceivedModel>> getOrdersByUserId(String userId) async {
+    try {
+      final snapshot = await firestore
+          .collection('orders')
+          .where('userId', isEqualTo: userId)
+          .orderBy('createdAt', descending: true)
+          .limit(5)
+          .get();
+
+      return snapshot.docs
+          .map((doc) => OrderReceivedModel.fromFirestore(doc))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch user orders: $e');
     }
   }
 }

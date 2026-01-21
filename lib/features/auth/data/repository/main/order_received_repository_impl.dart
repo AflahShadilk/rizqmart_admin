@@ -39,4 +39,9 @@ class OrderReceivedRepositoryImpl implements OrderReceivedRepository {
   Future<void> markOrderAsReceived(String orderId) async {
     await dataSource.markOrderAsReceived(orderId);
   }
+
+  @override
+  Future<List<OrderReceivedEntity>> getOrdersByUserId(String userId) async {
+    return await dataSource.getOrdersByUserId(userId);
+  }
 }

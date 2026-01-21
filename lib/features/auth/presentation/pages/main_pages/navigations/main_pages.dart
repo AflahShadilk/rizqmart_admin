@@ -26,8 +26,9 @@ class _MainPagesState extends State<MainPages> {
     {'icon': Icons.bar_chart, 'title': 'Sales Report', 'route': '/salesReport'},
     {'icon': Icons.people, 'title': 'Users', 'route': '/users'},
     {'icon': Icons.account_balance_wallet, 'title': 'Payments', 'route': '/payment'},
-    {'icon': Icons.confirmation_num, 'title': 'Coupons', 'route': '/coupons'},
+    {'icon': Icons.confirmation_num, 'title': 'Offers', 'route': '/coupons'},
     {'icon': Icons.shopping_cart, 'title': 'Orders', 'route': '/order'},
+    {'icon': Icons.chat_bubble, 'title': 'Chat', 'route': '/chat'},
   ];
 
   void onDrawerItemTap(int index) {

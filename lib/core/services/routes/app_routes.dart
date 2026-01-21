@@ -74,7 +74,18 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/user/u
 import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/splash_screen.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/welcome_screen.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/sales_report/get_sales_report_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_orders_by_user_id_usecase.dart';
 import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
+
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/coupons/coupons_page.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/coupon_bloc.dart';
+import 'package:rizqmartadmin/features/auth/data/repository/main/coupon_repository_impl.dart';
+
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/chat/chat_list_page.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/chat/chat_details_page.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_event.dart';
+import 'package:rizqmartadmin/features/auth/data/repository/main/chat_repository_impl.dart';
 
 class AppRoutes {
   static final GoRouter router = GoRouter(initialLocation: '/', routes: [
@@ -457,6 +468,73 @@ class AppRoutes {
               );
             },
           ),
+          GoRoute(
+            path: '/coupons',
+            builder: (context, state) {
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (_) => CouponBloc(
+                      couponsRepository: sl<CouponRepositoryImpl>(),
+                    ),
+                  ),
+                  BlocProvider<ProductBloc>(
+                    create: (_) => ProductBloc(
+                      getProductUsecase:
+                          GetProductUsecase(sl<ProductRepositoryImpl>()),
+                      addProductUsecase:
+                          AddProductUsecase(sl<ProductRepositoryImpl>()),
+                      updateProductUsecase:
+                          UpdateProductUsecase(sl<ProductRepositoryImpl>()),
+                      deleteProductUsecase:
+                          DeleteProductUsecase(sl<ProductRepositoryImpl>()),
+                    ),
+                  ),
+                ],
+                child: const CouponsPage(),
+              );
+            },
+          ),
+
+
+          GoRoute(
+            path: '/chat',
+            builder: (context, state) {
+               return BlocProvider(
+                create: (_) => ChatBloc(sl<ChatRepositoryImpl>()),
+                child: const ChatListPage(),
+              );
+            },
+          ),
+           GoRoute(
+            path: '/chat_details', // Absolute path style for GoRouter
+            builder: (context, state) {
+               final extra = state.extra as Map<String, dynamic>? ?? {};
+               return MultiBlocProvider(
+                 providers: [
+                    BlocProvider(
+                      create: (_) => ChatBloc(sl<ChatRepositoryImpl>()),
+                    ),
+                    BlocProvider(
+                      create: (_) => OrderReceivedBloc(
+                        getNewOrdersUseCase: GetNewOrdersUseCase(repository: sl()),
+                        getOrdersByStatusUseCase: GetOrdersByStatusUseCase(repository: sl()),
+                        updateOrderStatusUseCase: UpdateOrderStatusUseCase(repository: sl()),
+                        markOrderReceivedUseCase: MarkOrderReceivedUseCase(repository: sl()),
+                        getPaymentByOrderIdUseCase: GetPaymentByOrderIdUseCase(repository: sl()),
+                        refundPaymentUseCase: RefundPaymentUseCase(repository: sl()),
+                        getOrdersByUserIdUseCase: GetOrdersByUserIdUseCase(repository: sl()),
+                      )..add(FetchOrdersByUserIdEvent(extra['userId'] ?? '')),
+                    ),
+                 ],
+                 child: ChatDetailsPage(
+                  userId: extra['userId'] ?? '',
+                  userName: extra['userName'] ?? 'Unknown',
+                ),
+              );
+            },
+          ),
+
         ]),
   ]);
 }

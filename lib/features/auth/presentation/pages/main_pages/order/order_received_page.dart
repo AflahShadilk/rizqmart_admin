@@ -8,7 +8,9 @@ import 'package:rizqmartadmin/features/auth/domain/entities/main/order_recieved_
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_state.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/order/print_order.dart';
+import 'package:go_router/go_router.dart';
 
 class OrderReceivedPage extends StatefulWidget {
   const OrderReceivedPage({super.key});
@@ -399,7 +401,7 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                               physics: const NeverScrollableScrollPhysics(),
                               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: MediaQuery.of(context).size.width > 1400 ? 4 : 3,
-                                childAspectRatio: 1.15,
+                                childAspectRatio: 0.75,
                                 crossAxisSpacing: 16,
                                 mainAxisSpacing: 16,
                               ),
@@ -557,14 +559,23 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => showDetailsModal(context, order),
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      if (order.userId.isNotEmpty) {
+                        context.push('/chat_details', extra: {
+                          'userId': order.userId,
+                          'userName': order.userName,
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Cannot chat: User ID missing')),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.chat_bubble_outline, size: 16),
+                    label: const Text('Chat', style: TextStyle(fontSize: 12)),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                    ),
-                    child: const Text(
-                      'Details',
-                      style: TextStyle(fontSize: 12),
                     ),
                   ),
                 ),
@@ -584,6 +595,21 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () => showDetailsModal(context, order),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                ),
+                child: const Text(
+                  'Details',
+                  style: TextStyle(fontSize: 12),
+                ),
+              ),
+            ),
+
           ],
         ),
       ),
@@ -691,6 +717,26 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
               const SizedBox(height: 12),
               Column(
                 children: [
+                  if (order.userId.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            context.push('/chat_details', extra: {
+                              'userId': order.userId,
+                              'userName': order.userName,
+                            });
+                          },
+                          icon: const Icon(Icons.chat_bubble_outline, size: 14),
+                          label: const Text('Chat with Customer', style: TextStyle(fontSize: 11)),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                          ),
+                        ),
+                      ),
+                    ),
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton(

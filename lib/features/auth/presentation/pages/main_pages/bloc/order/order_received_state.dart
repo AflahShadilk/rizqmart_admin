@@ -72,3 +72,10 @@ class OrderReceivedError extends OrderReceivedState {
   @override
   List<Object?> get props => [message];
 }
+
+class OrdersByUserIdLoaded extends OrderReceivedState {
+  final List<OrderReceivedEntity> orders;
+  const OrdersByUserIdLoaded(this.orders);
+  @override
+  List<Object?> get props => [orders];
+}

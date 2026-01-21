@@ -7,4 +7,5 @@ abstract class OrderReceivedRepository {
   Future<OrderReceivedEntity> getOrderById(String orderId);
   Future<void> updateOrderStatus(String orderId, String status);
   Future<void> markOrderAsReceived(String orderId);
+  Future<List<OrderReceivedEntity>> getOrdersByUserId(String userId);
 }

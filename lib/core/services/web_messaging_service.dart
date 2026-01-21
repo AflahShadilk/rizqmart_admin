@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -127,10 +126,7 @@ class WebMessagingService {
 
   static Future<void> subscribeToTopic(String topic) async {
     try {
-      if (kIsWeb) {
-        print('⚠️ subscribeToTopic is not supported on Web. Skipping topic: $topic');
-        return;
-      }
+
       await _fcm.subscribeToTopic(topic);
       print('✅ Subscribed to topic: $topic');
     } catch (e) {
@@ -140,10 +136,7 @@ class WebMessagingService {
 
   static Future<void> unsubscribeFromTopic(String topic) async {
     try {
-      if (kIsWeb) {
-        print('⚠️ unsubscribeFromTopic is not supported on Web. Skipping topic: $topic');
-        return;
-      }
+
       await _fcm.unsubscribeFromTopic(topic);
       print('❌ Unsubscribed from topic: $topic');
     } catch (e) {

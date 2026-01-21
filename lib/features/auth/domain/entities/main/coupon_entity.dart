@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-class CouponEntity extends Equatable{
+class CouponEntity extends Equatable {
   final String id;
   final String name;
   final double? amount;
@@ -10,20 +10,32 @@ class CouponEntity extends Equatable{
   final int usageLimit;
   final bool isActive;
   final DateTime expiryDate;
- const CouponEntity(
-      {required this.id,
-      required this.name,
-      this.amount,
-      this.percentage,
-      required this.minOrderValue,
-      required this.imageurl,
-      required this.usageLimit,
-      required this.isActive,
-      required this.expiryDate});
+  final List<String> applicableProductIds;
+
+  const CouponEntity({
+    required this.id,
+    required this.name,
+    this.amount,
+    this.percentage,
+    required this.minOrderValue,
+    required this.imageurl,
+    required this.usageLimit,
+    required this.isActive,
+    required this.expiryDate,
+    required this.applicableProductIds,
+  });
 
   @override
-
-  List<Object?> get props => [id,name,amount,percentage,minOrderValue,imageurl,usageLimit,isActive,expiryDate];    
-
-
+  List<Object?> get props => [
+        id,
+        name,
+        amount,
+        percentage,
+        minOrderValue,
+        imageurl,
+        usageLimit,
+        isActive,
+        expiryDate,
+        applicableProductIds,
+      ];
 }

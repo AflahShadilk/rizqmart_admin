@@ -51,3 +51,10 @@ class NewOrdersStreamUpdate extends OrderReceivedEvent {
   @override
   List<Object?> get props => [orders];
 }
+
+class FetchOrdersByUserIdEvent extends OrderReceivedEvent {
+  final String userId;
+  const FetchOrdersByUserIdEvent(this.userId);
+  @override
+  List<Object?> get props => [userId];
+}
