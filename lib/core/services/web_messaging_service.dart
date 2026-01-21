@@ -1,3 +1,5 @@
+// ignore_for_file: empty_catches
+
 import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -20,14 +22,12 @@ class WebMessagingService {
         );
         onMessageCallback!(message);
       } catch (e) {
-        print('Error triggering local notification: $e');
       }
     }
   }
 
   static Future<void> initialize() async {
     try {
-      print('🔄 Initializing Firebase Messaging...');
 
       // Request notification permission
       NotificationSettings settings = await _fcm.requestPermission(
@@ -40,11 +40,8 @@ class WebMessagingService {
       );
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        print('✅ User granted notification permission');
       } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-        print('⚠️ User granted provisional permission');
       } else {
-        print('❌ User declined or has not yet granted permission');
         return;
       }
 
@@ -57,9 +54,6 @@ class WebMessagingService {
 
       // Handle foreground messages
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print('📬 Got a message whilst in the foreground!');
-        print('Message data: ${message.data}');
-        print('Message notification: ${message.notification?.title}');
         
         if (onMessageCallback != null) {
           onMessageCallback!(message);
@@ -69,7 +63,6 @@ class WebMessagingService {
 
       // Handle when notification is clicked and app is opened
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        print('👆 Message clicked!');
         if (onMessageOpenedAppCallback != null) {
           onMessageOpenedAppCallback!(message);
         }
@@ -77,33 +70,27 @@ class WebMessagingService {
       });
 
       // Get FCM token with VAPID key for web
+      // ignore: unused_local_variable
       String? token;
       if (kIsWeb) {
         token = await _fcm.getToken(vapidKey: vapidKey);
       } else {
         token = await _fcm.getToken();
       }
-      print('📱 FCM Token: $token');
       
       // Listen for token refresh
       _fcm.onTokenRefresh.listen((newToken) {
-        print('🔄 Token refreshed: $newToken');
         // Save new token to your backend
       });
 
     } catch (e) {
-      print('❌ Error initializing Firebase Messaging: $e');
     }
   }
 
   static void _handleForegroundMessage(RemoteMessage message) {
-    print('Title: ${message.notification?.title}');
-    print('Body: ${message.notification?.body}');
-    print('Data: ${message.data}');
   }
 
   static void _handleMessageClick(RemoteMessage message) {
-    print('Message data type: ${message.data['type']}');
     
     // Handle navigation based on notification type
     // Example:
@@ -119,7 +106,6 @@ class WebMessagingService {
       }
       return await _fcm.getToken();
     } catch (e) {
-      print('Error getting token: $e');
       return null;
     }
   }
@@ -128,9 +114,7 @@ class WebMessagingService {
     try {
 
       await _fcm.subscribeToTopic(topic);
-      print('✅ Subscribed to topic: $topic');
     } catch (e) {
-      print('Error subscribing to topic: $e');
     }
   }
 
@@ -138,9 +122,7 @@ class WebMessagingService {
     try {
 
       await _fcm.unsubscribeFromTopic(topic);
-      print('❌ Unsubscribed from topic: $topic');
     } catch (e) {
-      print('Error unsubscribing from topic: $e');
     }
   }
 }

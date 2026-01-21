@@ -1,8 +1,9 @@
+// ignore_for_file: deprecated_member_use, unnecessary_to_list_in_spreads
+
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:rizqmartadmin/features/auth/domain/repository/main/chat_repository.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/chat_repository_impl.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/chat/chat_entity.dart';
 import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
@@ -10,7 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'dart:async';
 
 class NotificationBell extends StatefulWidget {
-  const NotificationBell({Key? key}) : super(key: key);
+  const NotificationBell({super.key});
 
   @override
   State<NotificationBell> createState() => _NotificationBellState();
@@ -62,7 +63,6 @@ class _NotificationBellState extends State<NotificationBell> {
         }
       });
     } catch (e) {
-      print('NotificationBell: Failed to setup chat listener: $e');
     }
   }
 
@@ -92,7 +92,6 @@ class _NotificationBellState extends State<NotificationBell> {
   }
 
   void _handleNotificationClick(RemoteMessage message) {
-    print('Notification clicked: ${message.data}');
     
     // Handle based on notification type
     String? type = message.data['type'];
@@ -109,7 +108,6 @@ class _NotificationBellState extends State<NotificationBell> {
         // Show alert dialog
         break;
       default:
-        print('Unknown notification type: $type');
     }
   }
 

@@ -29,7 +29,7 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
       
       return snapshot.docs
           .map((doc) {
-            final data = doc.data();
+            doc.data();
             return OrderReceivedModel.fromFirestore(doc);
           })
           .toList();
@@ -69,6 +69,7 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
       
       return snapshot.docs
           .map((doc) {
+            // ignore: unused_local_variable
             final data = doc.data();
 
             return OrderReceivedModel.fromFirestore(doc);

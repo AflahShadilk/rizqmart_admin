@@ -183,6 +183,7 @@ class PaymentDataSourceImpl implements PaymentDataSource {
   }
 
   // Helper method to extract index URL from error message
+  // ignore: unused_element
   String _extractIndexUrl(String errorMessage) {
     final regex = RegExp(r'https://console\.firebase\.google\.com[^\s\]]+');
     final match = regex.firstMatch(errorMessage);
