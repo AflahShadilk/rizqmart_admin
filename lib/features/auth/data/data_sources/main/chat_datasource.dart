@@ -19,21 +19,31 @@ class ChatDataSourceImpl implements ChatDataSource {
         .snapshots()
         .asyncMap((snapshot) async {
       final chats = snapshot.docs.map((doc) => ChatModel.fromFirestore(doc)).toList();
-
-      // Fetch user details for chats with missing names
+      
+      // Enhance chats with user details if missing
       return await Future.wait(chats.map((chat) async {
-        if (chat.userName == 'Unknown User') {
+        
+        if (chat.userName == 'Unknown User' || chat.userName.isEmpty || chat.userProfile.isEmpty) {
           try {
             final userDoc = await _firestore.collection('users').doc(chat.userId).get();
             if (userDoc.exists) {
               final data = userDoc.data()!;
+              final name = data['name'] ?? data['fullName'] ?? data['userName'] ?? 'Unknown User';
+              final profile = data['image'] ?? data['profileImage'] ?? data['userProfile'] ?? '';
+              
+              if (name != 'Unknown User') {
+                 await _firestore.collection('chats').doc(chat.userId).update({
+                   'userName': name,
+                   'userProfile': profile,
+                 });
+              }
+
               return chat.copyWith(
-                userName: data['name'] ?? data['fullName'] ?? data['userName'] ?? 'Unknown User',
-                userProfile: data['image'] ?? data['profileImage'] ?? data['userProfile'] ?? '',
+                userName: name,
+                userProfile: profile,
               );
             }
           } catch (e) {
-            // Ignore error and return original chat
           }
         }
         return chat;

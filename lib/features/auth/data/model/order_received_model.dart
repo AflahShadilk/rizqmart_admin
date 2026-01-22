@@ -31,8 +31,10 @@ class OrderReceivedModel extends OrderReceivedEntity {
                   productId: item['id'] ?? item['productId'] ?? '',
                   productName: item['name'] ?? item['productName'] ?? 'Unknown Product',
                   price: (item['price'] as num?)?.toDouble() ?? 0.0,
-                  quantity: item['count'] ?? item['quantity'] ?? 0,
+                  quantity: (item['count'] ?? item['quantity'] ?? 0)?.toDouble() ?? 0.0,
                   imageUrl: item['imageUrl'] ?? item['image'] ?? '',
+                  variantId: item['variantId'] ?? item['variant_id'],
+                  unit: item['unit'] ?? item['unitName'],
                 ))
             .toList() ??
         [];

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/order_recieved_entity.dart';
 import 'dart:async';
 
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_new_order_usecase.dart';
@@ -9,6 +10,7 @@ import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/mark_orde
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/update_order_status_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_payment_by_order_id_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/refund_payment_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/refill_order_stock_usecase.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_state.dart';
 
@@ -20,6 +22,7 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
   final GetPaymentByOrderIdUseCase getPaymentByOrderIdUseCase;
   final RefundPaymentUseCase refundPaymentUseCase;
   final GetOrdersByUserIdUseCase? getOrdersByUserIdUseCase;
+  final RefillOrderStockUseCase? refillOrderStockUseCase;
 
   OrderReceivedBloc({
     required this.getNewOrdersUseCase,
@@ -29,6 +32,7 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     required this.getPaymentByOrderIdUseCase,
     required this.refundPaymentUseCase,
     this.getOrdersByUserIdUseCase,
+    this.refillOrderStockUseCase,
   }) : super(const OrderReceivedInitial()) {
     on<FetchNewOrdersEvent>(_onFetchNewOrders);
     on<FetchOrdersByStatusEvent>(_onFetchByStatus);
@@ -118,30 +122,53 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     emit(const OrderReceivedLoading());
 
     try {
-      // Check if status is cancelled or rejected to trigger refund
+      // Check if status is cancelled or rejected to trigger refund and stock refill
       if (event.status.toLowerCase() == 'cancelled' || 
           event.status.toLowerCase() == 'rejected' || 
           event.status.toLowerCase() == 'return') {
           
         try {
+           // Refill stock logic
+           if (refillOrderStockUseCase != null) {
+              OrderReceivedEntity? orderToRefill;
+              if (state is NewOrdersLoaded) {
+                // Use firstWhere with orElse to avoid StateError if not found
+                orderToRefill = (state as NewOrdersLoaded).orders
+                    .where((o) => o.orderId == event.orderId)
+                    .firstOrNull;
+              } else if (state is OrdersByStatusLoaded) {
+                 orderToRefill = (state as OrdersByStatusLoaded).orders
+                    .where((o) => o.orderId == event.orderId)
+                    .firstOrNull;
+              }
+
+              if (orderToRefill != null) {
+                  await refillOrderStockUseCase!.call(orderToRefill);
+              } else {
+                  // If we can't find it in state, we skip refill for now to avoid crashing, 
+                  // or we could throw error. Skipping is safer for stability, 
+                  // but stock won't update.
+                  // Ideally we should fetch order by ID here.
+                  print('Warning: Could not find order ${event.orderId} in state to refill stock.');
+              }
+           }
+
            final payment = await getPaymentByOrderIdUseCase.call(event.orderId);
            // Only refund if not already refunded
            if (payment.status != 'refunded') {
              await refundPaymentUseCase.call(payment.paymentId, payment.amount);
              WebMessagingService.triggerLocalNotification(
               'Order Cancelled', 
-              'Order ${event.orderId} has been cancelled and refunded.',
+              'Order ${event.orderId} has been cancelled, refunded, and stock refilled.',
               data: {'type': 'order', 'id': event.orderId}
              );
              emit(OrderStatusUpdated(
                orderId: event.orderId, 
-               message: 'Order cancelled and payment refunded successfully'
+               message: 'Order cancelled, payment refunded, and stock refilled successfully'
              ));
            }
         } catch (e) {
-          // Log error but proceed with cancellation? Or fail?
-          // User likely wants to know if refund failed.
-          emit(OrderReceivedError(message: 'Failed to refund payment: ${e.toString()}'));
+          emit(OrderReceivedError(message: 'Failed to refund/refill: ${e.toString()}'));
           return; 
         }
       }

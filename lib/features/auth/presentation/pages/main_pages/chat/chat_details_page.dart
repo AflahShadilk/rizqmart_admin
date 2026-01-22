@@ -144,10 +144,11 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                 } else if (state is MessagesLoaded) {
                   final messages = state.messages;
                   
+                  
                   if (messages.isEmpty) {
                      return Center(child: Text("Start a conversation", style: GoogleFonts.poppins(color: Colors.grey)));
                   }
-
+                  
                   return ListView.builder(
                     controller: _scrollController,
                     reverse: true, // Show latest at bottom
@@ -156,49 +157,80 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                     itemBuilder: (context, index) {
                       final message = messages[index];
                       final isMe = message.senderId == 'admin';
-                      return Align(
-                        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: isMe ? AppColors.darkBlue : Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(12),
-                              topRight: const Radius.circular(12),
-                              bottomLeft: isMe ? const Radius.circular(12) : Radius.zero,
-                              bottomRight: isMe ? Radius.zero : const Radius.circular(12),
+                      
+                      return Column(
+                        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                        children: [
+                          // If message has orderId, show text "Order #ID context" or similar
+                          if (message.orderId != null)
+                            GestureDetector(
+                                onTap: () {
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(bottom: 4, left: isMe ? 0 : 12, right: isMe ? 12 : 0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(color: Colors.orange.withOpacity(0.3))
+                                  ),
+                                  child: Text(
+                                    'Related to Order',
+                                    style: TextStyle(fontSize: 10, color: Colors.orange[800], fontWeight: FontWeight.bold),
+                                  ),
+                                ),
                             ),
-                            boxShadow: [
-                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              )
-                            ]
-                          ),
-                          child: Column(
-                            crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                message.text,
-                                style: GoogleFonts.poppins(
-                                  color: isMe ? Colors.white : Colors.black87,
-                                  fontSize: 14,
+
+                          Align(
+                            alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: isMe ? AppColors.darkBlue : Colors.white,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: const Radius.circular(12),
+                                  topRight: const Radius.circular(12),
+                                  bottomLeft: isMe ? const Radius.circular(12) : Radius.zero,
+                                  bottomRight: isMe ? Radius.zero : const Radius.circular(12),
                                 ),
+                                boxShadow: [
+                                   BoxShadow(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  )
+                                ]
                               ),
-                              4.h,
-                              Text(
-                                DateFormat('h:mm a').format(message.timestamp),
-                                style: TextStyle(
-                                  color: isMe ? Colors.white70 : Colors.grey.shade500,
-                                  fontSize: 10,
-                                ),
+                              child: Column(
+                                crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    message.text,
+                                    style: GoogleFonts.poppins(
+                                      color: isMe ? Colors.white : Colors.black87,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  4.h,
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        DateFormat('h:mm a').format(message.timestamp),
+                                        style: TextStyle(
+                                          color: isMe ? Colors.white70 : Colors.grey.shade500,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       );
                     },
                   );

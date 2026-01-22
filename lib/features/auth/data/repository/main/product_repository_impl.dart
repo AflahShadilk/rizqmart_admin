@@ -61,4 +61,9 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<void> deleteProduct(String id) async {
     await fireStore.deleteProduct(id);
   }
+
+  @override
+  Future<void> updateProductStock(String productId, String? variantId, double quantityChange) async {
+    await fireStore.updateStock(productId, variantId, quantityChange);
+  }
 }

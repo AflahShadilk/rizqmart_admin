@@ -56,8 +56,63 @@ class _NotificationBellState extends State<NotificationBell> {
       final chatRepo = sl<ChatRepositoryImpl>(); // Access repo
       _chatSubscription = chatRepo.getChats().listen((chats) {
         if (mounted) {
+          final newUnreadChats = chats.where((c) => c.unreadCount > 0).toList();
+          
+          // Check if unread count increased to trigger notification
+          // We can check total unread count
+          final int newTotalUnread = newUnreadChats.fold(0, (sum, c) => sum + c.unreadCount);
+          final int oldTotalUnread = unreadChats.fold(0, (sum, c) => sum + c.unreadCount);
+
+          if (newTotalUnread > oldTotalUnread) {
+             // Find which chat caused the increase (simple diff)
+             final changedChat = newUnreadChats.firstWhere(
+                 (c) => c.unreadCount > (unreadChats.where((old) => old.userId == c.userId).firstOrNull?.unreadCount ?? 0), 
+                 orElse: () => newUnreadChats.first
+             );
+             
+             // Trigger visible notification (Snackbar)
+             ScaffoldMessenger.of(context).showSnackBar(
+               SnackBar(
+                 behavior: SnackBarBehavior.floating,
+                 margin: EdgeInsets.only(
+                   bottom: MediaQuery.of(context).size.height - 150, // Top positioning hack or just normal
+                   left: 16, 
+                   right: 16
+                 ),
+                 content: Row(
+                   children: [
+                     const Icon(Icons.chat, color: Colors.white),
+                     const SizedBox(width: 12),
+                     Expanded(
+                       child: Column(
+                         crossAxisAlignment: CrossAxisAlignment.start,
+                         mainAxisSize: MainAxisSize.min,
+                         children: [
+                           Text('New Message from ${changedChat.userName}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                           Text(changedChat.lastMessage, maxLines: 1, overflow: TextOverflow.ellipsis),
+                         ],
+                       ),
+                     ),
+                   ],
+                 ),
+                 action: SnackBarAction(
+                   label: 'View',
+                   textColor: Colors.yellow,
+                   onPressed: () {
+                     context.push('/chat_details', extra: {
+                        'userId': changedChat.userId,
+                        'userName': changedChat.userName,
+                      });
+                   },
+                 ),
+                 backgroundColor: const Color(0xFF1E88E5), // Material Blue 600
+                 duration: const Duration(seconds: 4),
+               ),
+             );
+          }
+
           setState(() {
-            unreadChats = chats.where((c) => c.unreadCount > 0).toList();
+            unreadChats = newUnreadChats;
             _updateTotalCount();
           });
         }
@@ -88,7 +143,42 @@ class _NotificationBellState extends State<NotificationBell> {
       }
     });
 
-
+    // Show Global Snackbar for this notification
+    if (mounted) {
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+           behavior: SnackBarBehavior.floating,
+           margin: EdgeInsets.only(
+             bottom: MediaQuery.of(context).size.height - 150, 
+             left: 16, 
+             right: 16
+           ),
+           content: Row(
+             children: [
+               Icon(
+                 message.notification?.title?.toLowerCase().contains('order') == true 
+                     ? Icons.shopping_cart 
+                     : Icons.notifications_active, 
+                 color: Colors.white
+               ),
+               const SizedBox(width: 12),
+               Expanded(
+                 child: Column(
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                   mainAxisSize: MainAxisSize.min,
+                   children: [
+                     Text(message.notification?.title ?? 'Notification', style: const TextStyle(fontWeight: FontWeight.bold)),
+                     Text(message.notification?.body ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
+                   ],
+                 ),
+               ),
+             ],
+           ),
+           backgroundColor: Colors.green, // Different color for orders/alerts
+           duration: const Duration(seconds: 4),
+         ),
+       );
+    }
   }
 
   void _handleNotificationClick(RemoteMessage message) {

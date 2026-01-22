@@ -25,6 +25,7 @@ import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_new_o
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_order_by_status_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/mark_order_received_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/update_order_status_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/refill_order_stock_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_all_payments_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_payment_analitics_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/payment/get_payment_by_order_id_usecase.dart';
@@ -168,7 +169,9 @@ class AppRoutes {
                           getPaymentByOrderIdUseCase:
                               GetPaymentByOrderIdUseCase(repository: sl()),
                           refundPaymentUseCase:
-                              RefundPaymentUseCase(repository: sl()))),
+                              RefundPaymentUseCase(repository: sl()),
+                          refillOrderStockUseCase:
+                              RefillOrderStockUseCase(repository: sl<ProductRepositoryImpl>()))),
                 ],
                 child: const DashboardPage(),
               );
@@ -424,7 +427,9 @@ class AppRoutes {
                           getPaymentByOrderIdUseCase:
                               GetPaymentByOrderIdUseCase(repository: sl()),
                           refundPaymentUseCase:
-                              RefundPaymentUseCase(repository: sl()))),
+                              RefundPaymentUseCase(repository: sl()),
+                          refillOrderStockUseCase:
+                              RefillOrderStockUseCase(repository: sl<ProductRepositoryImpl>()))),
                 ], child: const OrderReceivedPage());
               }),
           GoRoute(
@@ -524,6 +529,7 @@ class AppRoutes {
                         getPaymentByOrderIdUseCase: GetPaymentByOrderIdUseCase(repository: sl()),
                         refundPaymentUseCase: RefundPaymentUseCase(repository: sl()),
                         getOrdersByUserIdUseCase: GetOrdersByUserIdUseCase(repository: sl()),
+                        refillOrderStockUseCase: RefillOrderStockUseCase(repository: sl<ProductRepositoryImpl>()),
                       )..add(FetchOrdersByUserIdEvent(extra['userId'] ?? '')),
                     ),
                  ],

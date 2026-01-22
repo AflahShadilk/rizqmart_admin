@@ -1225,7 +1225,7 @@ Widget detailItem(String label, String value) {
 
 
   void showStatusDialog(BuildContext context, String orderId) {
-    final statuses = ['pending', 'processing', 'shipped', 'received'];
+    final statuses = ['pending', 'processing', 'shipped', 'received', 'cancelled'];
     String selectedStatus = 'pending';
 
     showDialog(
@@ -1412,6 +1412,8 @@ Widget detailItem(String label, String value) {
         return Colors.purple;
       case 'received':
         return Colors.green;
+      case 'cancelled':
+        return Colors.red;
       default:
         return Colors.grey;
     }
