@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rizqmartadmin/features/auth/data/model/chat/chat_model.dart';
 import 'package:rizqmartadmin/features/auth/data/model/chat/message_model.dart';
@@ -6,6 +7,7 @@ abstract class ChatDataSource {
   Stream<List<ChatModel>> getChats();
   Stream<List<MessageModel>> getMessages(String userId);
   Future<void> sendMessage(String userId, MessageModel message);
+  Future<void> markChatAsRead(String userId);
 }
 
 class ChatDataSourceImpl implements ChatDataSource {
@@ -32,18 +34,22 @@ class ChatDataSourceImpl implements ChatDataSource {
               final profile = data['image'] ?? data['profileImage'] ?? data['userProfile'] ?? '';
               
               if (name != 'Unknown User') {
-                 await _firestore.collection('chats').doc(chat.userId).update({
+                 // Update the cache in the chat document
+                 await _firestore.collection('chats').doc(chat.userId).set({
                    'userName': name,
                    'userProfile': profile,
-                 });
+                   'userData': data, // Cache full data
+                 }, SetOptions(merge: true));
               }
 
               return chat.copyWith(
                 userName: name,
                 userProfile: profile,
+                userData: data,
               );
             }
           } catch (e) {
+            print("Error fetching user details for ${chat.userId}: $e");
           }
         }
         return chat;
@@ -69,14 +75,33 @@ class ChatDataSourceImpl implements ChatDataSource {
     final chatRef = _firestore.collection('chats').doc(userId);
     final messagesRef = chatRef.collection('messages');
 
-    // Add message
-    await messagesRef.add(message.toFirestore());
+    final batch = _firestore.batch();
+    
+    // 1. Add Message
+    final newMessageRef = messagesRef.doc();
+    batch.set(newMessageRef, message.toFirestore());
 
-    // Update last message in chat summary
-    await chatRef.update({
+    // 2. Update Metadata & Unread Count
+    // Since ADMIM is sending, increment USER's unread count
+    batch.set(chatRef, {
       'lastMessage': message.type == 'image' ? 'Image' : message.text,
       'lastMessageTime': FieldValue.serverTimestamp(),
-      'unreadCount': 0, // Admin replied, so unread count reset (or handle differently based on req)
-    });
+      'unreadCounts': {
+        'user': FieldValue.increment(1),
+        // 'admin': FieldValue.increment(0) // No change to admin count
+      }
+    }, SetOptions(merge: true));
+
+    await batch.commit();
+  }
+
+  @override
+  Future<void> markChatAsRead(String userId) async {
+    // Reset Admin's unread count to 0
+    await _firestore.collection('chats').doc(userId).set({
+      'unreadCounts': {
+        'admin': 0
+      }
+    }, SetOptions(merge: true));
   }
 }

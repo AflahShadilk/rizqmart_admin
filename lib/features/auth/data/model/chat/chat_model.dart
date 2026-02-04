@@ -8,7 +8,8 @@ class ChatModel extends ChatEntity {
     required super.userProfile,
     required super.lastMessage,
     required super.lastMessageTime,
-    required super.unreadCount,
+    required super.unreadCounts,
+    required super.userData,
   });
 
   factory ChatModel.fromFirestore(DocumentSnapshot doc) {
@@ -19,7 +20,12 @@ class ChatModel extends ChatEntity {
       userProfile: data['userProfile'] ?? data['image'] ?? data['profileImage'] ?? '',
       lastMessage: data['lastMessage'] ?? '',
       lastMessageTime: (data['lastMessageTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      unreadCount: (data['unreadCount'] ?? 0) as int,
+      unreadCounts: data['unreadCounts'] != null 
+          ? Map<String, dynamic>.from(data['unreadCounts']) 
+          : {'admin': data['unreadCount'] ?? 0, 'user': 0},
+      userData: data['userData'] != null 
+          ? Map<String, dynamic>.from(data['userData']) 
+          : {},
     );
   }
 
@@ -29,9 +35,9 @@ class ChatModel extends ChatEntity {
       'userProfile': userProfile,
       'lastMessage': lastMessage,
       'lastMessageTime': Timestamp.fromDate(lastMessageTime),
-      'unreadCount': unreadCount,
+      'unreadCounts': unreadCounts,
+      'userData': userData,
     };
-
   }
 
   ChatModel copyWith({
@@ -40,7 +46,8 @@ class ChatModel extends ChatEntity {
     String? userProfile,
     String? lastMessage,
     DateTime? lastMessageTime,
-    int? unreadCount,
+    Map<String, dynamic>? unreadCounts,
+    Map<String, dynamic>? userData,
   }) {
     return ChatModel(
       userId: userId ?? this.userId,
@@ -48,7 +55,8 @@ class ChatModel extends ChatEntity {
       userProfile: userProfile ?? this.userProfile,
       lastMessage: lastMessage ?? this.lastMessage,
       lastMessageTime: lastMessageTime ?? this.lastMessageTime,
-      unreadCount: unreadCount ?? this.unreadCount,
+      unreadCounts: unreadCounts ?? this.unreadCounts,
+      userData: userData ?? this.userData,
     );
   }
 }

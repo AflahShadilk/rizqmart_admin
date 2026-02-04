@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/order_recieved_entity.dart';
@@ -63,16 +64,55 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     NewOrdersStreamUpdate event,
     Emitter<OrderReceivedState> emit,
   ) async {
-    // Notify if new order added (simple check: compare length or ID)
-    // For now, just emitting loaded state which updates UI
     if (state is NewOrdersLoaded) {
        final oldOrders = (state as NewOrdersLoaded).orders;
-       if (event.orders.length > oldOrders.length) {
-          WebMessagingService.triggerLocalNotification(
-            'New Order Received', 
-            'You have received a new order!',
-            data: {'type': 'order'}
-          );
+       final newOrders = event.orders;
+       
+       // Check for new orders
+       if (newOrders.length > oldOrders.length) {
+          final newOrderIds = newOrders.map((o) => o.orderId).toSet();
+          final oldOrderIds = oldOrders.map((o) => o.orderId).toSet();
+          final addedIds = newOrderIds.difference(oldOrderIds);
+          
+          if (addedIds.isNotEmpty) {
+            WebMessagingService.triggerLocalNotification(
+              'New Order Received', 
+              'You have received ${addedIds.length} new order(s)!',
+              data: {'type': 'order', 'action': 'new'}
+            );
+          }
+       }
+       
+       // Check for status changes (especially cancellations)
+       for (var newOrder in newOrders) {
+         final oldOrder = oldOrders.where((o) => o.orderId == newOrder.orderId).isNotEmpty
+             ? oldOrders.where((o) => o.orderId == newOrder.orderId).first
+             : null;
+         
+         if (oldOrder != null && oldOrder.orderStatus != newOrder.orderStatus) {
+           // Status changed - trigger notification
+           final status = newOrder.orderStatus.toLowerCase();
+           
+           if (status == 'cancelled' || status == 'canceled') {
+             WebMessagingService.triggerLocalNotification(
+               'Order Cancelled', 
+               'Order ${newOrder.orderId} has been cancelled by the customer',
+               data: {'type': 'order', 'action': 'cancelled', 'orderId': newOrder.orderId}
+             );
+           } else if (status == 'delivered') {
+             WebMessagingService.triggerLocalNotification(
+               'Order Delivered', 
+               'Order ${newOrder.orderId} has been marked as delivered',
+               data: {'type': 'order', 'action': 'delivered', 'orderId': newOrder.orderId}
+             );
+           } else if (status == 'returned' || status == 'return') {
+             WebMessagingService.triggerLocalNotification(
+               'Order Returned', 
+               'Order ${newOrder.orderId} has been returned',
+               data: {'type': 'order', 'action': 'returned', 'orderId': newOrder.orderId}
+             );
+           }
+         }
        }
     }
     emit(NewOrdersLoaded(orders: event.orders));
@@ -133,13 +173,13 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
               OrderReceivedEntity? orderToRefill;
               if (state is NewOrdersLoaded) {
                 // Use firstWhere with orElse to avoid StateError if not found
-                orderToRefill = (state as NewOrdersLoaded).orders
-                    .where((o) => o.orderId == event.orderId)
-                    .firstOrNull;
+                final matchingOrders = (state as NewOrdersLoaded).orders
+                    .where((o) => o.orderId == event.orderId);
+                orderToRefill = matchingOrders.isNotEmpty ? matchingOrders.first : null;
               } else if (state is OrdersByStatusLoaded) {
-                 orderToRefill = (state as OrdersByStatusLoaded).orders
-                    .where((o) => o.orderId == event.orderId)
-                    .firstOrNull;
+                 final matchingOrders = (state as OrdersByStatusLoaded).orders
+                    .where((o) => o.orderId == event.orderId);
+                 orderToRefill = matchingOrders.isNotEmpty ? matchingOrders.first : null;
               }
 
               if (orderToRefill != null) {

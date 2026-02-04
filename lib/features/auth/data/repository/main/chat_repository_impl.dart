@@ -29,4 +29,9 @@ class ChatRepositoryImpl implements ChatRepository {
     );
     return dataSource.sendMessage(userId, messageModel);
   }
+
+  @override
+  Future<void> markChatAsRead(String userId) async {
+    return dataSource.markChatAsRead(userId);
+  }
 }

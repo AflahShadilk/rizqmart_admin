@@ -49,3 +49,10 @@ class ChatErrorEvent extends ChatEvent {
   @override
   List<Object> get props => [error];
 }
+
+class MarkChatAsReadEvent extends ChatEvent {
+  final String userId;
+  const MarkChatAsReadEvent(this.userId);
+  @override
+  List<Object> get props => [userId];
+}

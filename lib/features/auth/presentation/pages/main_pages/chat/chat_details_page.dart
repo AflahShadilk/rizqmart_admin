@@ -141,6 +141,8 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
               builder: (context, state) {
                 if (state is ChatLoading && state is! MessagesLoaded) {
                   return const Center(child: CircularProgressIndicator());
+                } else if (state is ChatError) {
+                  return Center(child: Text("Error: ${state.message}", style: TextStyle(color: Colors.red)));
                 } else if (state is MessagesLoaded) {
                   final messages = state.messages;
                   

@@ -6,7 +6,8 @@ class ChatEntity extends Equatable {
   final String userProfile;
   final String lastMessage;
   final DateTime lastMessageTime;
-  final int unreadCount;
+  final Map<String, dynamic> unreadCounts;
+  final Map<String, dynamic> userData;
 
   const ChatEntity({
     required this.userId,
@@ -14,7 +15,8 @@ class ChatEntity extends Equatable {
     required this.userProfile,
     required this.lastMessage,
     required this.lastMessageTime,
-    required this.unreadCount,
+    required this.unreadCounts,
+    required this.userData,
   });
 
   @override
@@ -24,6 +26,7 @@ class ChatEntity extends Equatable {
         userProfile,
         lastMessage,
         lastMessageTime,
-        unreadCount,
+        unreadCounts,
+        userData,
       ];
 }

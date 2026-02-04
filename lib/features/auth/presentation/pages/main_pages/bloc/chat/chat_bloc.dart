@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'dart:async';
 import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +15,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<LoadChatsEvent>(_onLoadChats);
     on<LoadMessagesEvent>(_onLoadMessages);
     on<SendMessageEvent>(_onSendMessage);
+    on<MarkChatAsReadEvent>(_onMarkChatAsRead);
     
     // Internal Events
     on<UpdateChatsEvent>(_onUpdateChats);
@@ -38,9 +40,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   void _onLoadMessages(LoadMessagesEvent event, Emitter<ChatState> emit) {
     emit(ChatLoading()); 
-    // Optimization: In a real app we might check if state is already MessagesLoaded 
-    // and keep showing them while loading new ones, or verify userId.
     
+    // Mark as read immediately when loading messages
+    add(MarkChatAsReadEvent(event.userId));
+
     try {
       _messagesSubscription?.cancel();
       _messagesSubscription = repository.getMessages(event.userId).listen(
@@ -58,6 +61,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       // Success: Stream will update UI automatically.
     } catch (e) {
       emit(ChatError("Failed to send: $e"));
+    }
+  }
+
+  Future<void> _onMarkChatAsRead(MarkChatAsReadEvent event, Emitter<ChatState> emit) async {
+    try {
+      await repository.markChatAsRead(event.userId);
+    } catch (e) {
+      // Log error but don't disrupt UI state for this background action
+      print("Failed to mark chat as read: $e");
     }
   }
 

@@ -128,7 +128,7 @@ class _ChatListPageState extends State<ChatListPage> {
                               fontSize: 12,
                             ),
                           ),
-                          if (chat.unreadCount > 0) ...[
+                          if ((chat.unreadCounts['admin'] ?? 0) > 0) ...[
                             const SizedBox(height: 4),
                             Container(
                               padding: const EdgeInsets.all(6),
@@ -137,7 +137,7 @@ class _ChatListPageState extends State<ChatListPage> {
                                 shape: BoxShape.circle,
                               ),
                               child: Text(
-                                chat.unreadCount.toString(),
+                                (chat.unreadCounts['admin'] ?? 0).toString(),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 10,

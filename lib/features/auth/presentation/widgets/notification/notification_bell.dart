@@ -56,17 +56,17 @@ class _NotificationBellState extends State<NotificationBell> {
       final chatRepo = sl<ChatRepositoryImpl>(); // Access repo
       _chatSubscription = chatRepo.getChats().listen((chats) {
         if (mounted) {
-          final newUnreadChats = chats.where((c) => c.unreadCount > 0).toList();
+          final newUnreadChats = chats.where((c) => (c.unreadCounts['admin'] as int? ?? 0) > 0).toList();
           
           // Check if unread count increased to trigger notification
           // We can check total unread count
-          final int newTotalUnread = newUnreadChats.fold(0, (sum, c) => sum + c.unreadCount);
-          final int oldTotalUnread = unreadChats.fold(0, (sum, c) => sum + c.unreadCount);
+          final int newTotalUnread = newUnreadChats.fold(0, (sum, c) => sum + (c.unreadCounts['admin'] as int? ?? 0));
+          final int oldTotalUnread = unreadChats.fold(0, (sum, c) => sum + (c.unreadCounts['admin'] as int? ?? 0));
 
           if (newTotalUnread > oldTotalUnread) {
              // Find which chat caused the increase (simple diff)
              final changedChat = newUnreadChats.firstWhere(
-                 (c) => c.unreadCount > (unreadChats.where((old) => old.userId == c.userId).firstOrNull?.unreadCount ?? 0), 
+                 (c) => (c.unreadCounts['admin'] as int? ?? 0) > (unreadChats.where((old) => old.userId == c.userId).firstOrNull?.unreadCounts['admin'] as int? ?? 0), 
                  orElse: () => newUnreadChats.first
              );
              
@@ -118,11 +118,12 @@ class _NotificationBellState extends State<NotificationBell> {
         }
       });
     } catch (e) {
+      // Ignore errors in chat listener
     }
   }
 
   void _updateTotalCount() {
-    int chatUnreadCount = unreadChats.fold(0, (sum, chat) => sum + chat.unreadCount);
+    int chatUnreadCount = unreadChats.fold(0, (sum, chat) => sum + (chat.unreadCounts['admin'] as int? ?? 0));
     notificationCount = notifications.length + chatUnreadCount; 
   }
 
@@ -185,7 +186,7 @@ class _NotificationBellState extends State<NotificationBell> {
     
     // Handle based on notification type
     String? type = message.data['type'];
-    String? id = message.data['id'];
+    // String? id = message.data['id'];
     
     switch (type) {
       case 'order':
@@ -271,7 +272,7 @@ class _NotificationBellState extends State<NotificationBell> {
                          Container(
                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                            decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(10)),
-                           child: Text('${chat.unreadCount}', style: const TextStyle(color: Colors.white, fontSize: 10))
+                           child: Text('${chat.unreadCounts['admin'] as int? ?? 0}', style: const TextStyle(color: Colors.white, fontSize: 10))
                          )
                       ],
                     ),
@@ -385,6 +386,8 @@ class _NotificationBellState extends State<NotificationBell> {
   @override
   void dispose() {
     _chatSubscription?.cancel();
+    WebMessagingService.onMessageCallback = null;
+    WebMessagingService.onMessageOpenedAppCallback = null;
     super.dispose();
   }
 }
