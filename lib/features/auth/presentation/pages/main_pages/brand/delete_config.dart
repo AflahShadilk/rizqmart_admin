@@ -21,7 +21,6 @@ void handleDelete(BuildContext context, BrandEntity brandEntity) {
     if (productState is LoadingProductState) {
       productBloc.add(LoadingProductEvent());
       
-      // _showDeleteConfirmDialog(context, category);
       return;
     }
     

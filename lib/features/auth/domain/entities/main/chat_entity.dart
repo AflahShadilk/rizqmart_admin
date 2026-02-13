@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class ChatEntity extends Equatable {
+  final String id;
   final String userId;
   final String userName;
   final String userProfile;
@@ -10,6 +11,7 @@ class ChatEntity extends Equatable {
   final Map<String, dynamic> userData;
 
   const ChatEntity({
+    required this.id,
     required this.userId,
     required this.userName,
     required this.userProfile,
@@ -21,6 +23,7 @@ class ChatEntity extends Equatable {
 
   @override
   List<Object?> get props => [
+        id,
         userId,
         userName,
         userProfile,

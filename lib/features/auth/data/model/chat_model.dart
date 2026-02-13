@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/chat/chat_entity.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/chat_entity.dart';
 
 class ChatModel extends ChatEntity {
   const ChatModel({
+    required super.id,
     required super.userId,
     required super.userName,
     required super.userProfile,
@@ -15,7 +16,8 @@ class ChatModel extends ChatEntity {
   factory ChatModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return ChatModel(
-      userId: doc.id,
+      id: doc.id,
+      userId: data['userId'] ?? '', // Fallback to empty if missing, but should be there
       userName: data['userName'] ?? data['name'] ?? data['fullName'] ?? data['email'] ?? 'Unknown User',
       userProfile: data['userProfile'] ?? data['image'] ?? data['profileImage'] ?? '',
       lastMessage: data['lastMessage'] ?? '',
@@ -31,6 +33,7 @@ class ChatModel extends ChatEntity {
 
   Map<String, dynamic> toFirestore() {
     return {
+      'userId': userId,
       'userName': userName,
       'userProfile': userProfile,
       'lastMessage': lastMessage,
@@ -41,6 +44,7 @@ class ChatModel extends ChatEntity {
   }
 
   ChatModel copyWith({
+    String? id,
     String? userId,
     String? userName,
     String? userProfile,
@@ -50,6 +54,7 @@ class ChatModel extends ChatEntity {
     Map<String, dynamic>? userData,
   }) {
     return ChatModel(
+      id: id ?? this.id,
       userId: userId ?? this.userId,
       userName: userName ?? this.userName,
       userProfile: userProfile ?? this.userProfile,

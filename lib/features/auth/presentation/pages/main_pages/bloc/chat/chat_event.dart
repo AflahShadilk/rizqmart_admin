@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/chat/chat_entity.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/chat/message_entity.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/chat_entity.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/message_entity.dart';
+
 
 abstract class ChatEvent extends Equatable {
   const ChatEvent();
@@ -12,21 +13,21 @@ abstract class ChatEvent extends Equatable {
 class LoadChatsEvent extends ChatEvent {}
 
 class LoadMessagesEvent extends ChatEvent {
-  final String userId;
-  const LoadMessagesEvent(this.userId);
+  final String chatId;
+  const LoadMessagesEvent(this.chatId);
 
   @override
-  List<Object> get props => [userId];
+  List<Object> get props => [chatId];
 }
 
 class SendMessageEvent extends ChatEvent {
-  final String userId;
+  final String chatId;
   final MessageEntity message;
 
-  const SendMessageEvent({required this.userId, required this.message});
+  const SendMessageEvent({required this.chatId, required this.message});
 
   @override
-  List<Object> get props => [userId, message];
+  List<Object> get props => [chatId, message];
 }
 
 class UpdateChatsEvent extends ChatEvent {
@@ -51,8 +52,8 @@ class ChatErrorEvent extends ChatEvent {
 }
 
 class MarkChatAsReadEvent extends ChatEvent {
-  final String userId;
-  const MarkChatAsReadEvent(this.userId);
+  final String chatId;
+  const MarkChatAsReadEvent(this.chatId);
   @override
-  List<Object> get props => [userId];
+  List<Object> get props => [chatId];
 }

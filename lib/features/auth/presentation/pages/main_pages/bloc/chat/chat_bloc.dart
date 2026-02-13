@@ -42,11 +42,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(ChatLoading()); 
     
     // Mark as read immediately when loading messages
-    add(MarkChatAsReadEvent(event.userId));
+    add(MarkChatAsReadEvent(event.chatId));
 
     try {
       _messagesSubscription?.cancel();
-      _messagesSubscription = repository.getMessages(event.userId).listen(
+      _messagesSubscription = repository.getMessages(event.chatId).listen(
         (messages) => add(UpdateMessagesEvent(messages)),
         onError: (error) => add(ChatErrorEvent(error.toString())),
       );
@@ -57,7 +57,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   Future<void> _onSendMessage(SendMessageEvent event, Emitter<ChatState> emit) async {
     try {
-      await repository.sendMessage(event.userId, event.message);
+      await repository.sendMessage(event.chatId, event.message);
       // Success: Stream will update UI automatically.
     } catch (e) {
       emit(ChatError("Failed to send: $e"));
@@ -66,7 +66,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   Future<void> _onMarkChatAsRead(MarkChatAsReadEvent event, Emitter<ChatState> emit) async {
     try {
-      await repository.markChatAsRead(event.userId);
+      await repository.markChatAsRead(event.chatId);
     } catch (e) {
       // Log error but don't disrupt UI state for this background action
       print("Failed to mark chat as read: $e");
@@ -104,12 +104,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         // but typically admin ID is the current user ID.
         // Let's rely on checking if senderId is NOT the current user ID.
         
-        // Trigger notification
-         WebMessagingService.triggerLocalNotification(
-            'New Message', 
-            lastMessage.text.isNotEmpty ? lastMessage.text : 'Sent an image',
-            data: {'type': 'chat_message', 'senderId': lastMessage.senderId}
-         );
+        // Check if the message is NOT from 'admin' (me) before notifying
+        if (lastMessage.senderId != 'admin') { 
+           WebMessagingService.triggerLocalNotification(
+              'New Message', 
+              lastMessage.text.isNotEmpty ? lastMessage.text : 'Sent an image',
+              data: {'type': 'chat_message', 'senderId': lastMessage.senderId}
+           );
+        }
       }
     }
     emit(MessagesLoaded(event.messages));

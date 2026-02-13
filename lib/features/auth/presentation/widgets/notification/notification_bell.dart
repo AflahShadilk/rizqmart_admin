@@ -5,7 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:rizqmartadmin/features/auth/data/repository/main/chat_repository_impl.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/chat/chat_entity.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/chat_entity.dart';
 import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';

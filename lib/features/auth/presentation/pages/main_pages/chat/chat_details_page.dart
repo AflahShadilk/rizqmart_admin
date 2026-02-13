@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/chat/message_entity.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/message_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_state.dart';
@@ -43,7 +43,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
       timestamp: DateTime.now(),
     );
 
-    context.read<ChatBloc>().add(SendMessageEvent(userId: widget.userId, message: message));
+    context.read<ChatBloc>().add(SendMessageEvent(chatId: widget.userId, message: message));
     _messageController.clear();
   }
 

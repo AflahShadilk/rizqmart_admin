@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/chat/chat_entity.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/chat/message_entity.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/chat_entity.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/message_entity.dart';
 
 abstract class ChatState extends Equatable {
   const ChatState();
