@@ -70,8 +70,9 @@ class _ChatListPageState extends State<ChatListPage> {
                 return InkWell(
                   onTap: () {
                     context.push('/chat_details', extra: {
+                      'chatId': chat.id, // orderId
+                      'productName': chat.productName,
                       'userId': chat.userId,
-                      'userName': chat.userName,
                     });
                   },
                   child: Container(
@@ -91,62 +92,46 @@ class _ChatListPageState extends State<ChatListPage> {
                       leading: CircleAvatar(
                         radius: 25,
                         backgroundColor: AppColors.darkBlue.withOpacity(0.1),
-                        backgroundImage: chat.userProfile.isNotEmpty
-                            ? NetworkImage(chat.userProfile)
-                            : null,
-                        child: chat.userProfile.isEmpty
-                            ? Text(
-                                chat.userName.isNotEmpty ? chat.userName[0].toUpperCase() : '?',
-                                style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.darkBlue),
-                              )
-                            : null,
+                        child: const Icon(Icons.shopping_bag_outlined, color: AppColors.darkBlue),
                       ),
                       title: Text(
-                        chat.userName,
+                        chat.productName.isNotEmpty ? chat.productName : 'Order ${chat.id}',
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                          fontSize: 15,
                         ),
                       ),
-                      subtitle: Text(
-                        chat.lastMessage,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey.shade600,
-                          fontSize: 13,
-                        ),
-                      ),
-                      trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(height: 2),
                           Text(
-                            _formatTime(chat.lastMessageTime),
+                            'User: ${chat.userId}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.poppins(
-                              color: Colors.grey.shade400,
-                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                              fontSize: 11,
                             ),
                           ),
-                          if ((chat.unreadCounts['admin'] ?? 0) > 0) ...[
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: const BoxDecoration(
-                                color: AppColors.darkBlue,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Text(
-                                (chat.unreadCounts['admin'] ?? 0).toString(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                          const SizedBox(height: 2),
+                          Text(
+                            chat.lastMessage,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              color: Colors.grey.shade600,
+                              fontSize: 13,
                             ),
-                          ],
+                          ),
                         ],
+                      ),
+                      trailing: Text(
+                        _formatTime(chat.timestamp),
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey.shade400,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ),

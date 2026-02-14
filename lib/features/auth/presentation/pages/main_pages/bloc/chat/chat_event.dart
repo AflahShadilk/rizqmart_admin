@@ -39,9 +39,10 @@ class UpdateChatsEvent extends ChatEvent {
 
 class UpdateMessagesEvent extends ChatEvent {
   final List<MessageEntity> messages;
-  const UpdateMessagesEvent(this.messages);
+  final String chatId; // Added chatId
+  const UpdateMessagesEvent(this.messages, this.chatId);
   @override
-  List<Object> get props => [messages];
+  List<Object> get props => [messages, chatId];
 }
 
 class ChatErrorEvent extends ChatEvent {

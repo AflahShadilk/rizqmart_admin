@@ -26,6 +26,8 @@ class ChatRepositoryImpl implements ChatRepository {
       text: message.text,
       type: message.type,
       timestamp: message.timestamp,
+      orderId: message.orderId,
+      senderRole: message.senderRole,
     );
     return dataSource.sendMessage(chatId, messageModel);
   }

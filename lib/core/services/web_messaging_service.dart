@@ -231,7 +231,6 @@ class WebMessagingService {
   static Future<void> subscribeToTopic(String topic) async {
     try {
       if (kIsWeb) {
-        if (kDebugMode) print("Subscribing to topic not fully supported on web sdk directly via this method usually.");
         return;
       }
       await _fcm.subscribeToTopic(topic);

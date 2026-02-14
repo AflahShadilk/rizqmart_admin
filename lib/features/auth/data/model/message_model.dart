@@ -9,6 +9,7 @@ class MessageModel extends MessageEntity {
     required super.type,
     required super.timestamp,
     super.orderId,
+    super.senderRole = 'user',
   });
 
   factory MessageModel.fromFirestore(DocumentSnapshot doc) {
@@ -20,6 +21,7 @@ class MessageModel extends MessageEntity {
       type: data['type'] ?? 'text',
       timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       orderId: data['orderId'],
+      senderRole: data['senderRole'] ?? 'user',
     );
   }
 
@@ -29,6 +31,7 @@ class MessageModel extends MessageEntity {
       'text': text,
       'type': type,
       'timestamp': Timestamp.fromDate(timestamp),
+      'senderRole': senderRole,
       if (orderId != null) 'orderId': orderId,
     };
   }

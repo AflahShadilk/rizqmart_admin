@@ -74,10 +74,8 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/units/
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/user/users_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/splash_screen.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/welcome_screen.dart';
-import 'package:rizqmartadmin/features/auth/domain/usecases/main/sales_report/get_sales_report_usecase.dart';
-import 'package:rizqmartadmin/features/auth/domain/usecases/main/order/get_orders_by_user_id_usecase.dart';
 import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
-
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/sales_report/get_sales_report_usecase.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/coupons/coupons_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/coupon_bloc.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/coupon_repository_impl.dart';
@@ -85,7 +83,6 @@ import 'package:rizqmartadmin/features/auth/data/repository/main/coupon_reposito
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/chat/chat_list_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/chat/chat_details_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_bloc.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_event.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/chat_repository_impl.dart';
 
 class AppRoutes {
@@ -512,32 +509,17 @@ class AppRoutes {
             },
           ),
            GoRoute(
-            path: '/chat_details', // Absolute path style for GoRouter
+            path: '/chat_details',
             builder: (context, state) {
                final extra = state.extra as Map<String, dynamic>? ?? {};
-               return MultiBlocProvider(
-                 providers: [
-                    BlocProvider(
-                      create: (_) => ChatBloc(sl<ChatRepositoryImpl>()),
-                    ),
-                    BlocProvider(
-                      create: (_) => OrderReceivedBloc(
-                        getNewOrdersUseCase: GetNewOrdersUseCase(repository: sl()),
-                        getOrdersByStatusUseCase: GetOrdersByStatusUseCase(repository: sl()),
-                        updateOrderStatusUseCase: UpdateOrderStatusUseCase(repository: sl()),
-                        markOrderReceivedUseCase: MarkOrderReceivedUseCase(repository: sl()),
-                        getPaymentByOrderIdUseCase: GetPaymentByOrderIdUseCase(repository: sl()),
-                        refundPaymentUseCase: RefundPaymentUseCase(repository: sl()),
-                        getOrdersByUserIdUseCase: GetOrdersByUserIdUseCase(repository: sl()),
-                        refillOrderStockUseCase: RefillOrderStockUseCase(repository: sl<ProductRepositoryImpl>()),
-                      )..add(FetchOrdersByUserIdEvent(extra['userId'] ?? '')),
-                    ),
-                 ],
+               return BlocProvider(
+                 create: (_) => ChatBloc(sl<ChatRepositoryImpl>()),
                  child: ChatDetailsPage(
+                  chatId: extra['chatId'] ?? '',
+                  productName: extra['productName'] ?? '',
                   userId: extra['userId'] ?? '',
-                  userName: extra['userName'] ?? 'Unknown',
                 ),
-              );
+               );
             },
           ),
 

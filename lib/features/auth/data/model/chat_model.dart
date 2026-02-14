@@ -4,64 +4,55 @@ import 'package:rizqmartadmin/features/auth/domain/entities/main/chat_entity.dar
 class ChatModel extends ChatEntity {
   const ChatModel({
     required super.id,
+    required super.productName,
+    required super.productId,
     required super.userId,
-    required super.userName,
-    required super.userProfile,
+    required super.adminId,
     required super.lastMessage,
-    required super.lastMessageTime,
-    required super.unreadCounts,
-    required super.userData,
+    required super.timestamp,
   });
 
   factory ChatModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return ChatModel(
-      id: doc.id,
-      userId: data['userId'] ?? '', // Fallback to empty if missing, but should be there
-      userName: data['userName'] ?? data['name'] ?? data['fullName'] ?? data['email'] ?? 'Unknown User',
-      userProfile: data['userProfile'] ?? data['image'] ?? data['profileImage'] ?? '',
+      id: doc.id, // orderId
+      productName: data['productName'] ?? '',
+      productId: data['productId'] ?? '',
+      userId: data['userId'] ?? '',
+      adminId: data['adminId'] ?? 'admin',
       lastMessage: data['lastMessage'] ?? '',
-      lastMessageTime: (data['lastMessageTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      unreadCounts: data['unreadCounts'] != null 
-          ? Map<String, dynamic>.from(data['unreadCounts']) 
-          : {'admin': data['unreadCount'] ?? 0, 'user': 0},
-      userData: data['userData'] != null 
-          ? Map<String, dynamic>.from(data['userData']) 
-          : {},
+      timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
+      'productName': productName,
+      'productId': productId,
       'userId': userId,
-      'userName': userName,
-      'userProfile': userProfile,
+      'adminId': adminId,
       'lastMessage': lastMessage,
-      'lastMessageTime': Timestamp.fromDate(lastMessageTime),
-      'unreadCounts': unreadCounts,
-      'userData': userData,
+      'timestamp': Timestamp.fromDate(timestamp),
     };
   }
 
   ChatModel copyWith({
     String? id,
+    String? productName,
+    String? productId,
     String? userId,
-    String? userName,
-    String? userProfile,
+    String? adminId,
     String? lastMessage,
-    DateTime? lastMessageTime,
-    Map<String, dynamic>? unreadCounts,
-    Map<String, dynamic>? userData,
+    DateTime? timestamp,
   }) {
     return ChatModel(
       id: id ?? this.id,
+      productName: productName ?? this.productName,
+      productId: productId ?? this.productId,
       userId: userId ?? this.userId,
-      userName: userName ?? this.userName,
-      userProfile: userProfile ?? this.userProfile,
+      adminId: adminId ?? this.adminId,
       lastMessage: lastMessage ?? this.lastMessage,
-      lastMessageTime: lastMessageTime ?? this.lastMessageTime,
-      unreadCounts: unreadCounts ?? this.unreadCounts,
-      userData: userData ?? this.userData,
+      timestamp: timestamp ?? this.timestamp,
     );
   }
 }
