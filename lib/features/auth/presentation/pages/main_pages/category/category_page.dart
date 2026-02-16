@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -131,7 +132,7 @@ class _CategoryPageState extends State<CategoryPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const CircularProgressIndicator(),
-                        const SizedBox(height: 16),
+                        16.h,
                         Text(
                           'Loading categories...',
                           style: GoogleFonts.poppins(
@@ -155,7 +156,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             size: 64,
                             color: Colors.grey.shade300,
                           ),
-                          const SizedBox(height: 16),
+                          16.h,
                           Text(
                             'No categories found',
                             style: GoogleFonts.poppins(
@@ -164,7 +165,7 @@ class _CategoryPageState extends State<CategoryPage> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          24.h,
                           buildAddButton(context, allCategories),
                         ],
                       ),
@@ -202,7 +203,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                       color: AppColors.blackHeading,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  4.h,
                                   Text(
                                     '${allCategories.length} ${allCategories.length == 1 ? 'category' : 'categories'} available',
                                     style: GoogleFonts.poppins(
@@ -282,7 +283,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                       size: 64,
                                       color: Colors.grey.shade300,
                                     ),
-                                    const SizedBox(height: 16),
+                                    16.h,
                                     Text(
                                       'No categories match "${pageState.searchQuery}"',
                                       style: GoogleFonts.poppins(
@@ -336,7 +337,7 @@ class _CategoryPageState extends State<CategoryPage> {
                           size: 64,
                           color: Colors.red.shade300,
                         ),
-                        const SizedBox(height: 16),
+                        16.h,
                         Text(
                           state.error,
                           style: GoogleFonts.poppins(
@@ -436,7 +437,7 @@ class CategoryCard extends StatelessWidget {
               onPressed: onEdit,
               tooltip: 'Edit Category',
             ),
-            const SizedBox(width: 4),
+            4.w,
             IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: onDelete,

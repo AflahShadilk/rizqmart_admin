@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +17,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/p
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/widgets/search_with_filter.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/respnsive_page.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -229,7 +231,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                       color: AppColors.blackHeading,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  4.h,
                                   Text(
                                     '${allProducts.length} ${allProducts.length == 1 ? 'product' : 'products'} available',
                                     style: GoogleFonts.poppins(
@@ -304,7 +306,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     const CircularProgressIndicator(),
-                                    const SizedBox(height: 16),
+                                    16.h,
                                     Text(
                                       'Loading products...',
                                       style: GoogleFonts.poppins(
@@ -325,7 +327,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                           size: 64,
                                           color: Colors.red.shade300,
                                         ),
-                                        const SizedBox(height: 16),
+                                        16.h,
                                         Text(
                                           'Error: ${state.message}',
                                           style: GoogleFonts.poppins(
@@ -333,7 +335,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                             fontSize: 16,
                                           ),
                                         ),
-                                        const SizedBox(height: 20),
+                                        20.h,
                                         ElevatedButton(
                                           onPressed: () {
                                             context
@@ -357,7 +359,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                                   size: 64,
                                                   color: Colors.grey.shade300,
                                                 ),
-                                                const SizedBox(height: 16),
+                                                16.h,
                                                 Text(
                                                   'No products found',
                                                   style: GoogleFonts.poppins(
@@ -466,44 +468,44 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 8)),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 12)),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.15),
-            blurRadius: 8,
+            blurRadius: Responsive.scaleRadius(context, 8),
             spreadRadius: 1,
             offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(Responsive.scaleSpacing(context, 12)),
         child: Row(
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: Responsive.scaleRadius(context, 80),
+              height: Responsive.scaleRadius(context, 80),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 8)),
                 color: Colors.grey.shade100,
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 8)),
                 child: getFirstVariantImage().isNotEmpty
                     ? Image.network(
                         getFirstVariantImage(),
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
-                          return const Icon(Icons.image_not_supported);
+                          return Icon(Icons.image_not_supported, size: Responsive.scaleFont(context, 32));
                         },
                       )
-                    : const Icon(Icons.image_not_supported),
+                    : Icon(Icons.image_not_supported, size: Responsive.scaleFont(context, 32)),
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: Responsive.scaleSpacing(context, 16)),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -511,50 +513,50 @@ class ProductCard extends StatelessWidget {
                   Text(
                     product.name,
                     style: GoogleFonts.poppins(
-                      fontSize: 16,
+                      fontSize: Responsive.scaleFont(context, 16),
                       fontWeight: FontWeight.w600,
                       color: AppColors.blackHeading,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: Responsive.scaleSpacing(context, 4)),
                   Row(
                     children: [
                       Text(
                         '₹${getFirstVariantPrice().toStringAsFixed(2)}',
                         style: GoogleFonts.poppins(
-                          fontSize: 14,
+                          fontSize: Responsive.scaleFont(context, 14),
                           fontWeight: FontWeight.w600,
                           color: AppColors.green,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: Responsive.scaleSpacing(context, 12)),
                       Text(
                         'Stock: ${getTotalQuantity().toInt()}',
                         style: GoogleFonts.poppins(
-                          fontSize: 12,
+                          fontSize: Responsive.scaleFont(context, 12),
                           color: Colors.grey.shade600,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: Responsive.scaleSpacing(context, 4)),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Responsive.scaleSpacing(context, 8),
+                      vertical: Responsive.scaleSpacing(context, 4),
                     ),
                     decoration: BoxDecoration(
                       color: product.status == true
                           ? Colors.green.withOpacity(0.1)
                           : Colors.red.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 6)),
                     ),
                     child: Text(
                       product.status == true ? 'Active' : 'Inactive',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: Responsive.scaleFont(context, 12),
                         color: product.status == true ? Colors.green : Colors.red,
                         fontWeight: FontWeight.w600,
                       ),
@@ -567,13 +569,13 @@ class ProductCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+                  icon: Icon(Icons.edit_outlined, color: Colors.blue, size: Responsive.scaleFont(context, 24)),
                   onPressed: onEdit,
                   tooltip: 'Edit Product',
                 ),
-                const SizedBox(width: 4),
+                SizedBox(width: Responsive.scaleSpacing(context, 4)),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  icon: Icon(Icons.delete_outline, color: Colors.red, size: Responsive.scaleFont(context, 24)),
                   onPressed: onDelete,
                   tooltip: 'Delete Product',
                 ),

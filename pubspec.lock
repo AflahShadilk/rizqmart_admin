@@ -776,6 +776,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  responsive_display:
+    dependency: "direct main"
+    description:
+      name: responsive_display
+      sha256: "317e4ad8e4dad03ef87d2ed99da7f6300e3df84906a8b11227bf49a429ddc1a9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   responsive_framework:
     dependency: "direct main"
     description:

@@ -70,6 +70,7 @@ class _MainPagesState extends State<MainPages> {
                     selectedTileColor: AppColors.lightGray.withOpacity(0.2),
                     onTap: () => onDrawerItemTap(idx),
                   );
+                // ignore: unnecessary_to_list_in_spreads
                 }).toList(),
               ],
             ),

@@ -30,6 +30,15 @@ class LoginRepositoryImpl implements LoginRepository {
     }
   }
 
+  @override
+  Future<LoginUserEntity?> getCurrentUser() async {
+    try {
+      return await loginAccDatasource.getCurrentUser();
+    } catch (e) {
+      throw Exception('Failed to get current user: ${e.toString()}');
+    }
+  }
+
   Exception _handleFirebaseAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':

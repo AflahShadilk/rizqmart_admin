@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use, use_build_context_synchronously
+﻿// ignore_for_file: deprecated_member_use, use_build_context_synchronously
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -205,7 +206,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                             color: Colors.white,
                                           ),
                                         ),
-                                        const SizedBox(height: 16),
+                                        16.h,
                                         Text(
                                           'Reset Your Password',
                                           textAlign: TextAlign.center,
@@ -240,7 +241,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                             height: 1.6,
                                           ),
                                         ),
-                                        const SizedBox(height: 28),
+                                        28.h,
                                         Form(
                                           key: _formkey,
                                           child: TextFormFLogin(
@@ -250,7 +251,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                             // enabled: !isLoading,
                                           ),
                                         ),
-                                        const SizedBox(height: 32),
+                                        32.h,
                                         SizedBox(
                                           width: double.infinity,
                                           child: ElevatedButton(
@@ -319,7 +320,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                                   ),
                                           ),
                                         ),
-                                        const SizedBox(height: 16),
+                                        16.h,
                                         SizedBox(
                                           width: double.infinity,
                                           child: TextButton(

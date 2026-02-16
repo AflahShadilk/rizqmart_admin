@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/auth/get_current_user_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/auth/login_acc_use_cases.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/auth/logout_usecase.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/login%20bloc/auth_event.dart';
@@ -8,10 +9,36 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/login%2
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginAccUseCases loginAccUseCases;
   final LogoutUseCase? logoutUseCase;
+  final GetCurrentUserUseCase? getCurrentUserUseCase;
 
-  LoginBloc({required this.loginAccUseCases, this.logoutUseCase}) : super(LoginInitial()) {
+  LoginBloc({
+    required this.loginAccUseCases,
+    this.logoutUseCase,
+    this.getCurrentUserUseCase,
+  }) : super(LoginInitial()) {
     on<LoginTryEvent>(_onLoginto);
     on<LogoutEvent>(_onLogout);
+    on<CheckAuthStatusEvent>(_onCheckAuthStatus);
+  }
+
+  Future<void> _onCheckAuthStatus(
+    CheckAuthStatusEvent event,
+    Emitter<LoginState> emit,
+  ) async {
+    if (getCurrentUserUseCase != null) {
+      try {
+        final user = await getCurrentUserUseCase!.call();
+        if (user != null) {
+          emit(AuthAuthenticated(email: user.email));
+        } else {
+          emit(AuthUnauthenticated());
+        }
+      } catch (e) {
+        emit(AuthUnauthenticated());
+      }
+    } else {
+      emit(AuthUnauthenticated());
+    }
   }
 
   Future<void> _onLoginto(
@@ -21,7 +48,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(LoginLoading());
     try {
       final usercred = await loginAccUseCases.call(event.email, event.password);
-      emit(LoginSuccess('Login successful! Welcome ${usercred.email}'));
+      emit(AuthAuthenticated(email: usercred.email));
     } on FirebaseAuthException catch (e) {
       emit(LoginError(_getFirebaseErrorMessage(e)));
     } on Exception catch (e) {
@@ -39,10 +66,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       if (logoutUseCase != null) {
         await logoutUseCase!.call();
-        emit(LogoutSuccess());
+        emit(AuthUnauthenticated());
       } else {
-       
-        emit(LogoutSuccess());
+        emit(AuthUnauthenticated());
       }
     } catch (e) {
       emit(LoginError('Logout failed: $e'));

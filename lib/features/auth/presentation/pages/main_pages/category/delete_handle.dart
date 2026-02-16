@@ -1,3 +1,4 @@
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -64,7 +65,7 @@ void showDeleteConfirmDialog(BuildContext context, CategoryModel category) {
         title: Row(
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
-            const SizedBox(width: 12),
+            12.w,
             Text(
               'Delete Category',
               style: GoogleFonts.poppins(

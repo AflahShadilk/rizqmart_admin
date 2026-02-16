@@ -1,6 +1,6 @@
-// ignore_for_file: use_build_context_synchronously, deprecated_member_use, prefer_final_fields
+﻿// ignore_for_file: use_build_context_synchronously, deprecated_member_use, prefer_final_fields
 
-import 'package:file_picker/file_picker.dart';
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -26,7 +26,6 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/produc
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/widgets.dart';
 import 'package:rizqmartadmin/features/auth/presentation/validators/text_field_validator.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/buttons/buttons.dart';
-import 'package:rizqmartadmin/features/auth/presentation/widgets/sized_boxes/sized_box.dart';
 import 'package:uuid/uuid.dart';
 
 class FormProducts extends StatefulWidget {
@@ -87,18 +86,9 @@ class _FormProductsState extends State<FormProducts> {
 
   Future<void> pickVariantImage(int variantIndex, int imageIndex) async {
     try {
-      final res = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        allowMultiple: false,
-      );
-      if (res != null && res.files.isNotEmpty) {
-        final file = res.files.first;
-        final result = FilePickerResult([file]);
-        final url = await uploadToCloudinary(result);
-
-        if (url != null) {
-          _formCubit.updateVariantImage(variantIndex, imageIndex, url);
-        }
+      final url = await ImageUploadService().pickAndUpload();
+      if (url != null) {
+        _formCubit.updateVariantImage(variantIndex, imageIndex, url);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -290,13 +280,13 @@ class _FormProductsState extends State<FormProducts> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 pageHeading(formState.isEditMode ? 'Edit Product' : 'Add New Product'),
-                const SizedBox(height: 30),
+                30.h,
                 Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      commonsizedBoxheight10(),
+                      10.h,
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.8,
                         child: WebTextField(
@@ -308,7 +298,7 @@ class _FormProductsState extends State<FormProducts> {
                           validator: ProductTextValidators.name,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      20.h,
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.8,
                         child: WebTextArea(
@@ -319,23 +309,23 @@ class _FormProductsState extends State<FormProducts> {
                           validator: ProductTextValidators.description,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      20.h,
                       buildBrandSection(formState),
-                      const SizedBox(height: 20),
+                      20.h,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           buildCategorySection(formState),
-                          const SizedBox(width: 20),
+                          20.w,
                           buildStatusSection(formState),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      20.h,
                       if (formState.selectedCategoryId != null &&
                           formState.selectedCategoryId!.isNotEmpty)
                         buildVariantSection(formState),
-                      const SizedBox(height: 20),
-                      const SizedBox(height: 40),
+                      20.h,
+                      40.h,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -345,7 +335,7 @@ class _FormProductsState extends State<FormProducts> {
                               context.go('/products');
                             },
                           ),
-                          const SizedBox(width: 20),
+                          20.w,
                           elevatedButtonForSave(
                             text: formState.isEditMode ? 'Update Product' : 'Save Product',
                             onPressed: () => handleSaveProduct(formState),
@@ -475,10 +465,10 @@ class _FormProductsState extends State<FormProducts> {
                 fontSize: 14,
               ),
             ),
-            const SizedBox(height: 8),
+            8.h,
             Row(
               children: [
-                const SizedBox(width: 12),
+                12.w,
                 Switch(
                   value: formState.status,
                   onChanged: (val) {
@@ -534,7 +524,7 @@ class _FormProductsState extends State<FormProducts> {
                     color: AppColors.blueAccent,
                   ),
                 ),
-                const SizedBox(height: 20),
+                20.h,
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -572,7 +562,7 @@ class _FormProductsState extends State<FormProducts> {
                 fontSize: 14,
               ),
             ),
-            const SizedBox(height: 15),
+            15.h,
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -590,7 +580,7 @@ class _FormProductsState extends State<FormProducts> {
                           _formCubit.updateVariantPrice(index, value);
                         },
                       ),
-                      const SizedBox(height: 15),
+                      15.h,
                       TextFormField(
                         decoration: const InputDecoration(
                           labelText: 'Selling Price',
@@ -602,7 +592,7 @@ class _FormProductsState extends State<FormProducts> {
                           _formCubit.updateVariantMrp(index, value);
                         },
                       ),
-                      const SizedBox(height: 15),
+                      15.h,
                       TextFormField(
                         decoration: const InputDecoration(
                           labelText: 'Stock Quantity',
@@ -617,7 +607,7 @@ class _FormProductsState extends State<FormProducts> {
                     ],
                   ),
                 ),
-                const SizedBox(width: 20),
+                20.w,
                 Expanded(
                   child: buildVariantImages(index, formState),
                 ),
@@ -638,7 +628,7 @@ class _FormProductsState extends State<FormProducts> {
           'Images',
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         ),
-        const SizedBox(height: 10),
+        10.h,
         Row(
           children: List.generate(3, (imageIndex) {
             final imageUrl = imageIndex < images.length ? images[imageIndex] : '';

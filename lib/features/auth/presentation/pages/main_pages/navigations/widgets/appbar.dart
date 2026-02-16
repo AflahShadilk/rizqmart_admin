@@ -1,3 +1,4 @@
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,14 +25,14 @@ PreferredSizeWidget appBarRizq(BuildContext context) {
       ),
     ),
     actions: [
-      const SizedBox(width: 16),
+      16.w,
       const NotificationBell(),
-      const SizedBox(width: 16),
+      16.w,
       IconButton(
         icon: const Icon(Icons.logout, color: Colors.white),
         onPressed: () => _showLogoutDialog(context),
       ),
-      const SizedBox(width: 16),
+      16.w,
     ],
   );
 }

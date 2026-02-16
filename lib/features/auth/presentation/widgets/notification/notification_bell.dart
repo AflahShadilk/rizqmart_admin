@@ -1,366 +1,283 @@
-// ignore_for_file: deprecated_member_use, unnecessary_to_list_in_spreads
+﻿// ignore_for_file: deprecated_member_use, unnecessary_to_list_in_spreads
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/notification/notification_bell_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/notification/notification_bell_cubit_state.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:rizqmartadmin/features/auth/data/repository/main/chat_repository_impl.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/chat_entity.dart';
-import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:async';
 
-class NotificationBell extends StatefulWidget {
+class NotificationBell extends StatelessWidget {
   const NotificationBell({super.key});
 
   @override
-  State<NotificationBell> createState() => _NotificationBellState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => NotificationBellCubit(),
+      child: const _NotificationBellView(),
+    );
+  }
 }
 
-class _NotificationBellState extends State<NotificationBell> {
-  int notificationCount = 0;
-  List<Map<String, dynamic>> notifications = [];
-  List<ChatEntity> unreadChats = [];
-  StreamSubscription? _chatSubscription; // Add subscription
-  String? fcmToken;
-
-  @override
-  void initState() {
-    super.initState();
-    _setupNotifications();
-  }
-
-  void _setupNotifications() async {
-    // Get FCM token
-    fcmToken = await WebMessagingService.getToken();
-    
-    // Subscribe to topics
-    await WebMessagingService.subscribeToTopic('admin_alerts');
-    await WebMessagingService.subscribeToTopic('order_updates');
-
-    // Set callback for foreground messages
-    WebMessagingService.onMessageCallback = (RemoteMessage message) {
-      _addNotification(message);
-    };
-
-    // Set callback for when notification is clicked
-    WebMessagingService.onMessageOpenedAppCallback = (RemoteMessage message) {
-      _handleNotificationClick(message);
-    };
-
-    _setupChatListener();
-  }
-
-  void _setupChatListener() {
-    try {
-      final chatRepo = sl<ChatRepositoryImpl>(); // Access repo
-      _chatSubscription = chatRepo.getChats().listen((chats) {
-        if (mounted) {
-          // Since we don't have unreadCounts in the doc anymore (from requirements), 
-          // we might need a different way to track unread.
-          // For now, let's just use all chats if they are recent? 
-          // Or better, let's check for a field like 'adminUnread' which I added to markChatAsRead as a placeholder.
-          // Actually, if the requirement didn't specify it, maybe we don't show unread count for now or use a local state.
-          // Given the requirements, I'll assume for now we list the most recent chats if they have activity.
-          // But to fix the compile error, I'll just remove the unread filter or use a safe check.
-          
-          final newUnreadChats = chats; // For now, just show recent chats in notification bell if any
-          
-          // Trigger visible notification (Snackbar) if the list changed and we have a new chat at top
-          if (newUnreadChats.isNotEmpty && (unreadChats.isEmpty || newUnreadChats.first.timestamp.isAfter(unreadChats.first.timestamp))) {
-             final changedChat = newUnreadChats.first;
-             
-             // Trigger visible notification (Snackbar)
-             ScaffoldMessenger.of(context).showSnackBar(
-               SnackBar(
-                 behavior: SnackBarBehavior.floating,
-                 margin: EdgeInsets.only(
-                   bottom: MediaQuery.of(context).size.height - 150, 
-                   left: 16, 
-                   right: 16
-                 ),
-                 content: Row(
-                   children: [
-                     const Icon(Icons.chat, color: Colors.white),
-                     const SizedBox(width: 12),
-                     Expanded(
-                       child: Column(
-                         crossAxisAlignment: CrossAxisAlignment.start,
-                         mainAxisSize: MainAxisSize.min,
-                         children: [
-                           Text('New Message for ${changedChat.productName.isNotEmpty ? changedChat.productName : changedChat.id}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                           Text(changedChat.lastMessage, maxLines: 1, overflow: TextOverflow.ellipsis),
-                         ],
-                       ),
-                     ),
-                   ],
-                 ),
-                 action: SnackBarAction(
-                   label: 'View',
-                   textColor: Colors.yellow,
-                   onPressed: () {
-                     context.push('/chat_details', extra: {
-                        'chatId': changedChat.id,
-                        'productName': changedChat.productName,
-                        'userId': changedChat.userId,
-                      });
-                   },
-                 ),
-                 backgroundColor: const Color(0xFF1E88E5), 
-                 duration: const Duration(seconds: 4),
-               ),
-             );
-          }
-
-          setState(() {
-            unreadChats = newUnreadChats;
-            _updateTotalCount();
-          });
-        }
-      });
-    } catch (e) {
-      // Ignore errors in chat listener
-    }
-  }
-
-  void _updateTotalCount() {
-    notificationCount = notifications.length + unreadChats.length; 
-  }
-
-  void _addNotification(RemoteMessage message) {
-    setState(() {
-      notifications.insert(0, {
-        'title': message.notification?.title ?? 'Notification',
-        'body': message.notification?.body ?? '',
-        'timestamp': DateTime.now(),
-        'data': message.data,
-      });
-
-      _updateTotalCount();
-
-      // Keep only last 10 notifications
-      if (notifications.length > 10) {
-        notifications.removeLast();
-      }
-    });
-
-    // ... snackbar logic remains ...
-    if (mounted) {
-       ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(
-           behavior: SnackBarBehavior.floating,
-           margin: EdgeInsets.only(
-             bottom: MediaQuery.of(context).size.height - 150, 
-             left: 16, 
-             right: 16
-           ),
-           content: Row(
-             children: [
-               Icon(
-                 message.notification?.title?.toLowerCase().contains('order') == true 
-                     ? Icons.shopping_cart 
-                     : Icons.notifications_active, 
-                 color: Colors.white
-               ),
-               const SizedBox(width: 12),
-               Expanded(
-                 child: Column(
-                   crossAxisAlignment: CrossAxisAlignment.start,
-                   mainAxisSize: MainAxisSize.min,
-                   children: [
-                     Text(message.notification?.title ?? 'Notification', style: const TextStyle(fontWeight: FontWeight.bold)),
-                     Text(message.notification?.body ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
-                   ],
-                 ),
-               ),
-             ],
-           ),
-           backgroundColor: Colors.green, 
-           duration: const Duration(seconds: 4),
-         ),
-       );
-    }
-  }
-
-  void _handleNotificationClick(RemoteMessage message) {
-    String? type = message.data['type'];
-    
-    switch (type) {
-      case 'chat_message':
-         if (message.data['chatId'] != null) {
-            context.push('/chat_details', extra: {
-              'chatId': message.data['chatId'],
-              'productName': message.data['productName'] ?? 'Product',
-              'userId': message.data['userId'] ?? 'User',
-            });
-         }
-        break;
-      // ... rest of switch ...
-      default:
-    }
-  }
-
-  void _clearNotifications() {
-    setState(() {
-      notifications.clear();
-      _updateTotalCount();
-    });
-  }
+class _NotificationBellView extends StatelessWidget {
+  const _NotificationBellView();
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton(
-      offset: const Offset(0, 50),
-      itemBuilder: (BuildContext context) {
-        if (notifications.isEmpty && unreadChats.isEmpty) {
-          return [
-            PopupMenuItem(
-              enabled: false,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'No notifications',
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-              ),
-            ),
-          ];
+    return BlocListener<NotificationBellCubit, NotificationBellState>(
+      listenWhen: (previous, current) =>
+          previous.lastAddedNotification != current.lastAddedNotification ||
+          previous.lastAddedChat != current.lastAddedChat,
+      listener: (context, state) {
+        if (state.lastAddedChat != null) {
+          _showChatSnackbar(context, state.lastAddedChat!);
         }
-
-        return [
-          // Chat Notifications
-          ...unreadChats.take(5).map((chat) {
-            return PopupMenuItem(
-              onTap: () {
-                 context.push('/chat_details', extra: {
-                  'chatId': chat.id,
-                  'productName': chat.productName,
-                  'userId': chat.userId,
-                });
-              },
-              child: Container(
-                width: 300,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Colors.grey[300]!),
-                    left: const BorderSide(color: Colors.blue, width: 4),
+        if (state.lastAddedNotification != null) {
+          _showNotificationSnackbar(context, state.lastAddedNotification!);
+        }
+      },
+      child: BlocBuilder<NotificationBellCubit, NotificationBellState>(
+        builder: (context, state) {
+          return PopupMenuButton(
+            offset: const Offset(0, 50),
+            itemBuilder: (BuildContext context) {
+              if (state.notifications.isEmpty && state.unreadChats.isEmpty) {
+                return [
+                  PopupMenuItem(
+                    enabled: false,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'No notifications',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ),
                   ),
-                  color: Colors.blue.withOpacity(0.05),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            chat.productName.isNotEmpty ? chat.productName : 'Order ${chat.id}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: Colors.blue,
+                ];
+              }
+
+              return [
+                // Chat Notifications
+                ...state.unreadChats.take(5).map((chat) {
+                  return PopupMenuItem(
+                    onTap: () {
+                      context.push('/chat_details', extra: {
+                        'chatId': chat.id,
+                        'productName': chat.productName,
+                        'userId': chat.userId,
+                      });
+                    },
+                    child: Container(
+                      width: 300,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: Colors.grey[300]!),
+                          left: const BorderSide(color: Colors.blue, width: 4),
+                        ),
+                        color: Colors.blue.withOpacity(0.05),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  chat.productName.isNotEmpty
+                                      ? chat.productName
+                                      : 'Order ${chat.id}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.blue,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          4.h,
+                          Text(
+                            chat.lastMessage,
+                            style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: 12,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          4.h,
+                          Text(
+                            'User: ${chat.userId}',
+                            style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                          ),
+                          Text(
+                            _formatTime(chat.timestamp),
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+
+                // Original Notifications
+                ...state.notifications.map((notif) {
+                  return PopupMenuItem(
+                    enabled: false,
+                    child: Container(
+                      width: 300,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: Colors.grey[300]!),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      chat.lastMessage,
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 12,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'User: ${chat.userId}',
-                      style: TextStyle(color: Colors.grey[500], fontSize: 11),
-                    ),
-                    Text(
-                      _formatTime(chat.timestamp),
-                      style: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 10,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            notif['title'],
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          4.h,
+                          Text(
+                            notif['body'],
+                            style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: 12,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          4.h,
+                          Text(
+                            _formatTime(notif['timestamp']),
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            );
-          }),
-          
-          // Original Notifications
-          ...notifications.map((notif) {
-            return PopupMenuItem(
-              enabled: false,
-              child: Container(
-                width: 300,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Colors.grey[300]!),
+                  );
+                }).toList(),
+                if (state.notifications.isNotEmpty)
+                  PopupMenuItem(
+                    child: Center(
+                      child: TextButton(
+                        onPressed: () => context
+                            .read<NotificationBellCubit>()
+                            .clearNotifications(),
+                        child: const Text('Clear All'),
+                      ),
+                    ),
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      notif['title'],
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      notif['body'],
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 12,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _formatTime(notif['timestamp']),
-                      style: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
-                ),
+              ];
+            },
+            child: badges.Badge(
+              badgeContent: Text(
+                state.notificationCount.toString(),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
               ),
-            );
-          }).toList(),
-          if (notifications.isNotEmpty)
-            PopupMenuItem(
-              child: Center(
-                child: TextButton(
-                  onPressed: _clearNotifications,
-                  child: const Text('Clear All'),
-                ),
+              showBadge: state.notificationCount > 0,
+              child: const Icon(Icons.notifications, color: Colors.white),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showChatSnackbar(BuildContext context, dynamic chat) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).size.height - 150,
+            left: 16,
+            right: 16),
+        content: Row(
+          children: [
+            const Icon(Icons.chat, color: Colors.white),
+            12.w,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                      'New Message for ${chat.productName.isNotEmpty ? chat.productName : chat.id}',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(chat.lastMessage,
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                ],
               ),
             ),
-        ];
-      },
-      child: badges.Badge(
-        badgeContent: Text(
-          notificationCount.toString(),
-          style: const TextStyle(color: Colors.white, fontSize: 12),
+          ],
         ),
-        showBadge: notificationCount > 0,
-        child: const Icon(Icons.notifications, color: Colors.white),
+        action: SnackBarAction(
+          label: 'View',
+          textColor: Colors.yellow,
+          onPressed: () {
+            context.push('/chat_details', extra: {
+              'chatId': chat.id,
+              'productName': chat.productName,
+              'userId': chat.userId,
+            });
+          },
+        ),
+        backgroundColor: const Color(0xFF1E88E5),
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
+
+  void _showNotificationSnackbar(BuildContext context, Map<String, dynamic> notif) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).size.height - 150,
+            left: 16,
+            right: 16),
+        content: Row(
+          children: [
+            Icon(
+                notif['title'].toString().toLowerCase().contains('order') == true
+                    ? Icons.shopping_cart
+                    : Icons.notifications_active,
+                color: Colors.white),
+            12.w,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(notif['title'],
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(notif['body'],
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                ],
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 4),
       ),
     );
   }
@@ -378,12 +295,5 @@ class _NotificationBellState extends State<NotificationBell> {
     } else {
       return '${difference.inDays}d ago';
     }
-  }
-  @override
-  void dispose() {
-    _chatSubscription?.cancel();
-    WebMessagingService.onMessageCallback = null;
-    WebMessagingService.onMessageOpenedAppCallback = null;
-    super.dispose();
   }
 }

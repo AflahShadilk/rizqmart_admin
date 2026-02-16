@@ -1,0 +1,9 @@
+﻿Analyzing rizqmartadmin...                                      
+
+   info - Don't invoke 'print' in production code - lib\features\auth\domain\usecases\main\order\refill_order_stock_usecase.dart:22:11 - avoid_print
+warning - The left operand can't be null, so the right operand is never executed - lib\features\auth\presentation\pages\main_pages\brand\delete_config.dart:28:42 - dead_null_aware_expression
+   info - Unnecessary use of 'toList' in a spread - lib\features\auth\presentation\pages\main_pages\navigations\main_pages.dart:73:20 - unnecessary_to_list_in_spreads
+warning - Unused import: 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/salesreport/sales_report_page_cubit_state.dart' - lib\features\auth\presentation\pages\main_pages\report\sales_report_page.dart:14:8 - unused_import
+   info - Don't use 'BuildContext's across async gaps - lib\features\auth\presentation\pages\main_pages\report\sales_report_page.dart:68:7 - use_build_context_synchronously
+warning - The left operand can't be null, so the right operand is never executed - lib\features\auth\presentation\pages\main_pages\units\widgets\unit_delete_config.dart:26:44 - dead_null_aware_expression
+

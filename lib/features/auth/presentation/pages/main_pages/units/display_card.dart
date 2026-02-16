@@ -1,3 +1,4 @@
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
@@ -74,7 +75,7 @@ class UnitCard extends StatelessWidget {
               onPressed: onEdit,
               tooltip: 'Edit Unit',
             ),
-            const SizedBox(width: 4),
+            4.w,
             IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: onDelete,

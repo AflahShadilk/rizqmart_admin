@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:rizqmartadmin/features/auth/presentation/utils/page_navigation.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/welcome/text_features.dart';
@@ -256,7 +257,7 @@ class _WelcomePageState extends State<WelcomePage>
                               );
                             },
                           ),
-                          const SizedBox(height: 16),
+                          16.h,
                           FadeTransition(
                             opacity: _fadeAnimation,
                             child: AnimatedBuilder(
@@ -278,7 +279,7 @@ class _WelcomePageState extends State<WelcomePage>
                               },
                             ),
                           ),
-                          const SizedBox(height: 40),
+                          40.h,
                           Padding(
                             padding: const EdgeInsets.fromLTRB(8, 10, 0, 0),
                             child: Container(
@@ -325,7 +326,7 @@ class _WelcomePageState extends State<WelcomePage>
                                         letterSpacing: 1.2,
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    8.w,
                                     const Icon(Icons.arrow_forward, size: 20),
                                   ],
                                 ),

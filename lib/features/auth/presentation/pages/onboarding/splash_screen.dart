@@ -1,6 +1,11 @@
+﻿// ignore_for_file: use_build_context_synchronously
+
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rizqmartadmin/core/utils/constant_elements.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/login%20bloc/auth_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/login%20bloc/auth_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -37,19 +42,27 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> checkUserLogin() async {
-    final pref = await SharedPreferences.getInstance();
-    final userLoggIn = pref.getBool(saveKey) ?? false;
-    final hasSeen = pref.getBool("welcome") ?? false;
-
-    await Future.delayed(const Duration(seconds: 3));
+    // Wait for animations
+    await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
+    final state = context.read<LoginBloc>().state;
+    final pref = await SharedPreferences.getInstance();
+    final hasSeen = pref.getBool("welcome") ?? false; // Assuming welcome screen logic is still needed.
+    
     if (!hasSeen) {
       context.go('/welcomePage');
-    } else if (userLoggIn) {
-       context.go('/dashboard');
+      return;
+    }
+
+    if (state is AuthAuthenticated) {
+      context.go('/dashboard');
     } else {
-      context.go('/loginPage');
+      // If state is not determined yet (unlikely given the delay), check again or go to login
+      // Or we can rely on the fact that CheckAuthStatusEvent was fired at app start.
+      // If it's still Initial or Loading, we might want to wait, but 2 seconds is usually enough.
+      // Let's add a small listener or just default to login if not authenticated.
+       context.go('/loginPage');
     }
   }
 
@@ -61,7 +74,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<LoginBloc, LoginState>(
+      listener: (context, state) {
+        if (state is AuthAuthenticated) {
+             context.go('/dashboard');
+        } else if (state is AuthUnauthenticated) {
+             context.go('/loginPage');
+        }
+      },
+      child: Scaffold(
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -83,7 +104,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     width: 180,
                     height: 180,
                   ),
-                  const SizedBox(height: 24),
+                  24.h,
                   Text(
                     "RizqMart Admin",
                     style: TextStyle(
@@ -93,7 +114,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       letterSpacing: 1.2,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  8.h,
                   Text(
                     "Smart control. Seamless management.",
                     style: TextStyle(
@@ -107,6 +128,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           ),
         ),
       ),
+    ),
     );
   }
 }

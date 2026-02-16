@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -64,7 +65,7 @@ class _ChatListPageState extends State<ChatListPage> {
             return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: state.chats.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, __) => 12.h,
               itemBuilder: (context, index) {
                 final chat = state.chats[index];
                 return InkWell(
@@ -104,7 +105,7 @@ class _ChatListPageState extends State<ChatListPage> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 2),
+                          2.h,
                           Text(
                             'User: ${chat.userId}',
                             maxLines: 1,
@@ -114,7 +115,7 @@ class _ChatListPageState extends State<ChatListPage> {
                               fontSize: 11,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          2.h,
                           Text(
                             chat.lastMessage,
                             maxLines: 1,

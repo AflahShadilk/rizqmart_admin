@@ -40,6 +40,7 @@ dependencies:
   firebase_messaging: ^16.1.0
   flutter_local_notifications: ^19.5.0
   badges: ^3.1.2
+  responsive_display: ^1.0.0
   
 
 

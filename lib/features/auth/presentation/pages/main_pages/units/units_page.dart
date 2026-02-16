@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -90,7 +91,7 @@ class _UnitsPageState extends State<UnitsPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const CircularProgressIndicator(),
-                      const SizedBox(height: 16),
+                      16.h,
                       Text(
                         'Loading units...',
                         style: GoogleFonts.poppins(
@@ -113,7 +114,7 @@ class _UnitsPageState extends State<UnitsPage> {
                           size: 64,
                           color: Colors.grey.shade300,
                         ),
-                        const SizedBox(height: 16),
+                        16.h,
                         Text(
                           'No units found',
                           style: GoogleFonts.poppins(
@@ -122,7 +123,7 @@ class _UnitsPageState extends State<UnitsPage> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        24.h,
                         BuildAddButtonUnits(allUnits: allUnits),
                       ],
                     ),
@@ -159,7 +160,7 @@ class _UnitsPageState extends State<UnitsPage> {
                                         color: AppColors.blackHeading,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
+                                    4.h,
                                     Text(
                                       '${allUnits.length} ${allUnits.length == 1 ? 'Unit' : 'Units'} available',
                                       style: GoogleFonts.poppins(
@@ -241,7 +242,7 @@ class _UnitsPageState extends State<UnitsPage> {
                                         size: 64,
                                         color: Colors.grey.shade300,
                                       ),
-                                      const SizedBox(height: 16),
+                                      16.h,
                                       Text(
                                         'No Units match "$searchQuery"',
                                         style: GoogleFonts.poppins(

@@ -1,5 +1,6 @@
-// ignore_for_file: unnecessary_null_comparison, deprecated_member_use
+﻿// ignore_for_file: unnecessary_null_comparison, deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -72,7 +73,7 @@ class BrandCardWeb extends StatelessWidget {
                           const Icon(Icons.image, size: 40, color: Colors.grey),
                     ),
             ),
-            const SizedBox(width: 20),
+            20.w,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +86,7 @@ class BrandCardWeb extends StatelessWidget {
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  6.h,
                   Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -103,7 +104,7 @@ class BrandCardWeb extends StatelessWidget {
                           color: brand!.status ? Colors.green : Colors.red,
                           size: 18,
                         ),
-                        const SizedBox(width: 6),
+                        6.w,
                         Text(
                           brand!.status ? "Active" : "Inactive",
                           style: TextStyle(
@@ -158,7 +159,7 @@ class BrandCardWeb extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                10.w,
                 Tooltip(
                   message: "Delete Brand",
                   child: ElevatedButton.icon(

@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -10,18 +11,30 @@ import 'package:rizqmartadmin/features/auth/domain/entities/main/payment_entity.
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/payment/payment_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/payment/payment_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/payment/payment_state.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/payment/payment_page_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/payment/payment_page_cubit_state.dart';
 
-class PaymentPage extends StatefulWidget {
+class PaymentPage extends StatelessWidget {
   const PaymentPage({super.key});
 
   @override
-  State<PaymentPage> createState() => _PaymentPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => PaymentPageCubit(),
+      child: const _PaymentPageView(),
+    );
+  }
 }
 
-class _PaymentPageState extends State<PaymentPage> {
-  String selectedFilter = 'all';
+class _PaymentPageView extends StatefulWidget {
+  const _PaymentPageView();
+
+  @override
+  State<_PaymentPageView> createState() => _PaymentPageViewState();
+}
+
+class _PaymentPageViewState extends State<_PaymentPageView> {
   late PaymentBloc _paymentBloc;
-  int currentPage = 1;
   int itemsPerPage = 12;
 
   @override
@@ -52,16 +65,16 @@ class _PaymentPageState extends State<PaymentPage> {
             child: Column(
               children: [
                 buildPaymentHeaderSection(),
-                const SizedBox(height: 24),
+                24.h,
                 buildPaymentFilterSection(),
-                const SizedBox(height: 24),
+                24.h,
                 Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: isMobile ? 16 : 24,
                   ),
                   child: buildPaymentContent(isMobile),
                 ),
-                const SizedBox(height: 32),
+                32.h,
               ],
             ),
           ),
@@ -89,7 +102,7 @@ class _PaymentPageState extends State<PaymentPage> {
               size: 24,
             ),
           ),
-          const SizedBox(width: 12),
+          12.w,
           const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -126,7 +139,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   _paymentBloc.add(const FetchPaymentAnalyticsEvent());
                 },
               ),
-              const SizedBox(width: 8),
+              8.w,
               PopupMenuButton(
                 icon: Icon(Icons.more_vert, color: Colors.grey.shade600),
                 itemBuilder: (context) => [
@@ -134,7 +147,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     child: Row(
                       children: [
                         const Icon(Icons.download, size: 18),
-                        const SizedBox(width: 8),
+                        8.w,
                         const Text('Export CSV'),
                       ],
                     ),
@@ -144,7 +157,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     child: Row(
                       children: [
                         const Icon(Icons.print, size: 18),
-                        const SizedBox(width: 8),
+                        8.w,
                         const Text('Print'),
                       ],
                     ),
@@ -188,7 +201,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         Icons.trending_up,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    16.w,
                     Expanded(
                       child: buildPaymentMetricCard(
                         'Success Rate',
@@ -197,7 +210,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         Icons.check_circle,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    16.w,
                     Expanded(
                       child: buildPaymentMetricCard(
                         'Completed',
@@ -206,7 +219,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         Icons.done,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    16.w,
                     Expanded(
                       child: buildPaymentMetricCard(
                         'Pending',
@@ -217,7 +230,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                16.h,
                 Row(
                   children: [
                     Expanded(
@@ -227,7 +240,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         Colors.green,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    16.w,
                     Expanded(
                       child: buildPaymentAmountCard(
                         'Pending Amount',
@@ -235,7 +248,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         Colors.orange,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    16.w,
                     Expanded(
                       child: buildPaymentAmountCard(
                         'Refunded Amount',
@@ -270,7 +283,7 @@ class _PaymentPageState extends State<PaymentPage> {
       child: Column(
         children: [
           Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          8.h,
           Text(
             value,
             style: TextStyle(
@@ -279,7 +292,7 @@ class _PaymentPageState extends State<PaymentPage> {
               color: color,
             ),
           ),
-          const SizedBox(height: 4),
+          4.h,
           Text(
             label,
             style: TextStyle(
@@ -312,7 +325,7 @@ class _PaymentPageState extends State<PaymentPage> {
               color: Colors.grey[700],
             ),
           ),
-          const SizedBox(height: 8),
+          8.h,
           Text(
             amount,
             style: TextStyle(
@@ -354,27 +367,24 @@ class _PaymentPageState extends State<PaymentPage> {
                   child: FilterChip(
                     avatar: Icon(filter.$3, size: 16),
                     label: Text(filter.$2),
-                    selected: selectedFilter == filter.$1,
+                    selected: context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1,
                     backgroundColor: Colors.grey[100],
                     selectedColor: filter.$4.withOpacity(0.2),
                     side: BorderSide(
-                      color: selectedFilter == filter.$1
+                      color: context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1
                           ? filter.$4
                           : Colors.transparent,
                       width: 1.5,
                     ),
                     labelStyle: TextStyle(
-                      color: selectedFilter == filter.$1
+                      color: context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1
                           ? filter.$4
                           : Colors.grey[600],
                       fontWeight: FontWeight.w500,
                       fontSize: 12,
                     ),
                     onSelected: (selected) {
-                      setState(() {
-                        selectedFilter = filter.$1;
-                        currentPage = 1;
-                      });
+                      context.read<PaymentPageCubit>().updateFilter(filter.$1);
 
                       if (filter.$1 == 'all') {
                         _paymentBloc.add(const FetchAllPaymentsEvent());
@@ -417,20 +427,22 @@ class _PaymentPageState extends State<PaymentPage> {
         int totalPages = (payments.length / itemsPerPage).ceil();
 
         // Fix: Ensure currentPage is valid
-        if (currentPage > totalPages && totalPages > 0) {
-          currentPage = totalPages;
+        if (context.read<PaymentPageCubit>().state.currentPage > totalPages && totalPages > 0) {
+          context.read<PaymentPageCubit>().setPage(totalPages);
         } else if (totalPages == 0) {
-          currentPage = 1;
+          context.read<PaymentPageCubit>().setPage(1);
         }
 
+        final currentPage = context.read<PaymentPageCubit>().state.currentPage;
         int startIndex = (currentPage - 1) * itemsPerPage;
-        int endIndex = (startIndex + itemsPerPage).clamp(0, payments.length);
+        int endIndex = startIndex + itemsPerPage;
+        startIndex = startIndex.clamp(0, payments.length);
+        endIndex = endIndex.clamp(0, payments.length);
 
-        // Fix: Ensure startIndex is valid
         if (startIndex >= payments.length && payments.isNotEmpty) {
           startIndex = 0;
           endIndex = itemsPerPage.clamp(0, payments.length);
-          currentPage = 1;
+          context.read<PaymentPageCubit>().setPage(1);
         }
 
         List<PaymentEntity> paginatedPayments =
@@ -490,7 +502,7 @@ class _PaymentPageState extends State<PaymentPage> {
         child: Column(
           children: [
             const CircularProgressIndicator(),
-            const SizedBox(height: 16),
+            16.h,
             Text(
               'Loading payments...',
               style: TextStyle(
@@ -515,7 +527,7 @@ class _PaymentPageState extends State<PaymentPage> {
               size: 48,
               color: Colors.red[300],
             ),
-            const SizedBox(height: 16),
+            16.h,
             Text(
               'Error: $message',
               style: const TextStyle(
@@ -541,7 +553,7 @@ class _PaymentPageState extends State<PaymentPage> {
               size: 64,
               color: Colors.grey[300],
             ),
-            const SizedBox(height: 16),
+            16.h,
             Text(
               'No payments found',
               style: TextStyle(
@@ -550,7 +562,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 8),
+            8.h,
             Text(
               'Check back later for new payments',
               style: TextStyle(
@@ -565,51 +577,55 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   Widget buildPaymentPaginationWidget(int totalPages) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.chevron_left),
-          onPressed: currentPage > 1
-              ? () {
-                  setState(() => currentPage--);
-                }
-              : null,
-        ),
-        ...List.generate(totalPages, (index) {
-          final pageNum = index + 1;
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() => currentPage = pageNum);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    currentPage == pageNum ? Colors.green : Colors.grey[200],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-              child: Text(
-                pageNum.toString(),
-                style: TextStyle(
-                  color: currentPage == pageNum ? Colors.white : Colors.black,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+    return BlocBuilder<PaymentPageCubit, PaymentPageState>(
+      builder: (context, pageState) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: pageState.currentPage > 1
+                  ? () {
+                      context.read<PaymentPageCubit>().previousPage();
+                    }
+                  : null,
             ),
-          );
-        }),
-        IconButton(
-          icon: const Icon(Icons.chevron_right),
-          onPressed: currentPage < totalPages
-              ? () {
-                  setState(() => currentPage++);
-                }
-              : null,
-        ),
-      ],
+            ...List.generate(totalPages, (index) {
+              final pageNum = index + 1;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.read<PaymentPageCubit>().setPage(pageNum);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        pageState.currentPage == pageNum ? Colors.green : Colors.grey[200],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  child: Text(
+                    pageNum.toString(),
+                    style: TextStyle(
+                      color: pageState.currentPage == pageNum ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              );
+            }),
+            IconButton(
+              icon: const Icon(Icons.chevron_right),
+              onPressed: pageState.currentPage < totalPages
+                  ? () {
+                      context.read<PaymentPageCubit>().nextPage();
+                    }
+                  : null,
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -639,7 +655,7 @@ class _PaymentPageState extends State<PaymentPage> {
                           fontSize: 14,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      4.h,
                       Text(
                         payment.userName,
                         style: TextStyle(
@@ -671,9 +687,9 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            12.h,
             Divider(color: Colors.grey[200]),
-            const SizedBox(height: 12),
+            12.h,
             Text(
               '₹${payment.amount.toStringAsFixed(2)}',
               style: const TextStyle(
@@ -681,7 +697,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 fontSize: 16,
               ),
             ),
-            const SizedBox(height: 8),
+            8.h,
             Text(
               '${payment.method} • ${DateFormat('dd MMM').format(payment.createdAt)}',
               style: TextStyle(
@@ -689,7 +705,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 color: Colors.grey[600],
               ),
             ),
-            const SizedBox(height: 12),
+            12.h,
             Row(
               children: [
                 Expanded(
@@ -706,7 +722,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                8.w,
                 if (payment.status == 'completed')
                   Expanded(
                     child: ElevatedButton(
@@ -753,7 +769,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 color: buildPaymentStatusColor(payment.status),
               ),
             ),
-            const SizedBox(width: 16),
+            16.w,
             Expanded(
               flex: 2,
               child: Column(
@@ -766,7 +782,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       fontSize: 13,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  4.h,
                   Text(
                     payment.userName,
                     style: TextStyle(
@@ -788,7 +804,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       fontSize: 13,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  4.h,
                   Text(
                     payment.method,
                     style: TextStyle(
@@ -810,7 +826,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       color: Colors.grey,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  4.h,
                   Text(
                     DateFormat('HH:mm').format(payment.createdAt),
                     style: TextStyle(
@@ -843,7 +859,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            12.w,
             SizedBox(
               width: 100,
               child: OutlinedButton(
@@ -919,7 +935,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                20.h,
                 buildPaymentDetailSection(
                   'Payment Information',
                   [
@@ -934,7 +950,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     buildPaymentDetailItem('Status', payment.status),
                   ],
                 ),
-                const SizedBox(height: 16),
+                16.h,
                 buildPaymentDetailSection(
                   'Customer Information',
                   [
@@ -942,7 +958,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     buildPaymentDetailItem('User ID', payment.userId),
                   ],
                 ),
-                const SizedBox(height: 16),
+                16.h,
                 buildPaymentDetailSection(
                   'Dates',
                   [
@@ -981,7 +997,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       ],
                     ),
                   ),
-                const SizedBox(height: 24),
+                24.h,
                 Row(
                   children: [
                     Expanded(
@@ -1034,7 +1050,7 @@ class _PaymentPageState extends State<PaymentPage> {
               fontSize: 12,
             ),
           ),
-          const SizedBox(height: 12),
+          12.h,
           ...items.asMap().entries.map((entry) {
             final isLast = entry.key == items.length - 1;
             return Padding(
@@ -1096,7 +1112,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 size: 48,
                 color: Colors.red[400],
               ),
-              const SizedBox(height: 16),
+              16.h,
               const Text(
                 'Refund Payment',
                 style: TextStyle(
@@ -1104,7 +1120,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 12),
+              12.h,
               Text(
                 'Refund amount for Transaction #${payment.paymentId.substring(0, 8)}',
                 textAlign: TextAlign.center,
@@ -1113,7 +1129,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   color: Colors.grey[700],
                 ),
               ),
-              const SizedBox(height: 20),
+              20.h,
               TextField(
                 controller: amountController,
                 keyboardType: TextInputType.number,
@@ -1126,7 +1142,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              24.h,
               Row(
                 children: [
                   Expanded(
@@ -1135,7 +1151,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       child: const Text('Cancel'),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  12.w,
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {

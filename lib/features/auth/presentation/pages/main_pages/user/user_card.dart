@@ -1,3 +1,4 @@
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -20,11 +21,11 @@ class UserCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(),
-            const SizedBox(height: 16),
+            16.h,
             const Divider(),
-            const SizedBox(height: 8),
+            8.h,
             _buildInfo(),
-            const SizedBox(height: 16),
+            16.h,
             _buildActions(context),
           ],
         ),
@@ -47,7 +48,7 @@ class UserCard extends StatelessWidget {
                 )
               : null,
         ),
-        const SizedBox(width: 16),
+        16.w,
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +57,7 @@ class UserCard extends StatelessWidget {
                 user.name ?? 'No Name',
                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
-              const SizedBox(height: 4),
+              4.h,
               Text(
                 user.email,
                 style: TextStyle(color: Colors.grey[600], fontSize: 14),
@@ -91,15 +92,15 @@ class UserCard extends StatelessWidget {
     return Column(
       children: [
         _buildInfoRow(Icons.phone, user.phoneNumber ?? 'No phone'),
-        const SizedBox(height: 8),
+        8.h,
         _buildInfoRow(Icons.badge, user.role.toUpperCase()),
-        const SizedBox(height: 8),
+        8.h,
         _buildInfoRow(
           Icons.calendar_today,
           'Joined: ${DateFormat('MMM dd, yyyy').format(user.createdAt)}',
         ),
         if (user.lastLoginAt != null) ...[
-          const SizedBox(height: 8),
+          8.h,
           _buildInfoRow(
             Icons.login,
             'Last login: ${DateFormat('MMM dd, yyyy').format(user.lastLoginAt!)}',
@@ -113,7 +114,7 @@ class UserCard extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, size: 16, color: Colors.grey[600]),
-        const SizedBox(width: 8),
+        8.w,
         Expanded(
           child: Text(
             text,

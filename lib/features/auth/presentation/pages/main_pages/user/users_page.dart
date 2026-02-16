@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/user_entity.dart';
@@ -50,7 +51,7 @@ class UsersView extends StatelessWidget {
               ),
               child: Icon(Icons.people_rounded, color: Colors.blue.shade700, size: 24),
             ),
-            const SizedBox(width: 12),
+            12.w,
             const Text(
               'Users Management',
               style: TextStyle(
@@ -111,7 +112,7 @@ class SearchAndStatsBar extends StatelessWidget {
             child: const SearchBar(),
           ),
           if (!Responsive.isMobile(context)) ...[
-            const SizedBox(width: 16),
+            16.w,
             const Expanded(child: UserStatsCards()),
           ],
         ],
@@ -223,7 +224,7 @@ class UserStatsCards extends StatelessWidget {
                   color: Colors.blue,
                 ),
               ),
-              const SizedBox(width: 12),
+              12.w,
               Expanded(
                 child: StatsCard(
                   icon: Icons.check_circle_rounded,
@@ -232,7 +233,7 @@ class UserStatsCards extends StatelessWidget {
                   color: Colors.green,
                 ),
               ),
-              const SizedBox(width: 12),
+              12.w,
               Expanded(
                 child: StatsCard(
                   icon: Icons.filter_list_rounded,
@@ -283,7 +284,7 @@ class StatsCard extends StatelessWidget {
             ),
             child: Icon(icon, color: color, size: 20),
           ),
-          const SizedBox(width: 12),
+          12.w,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,7 +299,7 @@ class StatsCard extends StatelessWidget {
                     height: 1,
                   ),
                 ),
-                const SizedBox(height: 4),
+                4.h,
                 Text(
                   label,
                   style: TextStyle(
@@ -346,7 +347,7 @@ class UsersBody extends StatelessWidget {
                     strokeWidth: 3,
                   ),
                 ),
-                const SizedBox(height: 24),
+                24.h,
                 Text(
                   'Loading users...',
                   style: TextStyle(
@@ -397,7 +398,7 @@ class UsersBody extends StatelessWidget {
                         color: Colors.blue.shade300,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    24.h,
                     Text(
                       'No users found',
                       style: TextStyle(
@@ -407,7 +408,7 @@ class UsersBody extends StatelessWidget {
                         letterSpacing: 0.3,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    8.h,
                     Text(
                       'Try adjusting your search filters',
                       style: TextStyle(
@@ -471,7 +472,7 @@ class ErrorView extends StatelessWidget {
                 color: Colors.red.shade400,
               ),
             ),
-            const SizedBox(height: 24),
+            24.h,
             Text(
               'Oops! Something went wrong',
               style: TextStyle(
@@ -482,7 +483,7 @@ class ErrorView extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 12),
+            12.h,
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -496,7 +497,7 @@ class ErrorView extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ),
-            const SizedBox(height: 32),
+            32.h,
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -515,7 +516,7 @@ class ErrorView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(Icons.refresh_rounded, size: 20),
-                    const SizedBox(width: 8),
+                    8.w,
                     const Text(
                       'Try Again',
                       style: TextStyle(
@@ -586,7 +587,7 @@ class MobileStatsCards extends StatelessWidget {
                   color: Colors.blue,
                 ),
               ),
-              const SizedBox(width: 8),
+              8.w,
               Expanded(
                 child: StatsCard(
                   icon: Icons.check_circle_rounded,
@@ -595,7 +596,7 @@ class MobileStatsCards extends StatelessWidget {
                   color: Colors.green,
                 ),
               ),
-              const SizedBox(width: 8),
+              8.w,
               Expanded(
                 child: StatsCard(
                   icon: Icons.filter_list_rounded,

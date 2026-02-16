@@ -1,3 +1,4 @@
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -49,17 +50,19 @@ class _LoginScreenState extends State<LoginScreen> {
       padding = const EdgeInsets.all(16);
     }
 
-    return BlocConsumer<LoginBloc, LoginState>(listener: (context, state) {
-      if (state is LoginSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(state.message),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 2),
-        ));
-        _emailKey.clear();
-        _passwordKey.clear();
-
-         context.go('/dashBoard');
+    return BlocConsumer<LoginBloc, LoginState>(listener: (context, state) async {
+      if (state is AuthAuthenticated) {
+        final pref = await SharedPreferences.getInstance();
+        await pref.setBool('UserLoggIn', true); // Keep for legacy or consistent usage if needed, but Bloc is source of truth.
+        
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Welcome back, ${state.email}!'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ));
+          context.go('/dashBoard');
+        }
       } else if (state is LoginError) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(state.error),
@@ -108,9 +111,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const IconRizq(),
-                            const SizedBox(height: 12),
+                            12.h,
                             const RizqMartName(),
-                            const SizedBox(height: 32),
+                            32.h,
                             loginSideShowIconAndText(
                               assetIm: 'assets/icons_and_images/leeficon.png',
                               textF: 'Organic Groceries',
@@ -151,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           headingLogin(fontSize, "Login to your account"),
-                          const SizedBox(height: 24),
+                          24.h,
                           Form(
                             //form field
                             key: _loginPageFormKey,
@@ -167,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   iconnColor: Colors.red,
                                   validator: emailValidator,
                                 ),
-                                const SizedBox(height: 20),
+                                20.h,
                                 TextFormFLogin(
                                   controller: _passwordKey,
                                   obscureText: true,
@@ -176,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   iconnColor: Colors.black,
                                   validator: passwordValidator,
                                 ),
-                                const SizedBox(height: 10),
+                                10.h,
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child: TextButton(
@@ -192,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 12),
+                                12.h,
                                 
 
                                 SizedBox(
@@ -208,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     onPressed: state is LoginLoading
                                         ? null
-                                        : () async {
+                                        : () {
                                             if (_loginPageFormKey.currentState!
                                                 .validate()) {
                                               context.read<LoginBloc>().add(
@@ -221,8 +224,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     ),
                                                   );
                                             }
-                                           final pref=await SharedPreferences.getInstance();
-                                           await pref.setBool('UserLoggIn', true);
                                           },
                                     child: state is LoginLoading
                                         ? const SizedBox(
@@ -245,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                   ),
                                 ),
-                                const SizedBox(height: 16),
+                                16.h,
                               ],
                             ),
                           ),

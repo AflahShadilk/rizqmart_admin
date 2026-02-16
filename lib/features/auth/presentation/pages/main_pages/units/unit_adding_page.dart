@@ -1,4 +1,5 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -150,7 +151,7 @@ class _UnitDialogState extends State<UnitDialog> {
                             size: 28,
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        16.w,
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,10 +194,10 @@ class _UnitDialogState extends State<UnitDialog> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 28),
+                    28.h,
 
                     BuildCategoryDropdown(categories: widget.categories),
-                    const SizedBox(height: 20),
+                    20.h,
 
                     BuildInputField(
                       label: 'Unit Name',
@@ -210,7 +211,7 @@ class _UnitDialogState extends State<UnitDialog> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
+                    20.h,
 
                     BuildInputField(
                       label: 'Unit Type',
@@ -224,7 +225,7 @@ class _UnitDialogState extends State<UnitDialog> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
+                    20.h,
 
                     BuildInputField(
                       label: 'Weight/Quantity',
@@ -245,7 +246,7 @@ class _UnitDialogState extends State<UnitDialog> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 32),
+                    32.h,
 
                     BlocBuilder<UnitDialogLoadingCubit, bool>(
                       builder: (context, isLoading) {
@@ -272,7 +273,7 @@ class _UnitDialogState extends State<UnitDialog> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            12.w,
                             Expanded(
                               child: ElevatedButton.icon(
                                 onPressed: isLoading ? null : _submitForm,
@@ -347,7 +348,7 @@ class BuildCategoryDropdown extends StatelessWidget {
             color: AppColors.blackHeading,
           ),
         ),
-        const SizedBox(height: 8),
+        8.h,
         BlocBuilder<UnitDialogCategoryCubit, String?>(
           builder: (context, selectedCategory) {
             return DropdownButtonFormField<String>(
@@ -460,7 +461,7 @@ class BuildInputField extends StatelessWidget {
             color: AppColors.blackHeading,
           ),
         ),
-        const SizedBox(height: 8),
+        8.h,
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,

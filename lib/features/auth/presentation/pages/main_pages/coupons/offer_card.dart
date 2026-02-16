@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -53,7 +54,7 @@ class OfferCard extends StatelessWidget {
                     : const Icon(Icons.local_offer, color: Colors.blueAccent, size: 30),
               ),
             ),
-            const SizedBox(width: 20),
+            20.w,
             // Details
             Expanded(
               child: Column(
@@ -67,7 +68,7 @@ class OfferCard extends StatelessWidget {
                       color: AppColors.blackHeading,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  4.h,
                   Row(
                     children: [
                       Icon(Icons.currency_rupee, size: 14, color: Colors.grey.shade600),
@@ -81,7 +82,7 @@ class OfferCard extends StatelessWidget {
                           color: AppColors.blueAccent,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      12.w,
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
@@ -99,7 +100,7 @@ class OfferCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  4.h,
                    Text(
                     'Min Order: ₹${offer.minOrderValue} | Using: ${offer.usageLimit}',
                     style: GoogleFonts.poppins(

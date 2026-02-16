@@ -1,6 +1,6 @@
-// ignore_for_file: deprecated_member_use, use_build_context_synchronously
+﻿// ignore_for_file: deprecated_member_use, use_build_context_synchronously
 
-import 'package:file_picker/file_picker.dart';
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -43,9 +43,8 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
   Future<void> _pickImage(BuildContext context) async {
     context.read<AddBrandFormCubit>().setUploading(true);
 
-    final result = await FilePicker.platform.pickFiles(type: FileType.image);
-    if (result != null) {
-      final url = await uploadToCloudinary(result);
+    final url = await ImageUploadService().pickAndUpload();
+    if (url != null) {
       context.read<AddBrandFormCubit>().setImage(url);
     }
 
@@ -95,7 +94,7 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      24.h,
 
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +128,7 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                               },
                             ),
                           ),
-                          const SizedBox(width: 20),
+                          20.w,
 
                           Column(
                             children: [
@@ -161,7 +160,7 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                                             ),
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              8.h,
                               Text(
                                 "Upload Logo",
                                 style: GoogleFonts.poppins(
@@ -174,7 +173,7 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                         ],
                       ),
 
-                      const SizedBox(height: 24),
+                      24.h,
 
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -215,7 +214,7 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      24.h,
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -224,7 +223,7 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                             onPressed: () => Navigator.pop(context),
                             child: const Text('Cancel'),
                           ),
-                          const SizedBox(width: 12),
+                          12.w,
                           ElevatedButton.icon(
                             icon: const Icon(Icons.save),
                             label: Text(

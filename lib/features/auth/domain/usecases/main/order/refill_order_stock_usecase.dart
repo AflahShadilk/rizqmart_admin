@@ -19,7 +19,6 @@ class RefillOrderStockUseCase {
         } catch (e) {
           // Log error but continue with other items? 
           // Ideally we might want some transaction consistency but for now we try best effort.
-          print('Failed to refill stock for product ${item.productId}: $e');
         }
       }
     }

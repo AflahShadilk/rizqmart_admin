@@ -3,4 +3,5 @@ import 'package:rizqmartadmin/features/auth/domain/entities/auth/login/login_use
 abstract class LoginRepository {
   Future<LoginUserEntity>login(String email,String password);
   Future<void> logout();
+  Future<LoginUserEntity?> getCurrentUser();
 }

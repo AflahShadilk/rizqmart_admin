@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -10,19 +11,32 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/o
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/order/print_order.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/respnsive_page.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/order/order_page_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/order/order_page_cubit_state.dart';
 
-class OrderReceivedPage extends StatefulWidget {
+class OrderReceivedPage extends StatelessWidget {
   const OrderReceivedPage({super.key});
 
   @override
-  State<OrderReceivedPage> createState() => _OrderReceivedPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => OrderPageCubit(),
+      child: const _OrderReceivedPageView(),
+    );
+  }
 }
 
-class _OrderReceivedPageState extends State<OrderReceivedPage> {
-  String selectedFilter = 'all';
+class _OrderReceivedPageView extends StatefulWidget {
+  const _OrderReceivedPageView();
+
+  @override
+  State<_OrderReceivedPageView> createState() => _OrderReceivedPageViewState();
+}
+
+class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
   late OrderReceivedBloc _orderBloc;
   late PageController _pageController;
-  int currentPage = 1;
   int itemsPerPage = 12;
 
   @override
@@ -62,7 +76,7 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                 size: 24,
               ),
             ),
-            const SizedBox(width: 12),
+            12.w,
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -158,7 +172,7 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                const SizedBox(height: 12),
+                                12.h,
                                 Text(
                                   totalOrders.toString(),
                                   style: const TextStyle(
@@ -167,7 +181,7 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                8.h,
                                 const Text(
                                   'Payment verified - Ready to process',
                                   style: TextStyle(
@@ -188,7 +202,7 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                     },
                   ),
                 ),
-                const SizedBox(height: 24),
+                24.h,
                 Container(
                   color: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
@@ -219,27 +233,24 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                           child: FilterChip(
                             avatar: Icon(filter.$3, size: 16),
                             label: Text(filter.$2),
-                            selected: selectedFilter == filter.$1,
+                            selected: context.watch<OrderPageCubit>().state.selectedFilter == filter.$1,
                             backgroundColor: Colors.grey[100],
                             selectedColor: filter.$4.withOpacity(0.2),
                             side: BorderSide(
-                              color: selectedFilter == filter.$1
+                              color: context.watch<OrderPageCubit>().state.selectedFilter == filter.$1
                                   ? filter.$4
                                   : Colors.transparent,
                               width: 1.5,
                             ),
                             labelStyle: TextStyle(
-                              color: selectedFilter == filter.$1
+                              color: context.watch<OrderPageCubit>().state.selectedFilter == filter.$1
                                   ? filter.$4
                                   : Colors.grey[600],
                               fontWeight: FontWeight.w500,
                               fontSize: 12,
                             ),
                             onSelected: (selected) {
-                              setState(() {
-                                selectedFilter = filter.$1;
-                                currentPage = 1;
-                              });
+                              context.read<OrderPageCubit>().updateFilter(filter.$1);
 
                               if (filter.$1 == 'all') {
                                 _orderBloc.add(const FetchNewOrdersEvent());
@@ -255,7 +266,7 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                24.h,
                 Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: isMobile ? 16 : 24,
@@ -269,7 +280,7 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                             child: Column(
                               children: [
                                 const CircularProgressIndicator(),
-                                const SizedBox(height: 16),
+                                16.h,
                                 Text(
                                   'Loading orders...',
                                   style: TextStyle(
@@ -300,7 +311,7 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                                   size: 48,
                                   color: Colors.red[300],
                                 ),
-                                const SizedBox(height: 16),
+                                16.h,
                                 Text(
                                   'Error: ${state.message}',
                                   style: const TextStyle(
@@ -326,7 +337,7 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                                   size: 64,
                                   color: Colors.grey[300],
                                 ),
-                                const SizedBox(height: 16),
+                                16.h,
                                 Text(
                                   'No orders found',
                                   style: TextStyle(
@@ -335,7 +346,7 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                8.h,
                                 Text(
                                   'Check back later for new orders',
                                   style: TextStyle(
@@ -349,23 +360,24 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                         );
                       }
 
+                      final currentPage = context.read<OrderPageCubit>().state.currentPage;
                       int totalPages = (orders.length / itemsPerPage).ceil();
                       
                       // Fix: Ensure currentPage is valid
                       if (currentPage > totalPages && totalPages > 0) {
-                        currentPage = totalPages;
+                        context.read<OrderPageCubit>().setPage(totalPages);
                       } else if (totalPages == 0) {
-                        currentPage = 1;
+                        context.read<OrderPageCubit>().setPage(1);
                       }
 
-                      int startIndex = (currentPage - 1) * itemsPerPage;
+                      int startIndex = (context.watch<OrderPageCubit>().state.currentPage - 1) * itemsPerPage;
                       int endIndex = (startIndex + itemsPerPage).clamp(0, orders.length);
                       
                       // Fix: Ensure startIndex is valid
                       if (startIndex >= orders.length && orders.isNotEmpty) {
                         startIndex = 0;
                         endIndex = itemsPerPage.clamp(0, orders.length);
-                        currentPage = 1;
+                        context.read<OrderPageCubit>().setPage(1);
                       }
                       
                       List<OrderReceivedEntity> paginatedOrders =
@@ -420,7 +432,7 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                     },
                   ),
                 ),
-                const SizedBox(height: 32),
+                32.h,
               ],
             ),
           ),
@@ -430,51 +442,55 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
   }
 
   Widget paginationWidget(int totalPages) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.chevron_left),
-          onPressed: currentPage > 1
-              ? () {
-                  setState(() => currentPage--);
-                }
-              : null,
-        ),
-        ...List.generate(totalPages, (index) {
-          final pageNum = index + 1;
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() => currentPage = pageNum);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    currentPage == pageNum ? Colors.blue : Colors.grey[200],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-              child: Text(
-                pageNum.toString(),
-                style: TextStyle(
-                  color: currentPage == pageNum ? Colors.white : Colors.black,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+    return BlocBuilder<OrderPageCubit, OrderPageState>(
+      builder: (context, pageState) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: pageState.currentPage > 1
+                  ? () {
+                      context.read<OrderPageCubit>().previousPage();
+                    }
+                  : null,
             ),
-          );
-        }),
-        IconButton(
-          icon: const Icon(Icons.chevron_right),
-          onPressed: currentPage < totalPages
-              ? () {
-                  setState(() => currentPage++);
-                }
-              : null,
-        ),
-      ],
+            ...List.generate(totalPages, (index) {
+              final pageNum = index + 1;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.read<OrderPageCubit>().setPage(pageNum);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        pageState.currentPage == pageNum ? Colors.blue : Colors.grey[200],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  child: Text(
+                    pageNum.toString(),
+                    style: TextStyle(
+                      color: pageState.currentPage == pageNum ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              );
+            }),
+            IconButton(
+              icon: const Icon(Icons.chevron_right),
+              onPressed: pageState.currentPage < totalPages
+                  ? () {
+                      context.read<OrderPageCubit>().nextPage();
+                    }
+                  : null,
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -482,11 +498,11 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 12)),
         side: BorderSide(color: Colors.grey[200]!),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(Responsive.scaleSpacing(context, 16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -499,16 +515,16 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                     children: [
                       Text(
                         'Order #${order.orderNumber}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: Responsive.scaleFont(context, 14),
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: Responsive.scaleSpacing(context, 4)),
                       Text(
                         order.userName,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: Responsive.scaleFont(context, 12),
                           color: Colors.grey[600],
                         ),
                       ),
@@ -516,18 +532,18 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Responsive.scaleSpacing(context, 10),
+                    vertical: Responsive.scaleSpacing(context, 5),
                   ),
                   decoration: BoxDecoration(
                     color: getStatusColor(order.orderStatus).withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 20)),
                   ),
                   child: Text(
                     order.orderStatus.toUpperCase(),
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: Responsive.scaleFont(context, 10),
                       fontWeight: FontWeight.bold,
                       color: getStatusColor(order.orderStatus),
                     ),
@@ -535,26 +551,26 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: Responsive.scaleSpacing(context, 12)),
             Divider(color: Colors.grey[200]),
-            const SizedBox(height: 12),
+            SizedBox(height: Responsive.scaleSpacing(context, 12)),
             Text(
               '₹${order.totalAmount.toStringAsFixed(2)}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: Responsive.scaleFont(context, 18),
                 color: Colors.green[700],
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: Responsive.scaleSpacing(context, 8)),
             Text(
               '${order.itemCount} items • ${DateFormat('dd MMM').format(order.createdAt)}',
               style: TextStyle(
-                fontSize: 11,
+                fontSize: Responsive.scaleFont(context, 11),
                 color: Colors.grey[600],
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: Responsive.scaleSpacing(context, 12)),
             Row(
               children: [
                 Expanded(
@@ -571,44 +587,43 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                         );
                       }
                     },
-                    icon: const Icon(Icons.chat_bubble_outline, size: 16),
-                    label: const Text('Chat', style: TextStyle(fontSize: 12)),
+                    icon: Icon(Icons.chat_bubble_outline, size: Responsive.scaleFont(context, 16)),
+                    label: Text('Chat', style: TextStyle(fontSize: Responsive.scaleFont(context, 12))),
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: Responsive.scaleSpacing(context, 8)),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => showStatusDialog(context, order.orderId),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Update',
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: Responsive.scaleFont(context, 12)),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: Responsive.scaleSpacing(context, 8)),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () => showDetailsModal(context, order),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                 ),
-                child: const Text(
+                child: Text(
                   'Details',
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: Responsive.scaleFont(context, 12)),
                 ),
               ),
             ),
-
           ],
         ),
       ),
@@ -619,14 +634,14 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 12)),
         side: BorderSide(color: Colors.grey[200]!),
       ),
       child: InkWell(
         onTap: () => showDetailsModal(context, order),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 12)),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(Responsive.scaleSpacing(context, 16)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -644,18 +659,18 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                           children: [
                             Text(
                               'Order #${order.orderNumber}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 13,
+                                fontSize: Responsive.scaleFont(context, 13),
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: Responsive.scaleSpacing(context, 4)),
                             Text(
                               order.userName,
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: Responsive.scaleFont(context, 11),
                                 color: Colors.grey[600],
                               ),
                               maxLines: 1,
@@ -665,18 +680,18 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Responsive.scaleSpacing(context, 8),
+                          vertical: Responsive.scaleSpacing(context, 4),
                         ),
                         decoration: BoxDecoration(
                           color: getStatusColor(order.orderStatus).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 12)),
                         ),
                         child: Text(
                           order.orderStatus.toUpperCase(),
                           style: TextStyle(
-                            fontSize: 9,
+                            fontSize: Responsive.scaleFont(context, 9),
                             fontWeight: FontWeight.bold,
                             color: getStatusColor(order.orderStatus),
                           ),
@@ -684,41 +699,41 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  Divider(color: Colors.grey[200], height: 12),
-                  const SizedBox(height: 12),
+                  SizedBox(height: Responsive.scaleSpacing(context, 12)),
+                  Divider(color: Colors.grey[200], height: Responsive.scaleSpacing(context, 12)),
+                  SizedBox(height: Responsive.scaleSpacing(context, 12)),
                   Text(
                     '₹${order.totalAmount.toStringAsFixed(2)}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: Responsive.scaleFont(context, 16),
                       color: Colors.green[700],
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: Responsive.scaleSpacing(context, 6)),
                   Text(
                     '${order.itemCount} items',
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: Responsive.scaleFont(context, 10),
                       color: Colors.grey[600],
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: Responsive.scaleSpacing(context, 4)),
                   Text(
                     DateFormat('dd MMM, HH:mm').format(order.createdAt),
                     style: TextStyle(
-                      fontSize: 9,
+                      fontSize: Responsive.scaleFont(context, 9),
                       color: Colors.grey[500],
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: Responsive.scaleSpacing(context, 12)),
               Column(
                 children: [
                   if (order.userId.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
+                      padding: EdgeInsets.only(bottom: Responsive.scaleSpacing(context, 8)),
                       child: SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(
@@ -728,10 +743,10 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                               'userName': order.userName,
                             });
                           },
-                          icon: const Icon(Icons.chat_bubble_outline, size: 14),
-                          label: const Text('Chat with Customer', style: TextStyle(fontSize: 11)),
+                          icon: Icon(Icons.chat_bubble_outline, size: Responsive.scaleFont(context, 14)),
+                          label: Text('Chat with Customer', style: TextStyle(fontSize: Responsive.scaleFont(context, 11))),
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                           ),
                         ),
                       ),
@@ -741,32 +756,32 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                     child: OutlinedButton(
                       onPressed: () => showDetailsModal(context, order),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                       ),
-                      child: const Text(
+                      child: Text(
                         'View Details',
-                        style: TextStyle(fontSize: 11),
+                        style: TextStyle(fontSize: Responsive.scaleFont(context, 11)),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: Responsive.scaleSpacing(context, 8)),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () => showStatusDialog(context, order.orderId),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Update Status',
-                        style: TextStyle(fontSize: 11),
+                        style: TextStyle(fontSize: Responsive.scaleFont(context, 11)),
                       ),
                     ),
                   ),
                   if (order.orderStatus != 'received')
                     Padding(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: EdgeInsets.only(top: Responsive.scaleSpacing(context, 8)),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -777,11 +792,11 @@ class _OrderReceivedPageState extends State<OrderReceivedPage> {
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
-                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Mark Received',
-                            style: TextStyle(fontSize: 11),
+                            style: TextStyle(fontSize: Responsive.scaleFont(context, 11)),
                           ),
                         ),
                       ),
@@ -823,7 +838,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      4.h,
                       Text(
                         'Order #${order.orderNumber}',
                         style: TextStyle(
@@ -845,7 +860,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      8.w,
                       Tooltip(
                         message: 'Print Order',
                         child: IconButton(
@@ -856,7 +871,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      8.w,
                       //close button
                       Tooltip(
                         message: 'Close',
@@ -888,7 +903,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                   detailItem('Payment Status', order.paymentStatus),
                 ],
               ),
-              const SizedBox(height: 24),
+              24.h,
 
               //customer info
               detailSection(
@@ -899,7 +914,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                   detailItem('Phone Number', order.userPhone),
                 ],
               ),
-              const SizedBox(height: 24),
+              24.h,
                //order details secction
               detailSection(
                 'Delivery Address',
@@ -914,7 +929,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                           size: 16,
                           color: Colors.blue,
                         ),
-                        const SizedBox(width: 8),
+                        8.w,
                         Expanded(
                           child: Text(
                             order.deliveryAddress,
@@ -936,7 +951,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                             size: 16,
                             color: Colors.amber,
                           ),
-                          const SizedBox(width: 8),
+                          8.w,
                           Expanded(
                             child: Text(
                               'Delivery Notes: ${order.deliveryNotes}',
@@ -952,7 +967,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                     ),
                 ],
               ),
-              const SizedBox(height: 24),
+              24.h,
 
               // order details
               if (order.items.isNotEmpty)
@@ -1039,7 +1054,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                     ),
                   ],
                 ),
-              const SizedBox(height: 24),
+              24.h,
 
               // ✅ TOTAL AMOUNT
               Container(
@@ -1070,7 +1085,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              32.h,
 
               // ACTION BUTTONS
               Row(
@@ -1088,7 +1103,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                       child: const Text('Close'),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  12.w,
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
@@ -1107,7 +1122,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                     ),
                   ),
                   if (order.orderStatus != 'received') ...[
-                    const SizedBox(width: 12),
+                    12.w,
                     Expanded(
                       flex: 2,
                       child: ElevatedButton(
@@ -1206,7 +1221,7 @@ Widget detailItem(String label, String value) {
           color: Colors.grey[700],
         ),
       ),
-      const SizedBox(width: 16),
+      16.w,
       Expanded(
         child: Text(
           value,
@@ -1248,7 +1263,7 @@ Widget detailItem(String label, String value) {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 20),
+                20.h,
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
@@ -1281,7 +1296,7 @@ Widget detailItem(String label, String value) {
                     },
                   ),
                 ),
-                const SizedBox(height: 24),
+                24.h,
                 Row(
                   children: [
                     Expanded(
@@ -1290,7 +1305,7 @@ Widget detailItem(String label, String value) {
                         child: const Text('Cancel'),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    12.w,
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
@@ -1340,7 +1355,7 @@ Widget detailItem(String label, String value) {
                 size: 48,
                 color: Colors.green[400],
               ),
-              const SizedBox(height: 16),
+              16.h,
               const Text(
                 'Mark Order as Received',
                 style: TextStyle(
@@ -1348,7 +1363,7 @@ Widget detailItem(String label, String value) {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 12),
+              12.h,
               Text(
                 'Are you sure you want to mark Order #$orderNumber as received?',
                 textAlign: TextAlign.center,
@@ -1357,7 +1372,7 @@ Widget detailItem(String label, String value) {
                   color: Colors.grey[700],
                 ),
               ),
-              const SizedBox(height: 24),
+              24.h,
               Row(
                 children: [
                   Expanded(
@@ -1366,7 +1381,7 @@ Widget detailItem(String label, String value) {
                       child: const Text('Cancel'),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  12.w,
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {

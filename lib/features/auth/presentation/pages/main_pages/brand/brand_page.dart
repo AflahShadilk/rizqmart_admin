@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -128,7 +129,7 @@ class BrandPageState extends State<BrandPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const CircularProgressIndicator(),
-                        const SizedBox(height: 16),
+                        16.h,
                         Text(
                           'Loading brands...',
                           style: GoogleFonts.poppins(
@@ -152,7 +153,7 @@ class BrandPageState extends State<BrandPage> {
                             size: 64,
                             color: Colors.grey.shade300,
                           ),
-                          const SizedBox(height: 16),
+                          16.h,
                           Text(
                             'No brands found',
                             style: GoogleFonts.poppins(
@@ -161,7 +162,7 @@ class BrandPageState extends State<BrandPage> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          24.h,
                           buildAddButton(context),
                         ],
                       ),
@@ -199,7 +200,7 @@ class BrandPageState extends State<BrandPage> {
                                       color: AppColors.blackHeading,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  4.h,
                                   Text(
                                     '${allBrands.length} ${allBrands.length == 1 ? 'brand' : 'brands'} available',
                                     style: GoogleFonts.poppins(
@@ -279,7 +280,7 @@ class BrandPageState extends State<BrandPage> {
                                       size: 64,
                                       color: Colors.grey.shade300,
                                     ),
-                                    const SizedBox(height: 16),
+                                    16.h,
                                     Text(
                                       'No brands match "${pageState.searchQuery}"',
                                       style: GoogleFonts.poppins(
@@ -318,7 +319,7 @@ class BrandPageState extends State<BrandPage> {
                           size: 64,
                           color: Colors.red.shade300,
                         ),
-                        const SizedBox(height: 16),
+                        16.h,
                         Text(
                           state.error,
                           style: GoogleFonts.poppins(

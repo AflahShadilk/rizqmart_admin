@@ -13,4 +13,12 @@ class LoginAccDatasource {
   Future<void> logout() async {
     await firebaseAuth.signOut();
   }
+
+  Future<LoginUserEntity?> getCurrentUser() async {
+    final user = firebaseAuth.currentUser;
+    if (user != null) {
+      return LoginUserEntity(uid: user.uid, email: user.email ?? '');
+    }
+    return null;
+  }
 }

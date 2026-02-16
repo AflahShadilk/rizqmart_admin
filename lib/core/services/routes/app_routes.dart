@@ -3,14 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rizqmartadmin/features/auth/data/model/add_product_model.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/forgot_pass_impliment/auth_repository_impl.dart';
-import 'package:rizqmartadmin/features/auth/data/repository/login%20account/login_auth_repository_impl.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/brand_repository_impl.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/category_repository_impl.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/product_repository_impl.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/units_repository_imple.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/auth/send_password_rest.dart';
-import 'package:rizqmartadmin/features/auth/domain/usecases/auth/login_acc_use_cases.dart';
-import 'package:rizqmartadmin/features/auth/domain/usecases/auth/logout_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/brand/add_brand_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/brand/delete_brand_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/brand/get_brand_usecase.dart';
@@ -97,11 +94,7 @@ class AppRoutes {
       name: 'loginPage',
       path: '/loginPage',
       builder: (context, state) {
-        return BlocProvider(
-          create: (_) => LoginBloc(
-              loginAccUseCases: LoginAccUseCases(sl<LoginRepositoryImpl>())),
-          child: const LoginScreen(),
-        );
+        return const LoginScreen();
       },
     ),
 
@@ -120,25 +113,19 @@ class AppRoutes {
     //Main routes
     ShellRoute(
         builder: (context, state, child) {
-          return BlocProvider(
-            create: (context) => LoginBloc(
-              loginAccUseCases: LoginAccUseCases(sl<LoginRepositoryImpl>()),
-              logoutUseCase: LogoutUseCase(sl<LoginRepositoryImpl>()),
-            ),
-            child: BlocListener<LoginBloc, LoginState>(
-              listener: (context, state) async {
-                if (state is LogoutSuccess) {
-                  final pref = await SharedPreferences.getInstance();
-                  await pref.setBool('isLoggedIn', false); 
-                  if (context.mounted) {
-                     context.goNamed('loginPage');
-                  }
+          return BlocListener<LoginBloc, LoginState>(
+            listener: (context, state) async {
+              if (state is AuthUnauthenticated) {
+                final pref = await SharedPreferences.getInstance();
+                await pref.setBool('isLoggedIn', false); 
+                if (context.mounted) {
+                   context.goNamed('loginPage');
                 }
-              },
-              child: BlocProvider(
-                create: (context) => DrawerSelectedIndexCubit(),
-                child: MainPages(child: child),
-              ),
+              }
+            },
+            child: BlocProvider(
+              create: (context) => DrawerSelectedIndexCubit(),
+              child: MainPages(child: child),
             ),
           );
         },

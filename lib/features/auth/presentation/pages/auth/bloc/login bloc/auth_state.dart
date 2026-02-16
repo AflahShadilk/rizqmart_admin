@@ -24,3 +24,12 @@ class LoginError extends LoginState{
 }
 
 class LogoutSuccess extends LoginState {}
+
+class AuthAuthenticated extends LoginState {
+  final String email;
+  AuthAuthenticated({required this.email});
+  @override
+  List<Object?> get props => [email];
+}
+
+class AuthUnauthenticated extends LoginState {}

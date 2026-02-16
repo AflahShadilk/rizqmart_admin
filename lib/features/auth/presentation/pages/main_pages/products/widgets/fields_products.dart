@@ -1,3 +1,4 @@
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
@@ -68,7 +69,7 @@ class _WebTextFieldState extends State<WebTextField> {
       children: [
         if (widget.label.isNotEmpty) ...[
           fieldLabel(widget.label),
-          const SizedBox(height: 8),
+          8.h,
         ],
         TextFormField(
           controller: widget.controller,
@@ -197,7 +198,7 @@ class _WebTextAreaState extends State<WebTextArea> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         fieldLabel(widget.label),
-        const SizedBox(height: 8),
+        8.h,
         TextFormField(
           controller: widget.controller,
           autovalidateMode: AutovalidateMode.onUnfocus,
@@ -393,7 +394,7 @@ class _WebTextFieldsState extends State<WebTextFields> {
               color: Colors.grey.shade800,
             ),
           ),
-          const SizedBox(height: 8),
+          8.h,
         ],
         if (widget.isDropdown)
           DropdownButtonFormField<String>(

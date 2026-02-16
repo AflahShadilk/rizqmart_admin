@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use, unused_local_variable
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -41,34 +42,38 @@ class _DashboardPageState extends State<DashboardPage> {
           context.read<DashboardBloc>().add(const FetchDashboardStatsEvent());
           context.read<OrderReceivedBloc>().add(const FetchNewOrdersEvent());
         },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1. Welcome / Quick Actions
-              _buildHeaderSection(),
-              const SizedBox(height: 32),
-
-              // 2. Statistics Grid
-              const Text(
-                'Business Overview',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
-              ),
-              const SizedBox(height: 16),
-              BlocBuilder<DashboardBloc, DashboardState>(
-                builder: (context, state) {
-                  if (state is DashboardLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (state is DashboardError) {
-                    return Center(child: Text('Error: ${state.message}'));
-                  }
-                  if (state is DashboardLoaded) {
-                    return LayoutBuilder(builder: (context, constraints) {
-                      int crossAxisCount = isDesktop ? 4 : (isTablet ? 2 : 1);
-                      double childAspectRatio = isDesktop ? 1.6 : (isTablet ? 1.4 : 1.8);
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1400),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                 
+                  _buildHeaderSection(),
+                  32.h,
+    
+              
+                  const Text(
+                    'Business Overview',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+                  ),
+                  16.h,
+                  BlocBuilder<DashboardBloc, DashboardState>(
+                    builder: (context, state) {
+                      if (state is DashboardLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (state is DashboardError) {
+                        return Center(child: Text('Error: ${state.message}'));
+                      }
+                      if (state is DashboardLoaded) {
+                        return LayoutBuilder(builder: (context, constraints) {
+                      double width = constraints.maxWidth;
+                      int crossAxisCount = width >= 1100 ? 4 : (width >= 700 ? 2 : 1);
+                      double childAspectRatio = width >= 1100 ? 2.2 : (width >= 700 ? 2.0 : 2.8);
                       
                       return GridView.count(
                         crossAxisCount: crossAxisCount,
@@ -84,40 +89,41 @@ class _DashboardPageState extends State<DashboardPage> {
                           _buildStatCard('Total Users', state.stats.totalUsers.toString(), Icons.people, Colors.purple),
                         ],
                       );
-                    });
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-              const SizedBox(height: 32),
-
-              // 3. Recent Orders
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Recent Orders',
+                    });    
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                  32.h,
+    
+                  // 3. Recent Orders
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Recent Orders',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+                      ),
+                      TextButton(
+                        onPressed: () => context.go('/order'),
+                        child: const Text('View All'),
+                      ),
+                    ],
+                  ),
+                  16.h,
+                  _buildRecentOrdersOrStatus(),
+                  
+                  32.h,
+                  
+                  // 4. Quick Access Grid (Optional additional navigation)
+                   const Text(
+                    'Quick Access',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
                   ),
-                  TextButton(
-                    onPressed: () => context.go('/order'),
-                    child: const Text('View All'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildRecentOrdersOrStatus(),
-              
-              const SizedBox(height: 32),
-              
-              // 4. Quick Access Grid (Optional additional navigation)
-               const Text(
-                'Quick Access',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
-              ),
-              const SizedBox(height: 16),
-               LayoutBuilder(builder: (context, constraints) {
-                   int crossAxisCount = isDesktop ? 4 : (isTablet ? 3 : 2);
+                  16.h,
+                   LayoutBuilder(builder: (context, constraints) {
+                   double width = constraints.maxWidth;
+                   int crossAxisCount = width >= 1100 ? 4 : (width >= 700 ? 3 : 2);
                     return GridView.count(
                     crossAxisCount: crossAxisCount,
                     crossAxisSpacing: 16,
@@ -133,8 +139,10 @@ class _DashboardPageState extends State<DashboardPage> {
                     ],
                   );
                }),
-
-            ],
+    
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -169,7 +177,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   'Welcome Back, Admin!',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
-                const SizedBox(height: 8),
+                8.h,
                 Text(
                   'Here is what is happening with your store today.',
                   style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.8)),
@@ -194,19 +202,17 @@ class _DashboardPageState extends State<DashboardPage> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
@@ -214,17 +220,33 @@ class _DashboardPageState extends State<DashboardPage> {
               color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: color, size: 28),
+            child: Icon(icon, color: color, size: 22),
           ),
-          const Spacer(),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          12.w,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    value,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+                    maxLines: 1,
+                  ),
+                ),
+                2.h,
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
-          Text(title, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
         ],
       ),
     );
@@ -245,7 +267,7 @@ class _DashboardPageState extends State<DashboardPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, color: color, size: 32),
-              const SizedBox(height: 12),
+              12.h,
               Text(
                 title, 
                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
@@ -312,7 +334,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text('₹${order.totalAmount.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                    const SizedBox(height: 4),
+                    4.h,
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(

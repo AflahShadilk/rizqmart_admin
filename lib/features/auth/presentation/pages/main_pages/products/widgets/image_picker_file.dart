@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 
 Widget imageAddingSection({
@@ -51,7 +52,7 @@ Widget imageAddingSection({
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(Icons.add_a_photo, size: 32, color: Colors.grey),
-                    const SizedBox(height: 4),
+                    4.h,
                     Text(
                       'Add Image',
                       style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
@@ -62,7 +63,7 @@ Widget imageAddingSection({
             ),
           ),
 
-          const SizedBox(width: 16),
+          16.w,
 
           
           Expanded(

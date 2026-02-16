@@ -1,5 +1,5 @@
-// ignore_for_file: deprecated_member_use
-import 'package:file_picker/file_picker.dart';
+﻿// ignore_for_file: deprecated_member_use
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -46,14 +46,9 @@ class CategoryDialogState extends State<CategoryDialog> {
 
   Future<void> pickImage() async {
     dialogCubit.setUploading(true);
-    final result = await FilePicker.platform.pickFiles(type: FileType.image);
-    if (result != null) {
-      final url = await uploadToCloudinary(result);
-      if (url != null) {
-        dialogCubit.updateImage(url);
-      } else {
-        dialogCubit.setUploading(false);
-      }
+    final url = await ImageUploadService().pickAndUpload();
+    if (url != null) {
+      dialogCubit.updateImage(url);
     } else {
       dialogCubit.setUploading(false);
     }
@@ -145,7 +140,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                         size: 28,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    16.w,
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +153,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          4.h,
                           Text(
                             isEditMode
                                 ? 'Update the category information'
@@ -174,7 +169,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 32),
+                32.h,
                 Text(
                   'Category Name',
                   style: GoogleFonts.poppins(
@@ -183,7 +178,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 8),
+                8.h,
                 BlocBuilder<CategoryDialogCubit, CategoryDialogCubitState>(
                   builder: (context, state) {
                     return Row(
@@ -246,7 +241,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                             },
                           ),
                         ),
-                        const SizedBox(width: 20),
+                        20.w,
                         Column(
                           children: [
                             InkWell(
@@ -278,7 +273,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                                           ),
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            8.h,
                             Text(
                               "Upload Logo *",
                               style: GoogleFonts.poppins(
@@ -296,7 +291,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                     );
                   },
                 ),
-                const SizedBox(height: 32),
+                32.h,
                 BlocBuilder<CategoryDialogCubit, CategoryDialogCubitState>(
                   builder: (context, state) {
                     return Row(
@@ -322,7 +317,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        12.w,
                         ElevatedButton.icon(
                           onPressed: () => handleSubmit(state.imageUrl),
                           icon: Icon(
