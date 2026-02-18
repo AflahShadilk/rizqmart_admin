@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/notification/notification_bell_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/notification/notification_bell_cubit_state.dart';
-import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
