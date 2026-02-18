@@ -1,10 +1,9 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/coupon_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/coupon_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/coupons/add_coupon_page.dart';
@@ -20,11 +19,11 @@ class OfferCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
             blurRadius: 10,
             spreadRadius: 1,
             offset: const Offset(0, 2),
@@ -41,7 +40,7 @@ class OfferCard extends StatelessWidget {
               height: 80,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: Colors.grey.shade100,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
@@ -65,13 +64,13 @@ class OfferCard extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.blackHeading,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                   4.h,
                   Row(
                     children: [
-                      Icon(Icons.currency_rupee, size: 14, color: Colors.grey.shade600),
+                      Icon(Icons.currency_rupee, size: 14, color: Theme.of(context).textTheme.bodyMedium?.color),
                       Text(
                          (offer.percentage ?? 0) > 0 
                             ? '${offer.percentage}% OFF' 
@@ -79,14 +78,14 @@ class OfferCard extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.blueAccent,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                       12.w,
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: offer.isActive ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                          color: offer.isActive ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -102,10 +101,10 @@ class OfferCard extends StatelessWidget {
                   ),
                   4.h,
                    Text(
-                    'Min Order: ₹${offer.minOrderValue} | Using: ${offer.usageLimit}',
+                    'Min Order: ?${offer.minOrderValue} | Using: ${offer.usageLimit}',
                     style: GoogleFonts.poppins(
                       fontSize: 12,
-                      color: Colors.grey.shade500,
+                      color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
                   ),
                 ],

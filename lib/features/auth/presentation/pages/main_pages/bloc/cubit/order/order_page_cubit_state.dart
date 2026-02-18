@@ -1,4 +1,4 @@
-class OrderPageState {
+﻿class OrderPageState {
   final String selectedFilter;
   final int currentPage;
 

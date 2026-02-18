@@ -1,8 +1,7 @@
-// ignore_for_file: avoid_print
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rizqmartadmin/features/auth/domain/repository/main/chat_repository.dart'; // Use interface
+import 'package:rizqmartadmin/features/auth/domain/repository/main/chat_repository.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_state.dart';
 
@@ -67,9 +66,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   Future<void> _onMarkChatAsRead(MarkChatAsReadEvent event, Emitter<ChatState> emit) async {
     try {
       await repository.markChatAsRead(event.chatId);
-    } catch (e) {
-      // Log error but don't disrupt UI state for this background action
-      print("Failed to mark chat as read: $e");
+    } catch (_) {
+      // Silently handle — don't disrupt UI for this background action
     }
   }
 

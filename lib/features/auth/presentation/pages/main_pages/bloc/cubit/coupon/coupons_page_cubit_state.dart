@@ -1,4 +1,4 @@
-class CouponsPageState {
+﻿class CouponsPageState {
   final String searchQuery;
 
   const CouponsPageState({

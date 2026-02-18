@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+﻿import 'package:equatable/equatable.dart';
 
 class PaymentEntity extends Equatable {
   final String paymentId;

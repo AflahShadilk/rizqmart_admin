@@ -1,4 +1,4 @@
-String? passwordValidator(String? value) {
+﻿String? passwordValidator(String? value) {
   if (value == null || value.isEmpty) {
     return 'Password is required';
   }

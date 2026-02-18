@@ -1,4 +1,4 @@
-﻿// ignore_for_file: unnecessary_to_list_in_spreads
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -188,7 +188,7 @@ class _SearchWithFiltersViewState extends State<_SearchWithFiltersView> {
                                         value: cat,
                                         child: Text(cat),
                                       ))
-                                  .toList(),
+                                  ,
                             ],
                             onChanged: (value) {
                               context.read<SearchFilterCubit>().setCategory(value);
@@ -214,7 +214,7 @@ class _SearchWithFiltersViewState extends State<_SearchWithFiltersView> {
                                         value: brand,
                                         child: Text(brand),
                                       ))
-                                  .toList(),
+                                  ,
                             ],
                             onChanged: (value) {
                               context.read<SearchFilterCubit>().setBrand(value);
@@ -223,7 +223,7 @@ class _SearchWithFiltersViewState extends State<_SearchWithFiltersView> {
                         ),
                       10.w,
                       SizedBox(
-                        width: 100,
+                        width: 120,
                         height: 40,
                         child: ElevatedButton.icon(
                             onPressed: () => clearFilters(),

@@ -1,4 +1,4 @@
-class SalesReportPageState {
+﻿class SalesReportPageState {
   final DateTime startDate;
   final DateTime endDate;
 

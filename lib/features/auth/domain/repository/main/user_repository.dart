@@ -1,4 +1,4 @@
-import 'package:rizqmartadmin/features/auth/domain/entities/main/user_entity.dart';
+﻿import 'package:rizqmartadmin/features/auth/domain/entities/main/user_entity.dart';
 
 abstract class UserRepository {
   Future<List<UserEntity>> getAllUsers();

@@ -1,4 +1,4 @@
-String? validatePrice(String? value) {
+﻿String? validatePrice(String? value) {
   if (value == null || value.trim().isEmpty) {
     return 'Please enter a price';
   }

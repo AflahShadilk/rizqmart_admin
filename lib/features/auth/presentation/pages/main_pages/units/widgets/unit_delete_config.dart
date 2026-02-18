@@ -24,7 +24,7 @@ void handleDeleteUnit(BuildContext context, UnitsEntity unit) {
       }
 
       if (productState is LoadedProductState) {
-        products = productState.product ?? [];
+        products = productState.product;
       } else {
         products = [];
       }

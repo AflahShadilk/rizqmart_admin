@@ -1,4 +1,4 @@
-//state
+﻿//state
 import 'package:equatable/equatable.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.dart';
 

@@ -1,4 +1,4 @@
-class AddBrandFormCubitState {
+﻿class AddBrandFormCubitState {
   final String? imageUrl;
   final bool status;
   final bool isUploading;

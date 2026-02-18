@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
@@ -56,7 +56,10 @@ class NotificationBellCubit extends Cubit<NotificationBellState> {
 
   void updateUnreadChats(List<ChatEntity> chats) {
     ChatEntity? lastChat;
-    if (chats.isNotEmpty && (state.unreadChats.isEmpty || chats.first.timestamp.isAfter(state.unreadChats.first.timestamp))) {
+    // Only trigger notification if the last message was NOT from an admin
+    if (chats.isNotEmpty && 
+        chats.first.lastMessageSenderRole != 'admin' &&
+        (state.unreadChats.isEmpty || chats.first.timestamp.isAfter(state.unreadChats.first.timestamp))) {
       lastChat = chats.first;
     }
 
@@ -64,6 +67,13 @@ class NotificationBellCubit extends Cubit<NotificationBellState> {
       unreadChats: chats,
       notificationCount: state.notifications.length + chats.length,
       lastAddedChat: lastChat,
+    ));
+  }
+
+  void resetLastAdded() {
+    emit(state.copyWith(
+      lastAddedNotification: null,
+      lastAddedChat: null,
     ));
   }
 

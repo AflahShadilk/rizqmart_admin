@@ -1,5 +1,4 @@
-// ignore_for_file: avoid_print
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rizqmartadmin/features/auth/data/model/chat_model.dart';
 import 'package:rizqmartadmin/features/auth/data/model/message_model.dart';
 
@@ -52,6 +51,7 @@ class ChatDataSourceImpl implements ChatDataSource {
     // 2. Update chat room metadata
     batch.set(chatRef, {
       'lastMessage': message.type == 'image' ? 'Image' : message.text,
+      'lastMessageSenderRole': message.senderRole,
       'timestamp': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
 

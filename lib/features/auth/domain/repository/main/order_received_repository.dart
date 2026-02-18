@@ -1,4 +1,4 @@
-import 'package:rizqmartadmin/features/auth/domain/entities/main/order_recieved_entity.dart';
+﻿import 'package:rizqmartadmin/features/auth/domain/entities/main/order_recieved_entity.dart';
 
 abstract class OrderReceivedRepository {
   Future<List<OrderReceivedEntity>> getNewOrders();

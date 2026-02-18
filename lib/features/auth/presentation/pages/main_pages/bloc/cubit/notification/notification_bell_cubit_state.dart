@@ -1,4 +1,4 @@
-import 'package:rizqmartadmin/features/auth/domain/entities/main/chat_entity.dart';
+﻿import 'package:rizqmartadmin/features/auth/domain/entities/main/chat_entity.dart';
 
 class NotificationBellState {
   final List<Map<String, dynamic>> notifications;
@@ -19,15 +19,21 @@ class NotificationBellState {
     List<Map<String, dynamic>>? notifications,
     List<ChatEntity>? unreadChats,
     int? notificationCount,
-    Map<String, dynamic>? lastAddedNotification,
-    ChatEntity? lastAddedChat,
+    Object? lastAddedNotification = _undefined,
+    Object? lastAddedChat = _undefined,
   }) {
     return NotificationBellState(
       notifications: notifications ?? this.notifications,
       unreadChats: unreadChats ?? this.unreadChats,
       notificationCount: notificationCount ?? this.notificationCount,
-      lastAddedNotification: lastAddedNotification ?? this.lastAddedNotification,
-      lastAddedChat: lastAddedChat ?? this.lastAddedChat,
+      lastAddedNotification: lastAddedNotification == _undefined
+          ? this.lastAddedNotification
+          : lastAddedNotification as Map<String, dynamic>?,
+      lastAddedChat: lastAddedChat == _undefined
+          ? this.lastAddedChat
+          : lastAddedChat as ChatEntity?,
     );
   }
+
+  static const _undefined = Object();
 }

@@ -1,4 +1,4 @@
-// Get images
+﻿// Get images
 List<String> getVariantImages(dynamic widget) {
   List<String> imageUrls = [];
   if (widget.product.variantDetails != null && 

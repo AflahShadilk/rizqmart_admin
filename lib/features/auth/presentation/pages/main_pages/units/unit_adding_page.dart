@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -123,7 +123,7 @@ class _UnitDialogState extends State<UnitDialog> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.15),
+                color: Colors.black.withValues(alpha: 0.15),
                 blurRadius: 20,
                 spreadRadius: 5,
               ),
@@ -142,7 +142,7 @@ class _UnitDialogState extends State<UnitDialog> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: AppColors.blueAccent.withOpacity(0.1),
+                            color: AppColors.blueAccent.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
@@ -285,8 +285,8 @@ class _UnitDialogState extends State<UnitDialog> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   elevation: 2,
-                                  shadowColor: AppColors.green.withOpacity(0.4),
-                                  disabledBackgroundColor: AppColors.green.withOpacity(0.6),
+                                  shadowColor: AppColors.green.withValues(alpha: 0.4),
+                                  disabledBackgroundColor: AppColors.green.withValues(alpha: 0.6),
                                 ),
                                 icon: isLoading
                                     ? SizedBox(
@@ -295,7 +295,7 @@ class _UnitDialogState extends State<UnitDialog> {
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
                                           valueColor: AlwaysStoppedAnimation<Color>(
-                                            Colors.white.withOpacity(0.8),
+                                            Colors.white.withValues(alpha: 0.8),
                                           ),
                                         ),
                                       )

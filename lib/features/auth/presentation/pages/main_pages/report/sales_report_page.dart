@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -55,9 +55,8 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
       initialDateRange: DateTimeRange(start: cubitState.startDate, end: cubitState.endDate),
       builder: (context, child) {
         return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: Colors.blue,
-            colorScheme: const ColorScheme.light(primary: Colors.blue),
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme,
           ),
           child: child!,
         );
@@ -75,33 +74,33 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
   Widget build(BuildContext context) {
     final dateState = context.watch<SalesReportPageCubit>().state;
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         toolbarHeight: 70,
         title: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.blue.shade100,
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 Icons.analytics_rounded,
-                color: Colors.blue.shade700,
+                color: Theme.of(context).colorScheme.primary,
                 size: 24,
               ),
             ),
             12.w,
-            const Column(
+             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Sales Report',
                   style: TextStyle(
-                    color: Colors.black87,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -109,7 +108,7 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                 Text(
                   'Visualize your sales performance',
                   style: TextStyle(
-                    color: Colors.grey,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                     fontSize: 11,
                     fontWeight: FontWeight.w400,
                   ),
@@ -118,7 +117,7 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
             ),
           ],
         ),
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: Theme.of(context).iconTheme.color),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -130,8 +129,8 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.blue.shade700,
-                backgroundColor: Colors.blue.shade50,
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
@@ -155,9 +154,9 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Overview',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color),
                       ),
                       16.h,
                       
@@ -179,10 +178,10 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 childAspectRatio: childAspectRatio,
                                 children: [
-                                  _buildSummaryCard('Total Revenue', '₹${report.totalRevenue.toStringAsFixed(2)}', Icons.currency_rupee, Colors.green),
+                                  _buildSummaryCard('Total Revenue', report.totalRevenue.toStringAsFixed(2), Icons.currency_rupee, Colors.green),
                                   _buildSummaryCard('Total Orders', report.totalOrders.toString(), Icons.shopping_bag, Colors.blue),
                                   _buildSummaryCard('Items Sold', report.totalItemsSold.toString(), Icons.inventory_2, Colors.orange),
-                                  _buildSummaryCard('Avg Order Value', '₹${report.averageOrderValue.toStringAsFixed(2)}', Icons.analytics, Colors.teal),
+                                  _buildSummaryCard('Avg Order Value', report.averageOrderValue.toStringAsFixed(2), Icons.analytics, Colors.teal),
                                 ],
                               ),
                               32.h,
@@ -224,11 +223,11 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
   Widget _buildSummaryCard(String title, String value, IconData icon, Color color) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -240,7 +239,7 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 22),
@@ -256,10 +255,10 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     value,
-                    style: const TextStyle(
+                    style:  TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                     maxLines: 1,
                   ),
@@ -269,7 +268,7 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                   title,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -287,9 +286,9 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
       height: 400,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 16)],
+        boxShadow: [BoxShadow(color: Theme.of(context).shadowColor.withValues(alpha: 0.1), blurRadius: 16)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,7 +313,7 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                                   padding: const EdgeInsets.only(top: 8),
                                   child: Text(
                                     DateFormat('MM/dd').format(data[value.toInt()].date),
-                                    style: const TextStyle(fontSize: 10, color: Colors.grey),
+                                    style: TextStyle(fontSize: 10, color: Theme.of(context).textTheme.bodySmall?.color),
                                   ),
                                 );
                               }
@@ -336,7 +335,7 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                           dotData: FlDotData(show: false),
                           belowBarData: BarAreaData(
                             show: true,
-                            color: Colors.blue.withOpacity(0.1),
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                           ),
                         ),
                       ],
@@ -353,9 +352,9 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
       height: 400,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 16)],
+        boxShadow: [BoxShadow(color: Theme.of(context).shadowColor.withValues(alpha: 0.1), blurRadius: 16)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

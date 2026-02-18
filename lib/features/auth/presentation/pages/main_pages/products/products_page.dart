@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -164,10 +164,11 @@ class _ProductsPageState extends State<ProductsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return BlocProvider.value(
       value: _pageCubit,
       child: Scaffold(
-        backgroundColor: Colors.blueAccent[50],
+        backgroundColor: theme.scaffoldBackgroundColor,
         body: BlocListener<ProductBloc, ProductState>(
           listener: (context, state) {
             if (state is SuccessLoadingState) {
@@ -208,10 +209,10 @@ class _ProductsPageState extends State<ProductsPage> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: theme.cardTheme.color,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.1),
+                              color: theme.shadowColor.withValues(alpha: 0.05),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -228,7 +229,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                     style: GoogleFonts.poppins(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.blackHeading,
+                                      color: theme.textTheme.bodyLarge?.color,
                                     ),
                                   ),
                                   4.h,
@@ -236,7 +237,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                     '${allProducts.length} ${allProducts.length == 1 ? 'product' : 'products'} available',
                                     style: GoogleFonts.poppins(
                                       fontSize: 13,
-                                      color: Colors.grey.shade600,
+                                      color: theme.textTheme.bodySmall?.color,
                                     ),
                                   ),
                                 ],
@@ -246,7 +247,7 @@ class _ProductsPageState extends State<ProductsPage> {
                               onPressed: () {
                                 context.go('/Addproducts');
                               },
-                              icon: const Icon(Icons.add_circle_outline, size: 20),
+                              icon: const Icon(Icons.add_circle_outline, size: 20,color: Colors.black,),
                               label: Text(
                                 'Add Product',
                                 style: GoogleFonts.poppins(
@@ -255,14 +256,14 @@ class _ProductsPageState extends State<ProductsPage> {
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.green,
-                                foregroundColor: Colors.white,
+                                backgroundColor: theme.colorScheme.primary,
+                                foregroundColor: theme.colorScheme.onPrimary,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 24,
                                   vertical: 14,
                                 ),
-                                elevation: 2,
-                                shadowColor: AppColors.green.withOpacity(0.3),
+                                elevation: 0,
+                                shadowColor: theme.colorScheme.primary.withValues(alpha: 0.3),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -310,7 +311,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                     Text(
                                       'Loading products...',
                                       style: GoogleFonts.poppins(
-                                        color: Colors.grey.shade600,
+                                        color: theme.textTheme.bodySmall?.color,
                                         fontSize: 14,
                                       ),
                                     ),
@@ -467,19 +468,15 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       margin: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 8)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 12)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
-            blurRadius: Responsive.scaleRadius(context, 8),
-            spreadRadius: 1,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.15),
+        ),
       ),
       child: Padding(
         padding: EdgeInsets.all(Responsive.scaleSpacing(context, 12)),
@@ -490,7 +487,7 @@ class ProductCard extends StatelessWidget {
               height: Responsive.scaleRadius(context, 80),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 8)),
-                color: Colors.grey.shade100,
+                color: theme.colorScheme.surface,
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 8)),
@@ -515,7 +512,7 @@ class ProductCard extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: Responsive.scaleFont(context, 16),
                       fontWeight: FontWeight.w600,
-                      color: AppColors.blackHeading,
+                      color: theme.textTheme.bodyLarge?.color,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -524,7 +521,7 @@ class ProductCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        '₹${getFirstVariantPrice().toStringAsFixed(2)}',
+                        getFirstVariantPrice().toStringAsFixed(2),
                         style: GoogleFonts.poppins(
                           fontSize: Responsive.scaleFont(context, 14),
                           fontWeight: FontWeight.w600,
@@ -536,7 +533,7 @@ class ProductCard extends StatelessWidget {
                         'Stock: ${getTotalQuantity().toInt()}',
                         style: GoogleFonts.poppins(
                           fontSize: Responsive.scaleFont(context, 12),
-                          color: Colors.grey.shade600,
+                          color: theme.textTheme.bodySmall?.color,
                         ),
                       ),
                     ],
@@ -549,8 +546,8 @@ class ProductCard extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: product.status == true
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
+                          ? Colors.green.withValues(alpha: 0.1)
+                          : Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 6)),
                     ),
                     child: Text(

@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+﻿import 'package:equatable/equatable.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 
 abstract class ProductState extends Equatable{

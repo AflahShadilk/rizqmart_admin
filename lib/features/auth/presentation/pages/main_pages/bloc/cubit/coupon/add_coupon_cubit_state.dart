@@ -1,4 +1,4 @@
-import 'package:file_picker/file_picker.dart';
+﻿import 'package:file_picker/file_picker.dart';
 
 class AddCouponState {
   final String discountType;

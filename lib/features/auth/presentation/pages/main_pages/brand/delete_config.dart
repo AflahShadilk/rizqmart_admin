@@ -26,7 +26,7 @@ void handleDelete(BuildContext context, BrandEntity brandEntity) {
     }
     
     if (productState is LoadedProductState) {
-      products = productState.product ?? [];
+      products = productState.product;
     } else {
       products = [];
     }

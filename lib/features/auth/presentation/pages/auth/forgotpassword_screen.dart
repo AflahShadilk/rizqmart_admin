@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use, use_build_context_synchronously
+﻿// ignore_for_file: use_build_context_synchronously
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -56,17 +56,12 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    final double fontSize;
     final EdgeInsets padding;
     if (Responsive.isDesktop(context)) {
-      fontSize = 28;
       padding = const EdgeInsets.symmetric(horizontal: 120, vertical: 40);
     } else if (Responsive.isTablet(context)) {
-      fontSize = 22;
       padding = const EdgeInsets.symmetric(horizontal: 48, vertical: 24);
     } else {
-      fontSize = 18;
       padding = const EdgeInsets.all(16);
     }
 
@@ -103,14 +98,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
         return Scaffold(
           body: Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.blue[50]!,
-                  Colors.blue[100]!,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: Theme.of(context).scaffoldBackgroundColor,
             ),
             width: double.infinity,
             height: double.infinity,
@@ -125,7 +113,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                     height: 300,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blue[200]?.withOpacity(0.3),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                     ),
                   ),
                 ),
@@ -137,7 +125,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                     height: 250,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.indigo[200]?.withOpacity(0.3),
+                      color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
                     ),
                   ),
                 ),
@@ -157,11 +145,11 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                   : double.infinity,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Theme.of(context).cardTheme.color,
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
                                   blurRadius: 30,
                                   spreadRadius: 8,
                                   offset: const Offset(0, 15),
@@ -183,8 +171,8 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(
                                         colors: [
-                                          Colors.blue[600]!,
-                                          Colors.indigo[600]!,
+                                          Theme.of(context).colorScheme.primary,
+                                          Theme.of(context).colorScheme.secondary,
                                         ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
@@ -196,14 +184,14 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                           padding: const EdgeInsets.all(16),
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            color: Colors.white.withOpacity(0.2),
+                                            color: Theme.of(context).cardTheme.color,
                                           ),
                                           child: Icon(
                                             Icons.lock_reset_rounded,
                                             size: Responsive.isDesktop(context)
                                                 ? 56
                                                 : 48,
-                                            color: Colors.white,
+                                            color: Theme.of(context).colorScheme.onPrimary,
                                           ),
                                         ),
                                         16.h,
@@ -215,7 +203,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                                 ? 20
                                                 : 24,
                                             fontWeight: FontWeight.w700,
-                                            color: Colors.white,
+                                            color: Theme.of(context).colorScheme.onPrimary,
                                           ),
                                         ),
                                       ],
@@ -237,7 +225,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                                 Responsive.isMobile(context)
                                                     ? 13
                                                     : 14,
-                                            color: Colors.grey[700],
+                                            color: Theme.of(context).textTheme.bodyMedium?.color,
                                             height: 1.6,
                                           ),
                                         ),
@@ -266,11 +254,11 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                                 borderRadius:
                                                     BorderRadius.circular(12),
                                               ),
-                                              backgroundColor:
-                                                  Colors.blue[600],
-                                              elevation: 4,
-                                              disabledBackgroundColor:
-                                                  Colors.grey[400],
+                                                backgroundColor:
+                                                    Theme.of(context).colorScheme.primary,
+                                                elevation: 4,
+                                                disabledBackgroundColor:
+                                                    Theme.of(context).disabledColor,
                                             ),
                                             onPressed: isLoading
                                                 ? null
@@ -297,7 +285,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                                       valueColor:
                                                           AlwaysStoppedAnimation<
                                                               Color>(
-                                                            Colors.white,
+                                                            Theme.of(context).colorScheme.onPrimary,
                                                           ),
                                                       strokeWidth: 2.5,
                                                     ),
@@ -315,7 +303,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                                               : 16,
                                                       fontWeight:
                                                           FontWeight.w600,
-                                                      color: Colors.white,
+                                                      color: Theme.of(context).colorScheme.onPrimary,
                                                     ),
                                                   ),
                                           ),
@@ -329,7 +317,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                               context.pop();
                                             },
                                             child: Text(
-                                              '← Back to Login',
+                                              '? Back to Login',
                                               style: GoogleFonts.poppins(
                                                 fontSize:
                                                     Responsive.isMobile(
@@ -337,7 +325,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                                           )
                                                         ? 12
                                                         : 14,
-                                                color: Colors.blue[600],
+                                                color: Theme.of(context).colorScheme.primary,
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),

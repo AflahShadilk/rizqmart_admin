@@ -1,4 +1,4 @@
-import 'package:rizqmartadmin/features/auth/domain/entities/main/sales_report_entity.dart';
+﻿import 'package:rizqmartadmin/features/auth/domain/entities/main/sales_report_entity.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/sales_data_point.dart';
 
 class SalesReportModel extends SalesReportEntity {

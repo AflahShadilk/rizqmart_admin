@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.dart';

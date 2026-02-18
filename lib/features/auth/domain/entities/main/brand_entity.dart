@@ -1,4 +1,4 @@
-
+﻿
 import 'package:equatable/equatable.dart';
 
 class BrandEntity extends Equatable{

@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+﻿import 'package:equatable/equatable.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/chat_entity.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/message_entity.dart';
 

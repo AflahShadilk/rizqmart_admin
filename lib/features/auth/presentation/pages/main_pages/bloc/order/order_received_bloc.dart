@@ -1,5 +1,4 @@
-// ignore_for_file: avoid_print
-import 'package:flutter_bloc/flutter_bloc.dart';
+﻿import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/order_recieved_entity.dart';
 import 'dart:async';
@@ -185,11 +184,7 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
               if (orderToRefill != null) {
                   await refillOrderStockUseCase!.call(orderToRefill);
               } else {
-                  // If we can't find it in state, we skip refill for now to avoid crashing, 
-                  // or we could throw error. Skipping is safer for stability, 
-                  // but stock won't update.
-                  // Ideally we should fetch order by ID here.
-                  print('Warning: Could not find order ${event.orderId} in state to refill stock.');
+                   // Skip refill if order not found in current state
               }
            }
 

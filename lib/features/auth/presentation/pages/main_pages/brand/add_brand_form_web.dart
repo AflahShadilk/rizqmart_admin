@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use, use_build_context_synchronously
+﻿// ignore_for_file: use_build_context_synchronously
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';

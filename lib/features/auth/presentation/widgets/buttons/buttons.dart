@@ -1,48 +1,41 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
 
-ElevatedButton signupButton(void Function()?onPress) {
-    return ElevatedButton(
-                      onPressed: onPress,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16, horizontal: 32),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 6,
-                        shadowColor: Colors.black26,
-                        backgroundColor: Colors.transparent,
-                      ),
-                      child: Ink(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFCA50BA), Color(0xFF6A1B9A)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Container(
-                          alignment: Alignment.center,
-                          constraints: const BoxConstraints(
-                              minHeight: 50, minWidth: 150),
-                          child: const Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-  }
-
-  //Text button for login signup
-
+ElevatedButton signupButton(void Function()? onPress) {
+  return ElevatedButton(
+    onPressed: onPress,
+    style: ElevatedButton.styleFrom(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+    ),
+    child: Ink(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Container(
+        alignment: Alignment.center,
+        constraints: const BoxConstraints(minHeight: 50, minWidth: 150),
+        child: Text(
+          'Sign Up',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 class ReusableTextButton extends StatefulWidget {
   final VoidCallback? onPressed;
@@ -87,12 +80,11 @@ class _ReusableTextButtonState extends State<ReusableTextButton> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final Color bgColor = widget.backgroundColor ?? Colors.transparent;
-    final Color overlay = (bgColor != Colors.transparent
-            ? bgColor
-            : Theme.of(context).primaryColor)
-        // ignore: deprecated_member_use
-        .withOpacity(0.2);
+    final Color overlay =
+        (bgColor != Colors.transparent ? bgColor : theme.colorScheme.primary)
+            .withValues(alpha: 0.1);
 
     return GestureDetector(
       onTapDown: _onTapDown,
@@ -107,19 +99,19 @@ class _ReusableTextButtonState extends State<ReusableTextButton> {
           onPressed: widget.onPressed,
           style: ButtonStyle(
             backgroundColor: WidgetStateProperty.all(bgColor),
-            padding: WidgetStateProperty.all(
-                widget.padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12)),
+            padding: WidgetStateProperty.all(widget.padding ??
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12)),
             shape: WidgetStateProperty.all(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             overlayColor: WidgetStateProperty.all(overlay),
           ),
           child: Text(
             widget.text,
-            style: TextStyle(
-              color: widget.textColor ?? Theme.of(context).primaryColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+            style: GoogleFonts.inter(
+              color: widget.textColor ?? theme.colorScheme.primary,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -128,27 +120,25 @@ class _ReusableTextButtonState extends State<ReusableTextButton> {
   }
 }
 
-
-ElevatedButton elevatedButtonForSave({required String text,required void Function()? onPressed}) {
-    return ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.darkBlue,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 16,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: onPressed,
-                      child: Text(
-                        text,
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          color: AppColors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    );
-  }
+ElevatedButton elevatedButtonForSave(
+    {required String text, required void Function()? onPressed}) {
+  return ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFF0D9488),
+      foregroundColor: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
+    onPressed: onPressed,
+    child: Text(
+      text,
+      style: GoogleFonts.inter(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+  );
+}

@@ -1,4 +1,4 @@
-// ignore_for_file: empty_catches
+﻿
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
@@ -10,9 +10,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you need to access Firebase in background, initialize it:
   await Firebase.initializeApp();
-  if (kDebugMode) {
-    print("Handling a background message: ${message.messageId}");
-  }
+  // if (kDebugMode) {
+  //   print("Handling a background message: ${message.messageId}");
+  // }
 }
 
 class WebMessagingService {
@@ -59,7 +59,7 @@ class WebMessagingService {
         );
       } else {
         // Web notification logic could go here if needed, usually browser handles it if tab is background
-        if (kDebugMode) print("Local Notification Triggered (Web): $title - $body");
+        // if (kDebugMode) print("Local Notification Triggered (Web): $title - $body");
       }
 
       // Also trigger the callback if any listener is attached
@@ -71,7 +71,7 @@ class WebMessagingService {
           onMessageCallback!(message);
       }
     } catch (e) {
-      if (kDebugMode) print("Error triggering local notification: $e");
+      // if (kDebugMode) print("Error triggering local notification: $e");
     }
   }
 
@@ -90,13 +90,13 @@ class WebMessagingService {
         sound: true,
       );
 
-      if (kDebugMode) {
-        print('User permission status: ${settings.authorizationStatus}');
-      }
+      // if (kDebugMode) {
+      //   print('User permission status: ${settings.authorizationStatus}');
+      // }
 
       if (settings.authorizationStatus != AuthorizationStatus.authorized &&
           settings.authorizationStatus != AuthorizationStatus.provisional) {
-         if (kDebugMode) print("User declined or has not accepted notification permission");
+        //  if (kDebugMode) print("User declined or has not accepted notification permission");
         return;
       }
 
@@ -119,7 +119,7 @@ class WebMessagingService {
       await _flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
         onDidReceiveNotificationResponse: (NotificationResponse response) {
-            if (kDebugMode) print("Notification Tapped with payload: ${response.payload}");
+            // if (kDebugMode) print("Notification Tapped with payload: ${response.payload}");
             // Handle notification tap logic here
         },
       );
@@ -148,12 +148,12 @@ class WebMessagingService {
 
       // 6. Listen for Foreground Messages
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        if (kDebugMode) {
-          print('Foreground Message Received: ${message.messageId}');
-          if (message.notification != null) {
-             print('Message Title: ${message.notification!.title}, Body: ${message.notification!.body}');
-          }
-        }
+        // if (kDebugMode) {
+        //   print('Foreground Message Received: ${message.messageId}');
+        //   if (message.notification != null) {
+        //      print('Message Title: ${message.notification!.title}, Body: ${message.notification!.body}');
+        //   }
+        // }
         
         if (onMessageCallback != null) {
           onMessageCallback!(message);
@@ -163,7 +163,7 @@ class WebMessagingService {
 
       // 7. Listen for Background Message Taps
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        if (kDebugMode) print("Notification Opened App");
+        // if (kDebugMode) print("Notification Opened App");
         if (onMessageOpenedAppCallback != null) {
           onMessageOpenedAppCallback!(message);
         }
@@ -171,20 +171,21 @@ class WebMessagingService {
       });
 
       // 8. Get Token
+      // ignore: unused_local_variable
       String? token;
       if (kIsWeb) {
         token = await _fcm.getToken(vapidKey: vapidKey);
       } else {
         token = await _fcm.getToken();
       }
-      if (kDebugMode) print("FCM Token: $token");
+      // if (kDebugMode) print("FCM Token: $token");
       
       _fcm.onTokenRefresh.listen((newToken) {
-         if (kDebugMode) print("FCM Token Refreshed: $newToken");
+        //  if (kDebugMode) print("FCM Token Refreshed: $newToken");
       });
 
     } catch (e) {
-      if (kDebugMode) print("Error initializing WebMessagingService: $e");
+      // if (kDebugMode) print("Error initializing WebMessagingService: $e");
     }
   }
 
@@ -212,7 +213,7 @@ class WebMessagingService {
   }
 
   static void _handleMessageClick(RemoteMessage message) {
-     if (kDebugMode) print("Handling Message Click for message: ${message.messageId}");
+    //  if (kDebugMode) print("Handling Message Click for message: ${message.messageId}");
      // Add navigation logic if needed
   }
 
@@ -223,7 +224,7 @@ class WebMessagingService {
       }
       return await _fcm.getToken();
     } catch (e) {
-      if (kDebugMode) print("Error getting token: $e");
+      // if (kDebugMode) print("Error getting token: $e");
       return null;
     }
   }
@@ -234,9 +235,9 @@ class WebMessagingService {
         return;
       }
       await _fcm.subscribeToTopic(topic);
-      if (kDebugMode) print("Subscribed to topic: $topic");
+      // if (kDebugMode) print("Subscribed to topic: $topic");
     } catch (e) {
-      if (kDebugMode) print("Error subscribing to topic: $e");
+      // if (kDebugMode) print("Error subscribing to topic: $e");
     }
   }
 
@@ -246,9 +247,9 @@ class WebMessagingService {
         return;
       }
       await _fcm.unsubscribeFromTopic(topic);
-       if (kDebugMode) print("Unsubscribed from topic: $topic");
+      //  if (kDebugMode) print("Unsubscribed from topic: $topic");
     } catch (e) {
-         if (kDebugMode) print("Error unsubscribing from topic: $e");
+        //  if (kDebugMode) print("Error unsubscribing from topic: $e");
     }
   }
 }

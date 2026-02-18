@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_state.dart';
@@ -37,18 +36,18 @@ class _ChatListPageState extends State<ChatListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           'Messages',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
-            color: AppColors.blackHeading,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
           ),
         ),
         elevation: 0,
-        backgroundColor: AppColors.backgroundColor,
-        iconTheme: const IconThemeData(color: AppColors.blackHeading),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        iconTheme: IconThemeData(color: Theme.of(context).iconTheme.color),
       ),
       body: BlocBuilder<ChatBloc, ChatState>(
         builder: (context, state) {
@@ -59,7 +58,7 @@ class _ChatListPageState extends State<ChatListPage> {
           } else if (state is ChatsLoaded) {
             if (state.chats.isEmpty) {
               return Center(
-                child: Text('No messages yet', style: GoogleFonts.poppins(color: Colors.grey)),
+                child: Text('No messages yet', style: GoogleFonts.poppins(color: Theme.of(context).hintColor)),
               );
             }
             return ListView.separated(
@@ -78,11 +77,11 @@ class _ChatListPageState extends State<ChatListPage> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardTheme.color,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.05),
+                          color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
                           blurRadius: 5,
                           offset: const Offset(0, 2),
                         ),
@@ -92,14 +91,15 @@ class _ChatListPageState extends State<ChatListPage> {
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       leading: CircleAvatar(
                         radius: 25,
-                        backgroundColor: AppColors.darkBlue.withOpacity(0.1),
-                        child: const Icon(Icons.shopping_bag_outlined, color: AppColors.darkBlue),
+                        backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                        child: Icon(Icons.shopping_bag_outlined, color: Theme.of(context).colorScheme.primary),
                       ),
                       title: Text(
                         chat.productName.isNotEmpty ? chat.productName : 'Order ${chat.id}',
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
                       subtitle: Column(
@@ -111,7 +111,7 @@ class _ChatListPageState extends State<ChatListPage> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.poppins(
-                              color: Colors.grey.shade500,
+                              color: Theme.of(context).textTheme.bodySmall?.color,
                               fontSize: 11,
                             ),
                           ),
@@ -121,7 +121,7 @@ class _ChatListPageState extends State<ChatListPage> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.poppins(
-                              color: Colors.grey.shade600,
+                              color: Theme.of(context).textTheme.bodyMedium?.color,
                               fontSize: 13,
                             ),
                           ),
@@ -130,7 +130,7 @@ class _ChatListPageState extends State<ChatListPage> {
                       trailing: Text(
                         _formatTime(chat.timestamp),
                         style: GoogleFonts.poppins(
-                          color: Colors.grey.shade400,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
                           fontSize: 12,
                         ),
                       ),

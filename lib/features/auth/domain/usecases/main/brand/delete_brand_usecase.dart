@@ -1,4 +1,4 @@
-import 'package:rizqmartadmin/features/auth/domain/repository/main/brand_repository.dart';
+﻿import 'package:rizqmartadmin/features/auth/domain/repository/main/brand_repository.dart';
 
 class DeleteBrandUsecase {
   BrandRepository repository;

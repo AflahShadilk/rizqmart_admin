@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+﻿import 'package:equatable/equatable.dart';
 
 class ChatEntity extends Equatable {
   final String id; 
@@ -7,6 +7,7 @@ class ChatEntity extends Equatable {
   final String userId;
   final String adminId;
   final String lastMessage;
+  final String lastMessageSenderRole;
   final DateTime timestamp;
 
   const ChatEntity({
@@ -16,6 +17,7 @@ class ChatEntity extends Equatable {
     required this.userId,
     required this.adminId,
     required this.lastMessage,
+    required this.lastMessageSenderRole,
     required this.timestamp,
   });
 
@@ -27,6 +29,7 @@ class ChatEntity extends Equatable {
         userId,
         adminId,
         lastMessage,
+        lastMessageSenderRole,
         timestamp,
       ];
 }

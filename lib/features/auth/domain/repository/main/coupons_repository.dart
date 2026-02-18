@@ -1,4 +1,4 @@
-import 'package:rizqmartadmin/features/auth/domain/entities/main/coupon_entity.dart';
+﻿import 'package:rizqmartadmin/features/auth/domain/entities/main/coupon_entity.dart';
 
 abstract class CouponsRepository {
   Stream<List<CouponEntity>>getCoupons();

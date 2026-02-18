@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/category_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/category/add_category_usecases.dart';
@@ -62,12 +62,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   Future<void> _onAddVariant(
       AddVariantEvent event, Emitter<CategoryState> emit) async {
     try {
-      
       await addVariantUsecase(event.categoryId, event.variant);
-      await Future.delayed(const Duration(milliseconds: 500));
-       add(LoadingCategoryEvent());
+      add(LoadingCategoryEvent());
       emit(CategorySuccessState('Variant added successfully'));
-    
     } catch (e) {
       emit(CategoryFailureState('Failed to add variant: $e'));
     }
@@ -84,28 +81,20 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   }
   
   Future<void> _onDeleteVariant(
-    DeleteVariantEvent event, Emitter<CategoryState> emit) async {
-  try {
-    
-    await deleteVariantusecase(event.categoryId, event.variant);
-    
-    await Future.delayed(const Duration(milliseconds: 500));
-    
-
-    add(LoadingCategoryEvent());
-    
-  } catch (e) {
-    emit(CategoryFailureState('Failed to delete variant: $e'));
+      DeleteVariantEvent event, Emitter<CategoryState> emit) async {
+    try {
+      await deleteVariantusecase(event.categoryId, event.variant);
+      add(LoadingCategoryEvent());
+    } catch (e) {
+      emit(CategoryFailureState('Failed to delete variant: $e'));
+    }
   }
-}
 
   Future<void> _onCategoryDelete(
       DeleteCategoryEvent event, Emitter<CategoryState> emit) async {
     try {
       add(LoadingCategoryEvent());
       await deleteCategoryUsecase(event.id);
-      
-      // emit(CategorySuccessState('Category deleting successful'));
     } catch (e) {
       emit(CategoryFailureState('Failed to delete category: $e'));
     }

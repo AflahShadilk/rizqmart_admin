@@ -1,10 +1,7 @@
-// ignore_for_file: deprecated_member_use
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/navigation/drawyer_selected_index_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/navigations/widgets/appbar.dart';
 
@@ -18,17 +15,18 @@ class MainPages extends StatefulWidget {
 
 class _MainPagesState extends State<MainPages> {
   final List<Map<String, dynamic>> drawerItems = [
-    {'icon': Icons.home, 'title': 'Dashboard', 'route': '/dashBoard'},
-    {'icon': Icons.shopping_bag, 'title': 'Products', 'route': '/products'},
-    {'icon': Icons.category, 'title': 'Categories', 'route': '/category'},
-    {'icon': Icons.select_all, 'title': 'Variants', 'route': '/unitPage'},
-    {'icon': Icons.branding_watermark, 'title': 'Brands', 'route': '/brand'},
-    {'icon': Icons.bar_chart, 'title': 'Sales Report', 'route': '/salesReport'},
-    {'icon': Icons.people, 'title': 'Users', 'route': '/users'},
-    {'icon': Icons.account_balance_wallet, 'title': 'Payments', 'route': '/payment'},
-    {'icon': Icons.confirmation_num, 'title': 'Offers', 'route': '/coupons'},
-    {'icon': Icons.shopping_cart, 'title': 'Orders', 'route': '/order'},
-    {'icon': Icons.chat_bubble, 'title': 'Chat', 'route': '/chat'},
+    {'icon': Icons.dashboard_outlined, 'title': 'Dashboard', 'route': '/dashBoard'},
+    {'icon': Icons.shopping_bag_outlined, 'title': 'Products', 'route': '/products'},
+    {'icon': Icons.category_outlined, 'title': 'Categories', 'route': '/category'},
+    {'icon': Icons.tune_outlined, 'title': 'Variants', 'route': '/unitPage'},
+    {'icon': Icons.branding_watermark_outlined, 'title': 'Brands', 'route': '/brand'},
+    {'icon': Icons.bar_chart_outlined, 'title': 'Sales Report', 'route': '/salesReport'},
+    {'icon': Icons.people_outline, 'title': 'Users', 'route': '/users'},
+    {'icon': Icons.account_balance_wallet_outlined, 'title': 'Payments', 'route': '/payment'},
+    {'icon': Icons.local_offer_outlined, 'title': 'Offers', 'route': '/coupons'},
+    {'icon': Icons.shopping_cart_outlined, 'title': 'Orders', 'route': '/order'},
+    {'icon': Icons.chat_bubble_outline, 'title': 'Chat', 'route': '/chat'},
+    {'icon': Icons.settings_outlined, 'title': 'Settings', 'route': '/settings'},
   ];
 
   void onDrawerItemTap(int index) {
@@ -39,39 +37,109 @@ class _MainPagesState extends State<MainPages> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       appBar: appBarRizq(context),
-      
       drawer: BlocBuilder<DrawerSelectedIndexCubit, int>(
         builder: (context, selectedIndex) {
           return Drawer(
-            backgroundColor: AppColors.darkBlue,
-            child: ListView(
+            backgroundColor: theme.drawerTheme.backgroundColor,
+            child: Column(
               children: [
-                DrawerHeader(
-                  child: Text(
-                    'Mart Menu',
-                    style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      color: Colors.white,
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        colorScheme.primary.withValues(alpha: 0.15),
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
                   ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.storefront_outlined,
+                          color: colorScheme.primary,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Rizq Mart',
+                        style: GoogleFonts.inter(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Admin Panel',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: Colors.white60,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                ...drawerItems.asMap().entries.map((entry) {
-                  int idx = entry.key;
-                  var item = entry.value;
-                  return ListTile(
-                    leading: Icon(item['icon'], color: Colors.white),
-                    title: Text(
-                      item['title'],
-                      style: GoogleFonts.inter(color: Colors.white),
-                    ),
-                    selected: selectedIndex == idx,
-                    selectedTileColor: AppColors.lightGray.withOpacity(0.2),
-                    onTap: () => onDrawerItemTap(idx),
-                  );
-                // ignore: unnecessary_to_list_in_spreads
-                }).toList(),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    itemCount: drawerItems.length,
+                    itemBuilder: (context, idx) {
+                      final item = drawerItems[idx];
+                      final isSelected = selectedIndex == idx;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: ListTile(
+                          leading: Icon(
+                            item['icon'],
+                            color: isSelected
+                                ? colorScheme.primary
+                                : Colors.white60,
+                            size: 22,
+                          ),
+                          title: Text(
+                            item['title'],
+                            style: GoogleFonts.inter(
+                              color: isSelected
+                                  ? colorScheme.primary
+                                  : Colors.white70,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                              fontSize: 14,
+                            ),
+                          ),
+                          selected: isSelected,
+                          selectedTileColor:
+                              colorScheme.primary.withValues(alpha: 0.1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          dense: true,
+                          visualDensity: const VisualDensity(vertical: -1),
+                          onTap: () => onDrawerItemTap(idx),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           );

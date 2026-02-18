@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -130,8 +130,8 @@ class CategoryDialogState extends State<CategoryDialog> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: isEditMode
-                            ? AppColors.blueAccent.withOpacity(0.1)
-                            : Colors.green.withOpacity(0.1),
+                            ? AppColors.blueAccent.withValues(alpha: 0.1)
+                            : Colors.green.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(

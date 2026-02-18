@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -55,12 +55,13 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 768;
+
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: theme.scaffoldBackgroundColor,
         toolbarHeight: 70,
         title: Row(
           children: [
@@ -77,13 +78,13 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
               ),
             ),
             12.w,
-            const Column(
+             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Order Received',
                   style: TextStyle(
-                    color: Colors.black87,
+                    color: theme.textTheme.bodyLarge?.color,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -91,7 +92,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                 Text(
                   'Manage incoming orders',
                   style: TextStyle(
-                    color: Colors.grey,
+                    color: theme.textTheme.bodySmall?.color,
                     fontSize: 11,
                     fontWeight: FontWeight.w400,
                   ),
@@ -124,17 +125,18 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
           }
         },
         child: Container(
-          color: Colors.grey[50],
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+          color: theme.scaffoldBackgroundColor,
+        child: Container(
+          color: theme.scaffoldBackgroundColor,
+          child: CustomScrollView(
+            slivers: [
+              // 1. Top Stats Section
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
                   child: BlocBuilder<OrderReceivedBloc, OrderReceivedState>(
                     builder: (context, state) {
                       int totalOrders = 0;
-
                       if (state is NewOrdersLoaded) {
                         totalOrders = state.orders.length;
                       } else if (state is OrdersByStatusLoaded) {
@@ -152,7 +154,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blue.withOpacity(0.3),
+                              color: Colors.blue.withValues(alpha: 0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),
@@ -194,7 +196,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             Icon(
                               Icons.check_circle,
                               size: 80,
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                             ),
                           ],
                         ),
@@ -202,10 +204,14 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                     },
                   ),
                 ),
-                24.h,
-                Container(
-                  color: Colors.white,
+              ),
+
+              // 2. Filters Section
+              SliverToBoxAdapter(
+                child: Container(
+                  color: theme.cardTheme.color,
                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                  margin: const EdgeInsets.only(bottom: 24),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -235,7 +241,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             label: Text(filter.$2),
                             selected: context.watch<OrderPageCubit>().state.selectedFilter == filter.$1,
                             backgroundColor: Colors.grey[100],
-                            selectedColor: filter.$4.withOpacity(0.2),
+                            selectedColor: filter.$4.withValues(alpha: 0.2),
                             side: BorderSide(
                               color: context.watch<OrderPageCubit>().state.selectedFilter == filter.$1
                                   ? filter.$4
@@ -266,182 +272,146 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                     ),
                   ),
                 ),
-                24.h,
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isMobile ? 16 : 24,
-                  ),
-                  child: BlocBuilder<OrderReceivedBloc, OrderReceivedState>(
-                    builder: (context, state) {
-                      if (state is OrderReceivedLoading) {
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(64),
-                            child: Column(
-                              children: [
-                                const CircularProgressIndicator(),
-                                16.h,
-                                Text(
-                                  'Loading orders...',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
+              ),
 
-                      List<OrderReceivedEntity> orders = [];
-
-                      if (state is NewOrdersLoaded) {
-                        orders = state.orders;
-                      } else if (state is OrdersByStatusLoaded) {
-                        orders = state.orders;
-                      } else if (state is OrderReceivedError) {
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(32),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  size: 48,
-                                  color: Colors.red[300],
-                                ),
-                                16.h,
-                                Text(
-                                  'Error: ${state.message}',
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 14,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-
-                      if (orders.isEmpty) {
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(64),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.inbox,
-                                  size: 64,
-                                  color: Colors.grey[300],
-                                ),
-                                16.h,
-                                Text(
-                                  'No orders found',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                8.h,
-                                Text(
-                                  'Check back later for new orders',
-                                  style: TextStyle(
-                                    color: Colors.grey[500],
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-
-                      final currentPage = context.read<OrderPageCubit>().state.currentPage;
-                      int totalPages = (orders.length / itemsPerPage).ceil();
-                      
-                      // Fix: Ensure currentPage is valid
-                      if (currentPage > totalPages && totalPages > 0) {
-                        context.read<OrderPageCubit>().setPage(totalPages);
-                      } else if (totalPages == 0) {
-                        context.read<OrderPageCubit>().setPage(1);
-                      }
-
-                      int startIndex = (context.watch<OrderPageCubit>().state.currentPage - 1) * itemsPerPage;
-                      int endIndex = (startIndex + itemsPerPage).clamp(0, orders.length);
-                      
-                      // Fix: Ensure startIndex is valid
-                      if (startIndex >= orders.length && orders.isNotEmpty) {
-                        startIndex = 0;
-                        endIndex = itemsPerPage.clamp(0, orders.length);
-                        context.read<OrderPageCubit>().setPage(1);
-                      }
-                      
-                      List<OrderReceivedEntity> paginatedOrders =
-                          orders.sublist(startIndex, endIndex);
-
-                      if (isMobile) {
-                        return Column(
+              // 3. Grid/List of Orders
+              BlocBuilder<OrderReceivedBloc, OrderReceivedState>(
+                builder: (context, state) {
+                  if (state is OrderReceivedLoading) {
+                    return const SliverFillRemaining(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: paginatedOrders.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: orderCardMobile(paginatedOrders[index]),
-                                );
-                              },
-                            ),
-                            if (totalPages > 1)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 24),
-                                child: paginationWidget(totalPages),
-                              ),
+                             CircularProgressIndicator(),
+                             SizedBox(height: 16),
+                             Text('Loading orders...'),
                           ],
-                        );
-                      } else {
-                        return Column(
+                        ),
+                      ),
+                    );
+                  }
+
+                  List<OrderReceivedEntity> orders = [];
+                  if (state is NewOrdersLoaded) {
+                    orders = state.orders;
+                  } else if (state is OrdersByStatusLoaded) {
+                    orders = state.orders;
+                  } else if (state is OrderReceivedError) {
+                     return SliverFillRemaining(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: MediaQuery.of(context).size.width > 1400 ? 4 : 3,
-                                childAspectRatio: 0.75,
-                                crossAxisSpacing: 16,
-                                mainAxisSpacing: 16,
-                              ),
-                              itemCount: paginatedOrders.length,
-                              itemBuilder: (context, index) {
-                                return orderCardDesktop(paginatedOrders[index]);
-                              },
-                            ),
-                            if (totalPages > 1)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 32),
-                                child: paginationWidget(totalPages),
-                              ),
+                            Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
+                            const SizedBox(height: 16),
+                            Text('Error: ${state.message}', style: const TextStyle(color: Colors.red)),
                           ],
-                        );
-                      }
-                    },
-                  ),
-                ),
-                32.h,
-              ],
-            ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (orders.isEmpty) {
+                     return SliverFillRemaining(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.inbox, size: 64, color: Colors.grey[300]),
+                            const SizedBox(height: 16),
+                            Text('No orders found', style: TextStyle(color: Colors.grey[600], fontSize: 16)),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  // Pagination Logic
+                  final currentPage = context.watch<OrderPageCubit>().state.currentPage;
+                  int totalPages = (orders.length / itemsPerPage).ceil();
+
+                   if (currentPage > totalPages && totalPages > 0) {
+                       
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                           if (context.mounted) context.read<OrderPageCubit>().setPage(totalPages);
+                        });
+                  } else if (totalPages == 0) {
+                  }
+
+                  int startIndex = (currentPage - 1) * itemsPerPage;
+                  if (startIndex >= orders.length) startIndex = 0;
+                  
+                  int endIndex = (startIndex + itemsPerPage).clamp(0, orders.length);
+                  List<OrderReceivedEntity> paginatedOrders = orders.sublist(startIndex, endIndex);
+
+                  final isMobile = MediaQuery.of(context).size.width < 768;
+
+                  if (isMobile) {
+                    return SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12, left: 16, right: 16),
+                            child: orderCardMobile(paginatedOrders[index]),
+                          );
+                        },
+                        childCount: paginatedOrders.length,
+                      ),
+                    );
+                  } else {
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      sliver: SliverGrid(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: MediaQuery.of(context).size.width > 1400 ? 4 : 3,
+                          childAspectRatio: 0.75,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            return orderCardDesktop(paginatedOrders[index]);
+                          },
+                          childCount: paginatedOrders.length,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+
+              // 4. Pagination Footer
+               BlocBuilder<OrderReceivedBloc, OrderReceivedState>(
+                builder: (context, state) {
+                   List<OrderReceivedEntity> orders = [];
+                  if (state is NewOrdersLoaded) orders = state.orders;
+                  else if (state is OrdersByStatusLoaded) orders = state.orders;
+                  
+                  if (orders.isEmpty) return const SliverToBoxAdapter(child: SizedBox());
+
+                  int totalPages = (orders.length / itemsPerPage).ceil();
+                  
+                  if (totalPages <= 1) return const SliverToBoxAdapter(child: SizedBox(height: 32));
+
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 32, bottom: 32),
+                      child: paginationWidget(totalPages),
+                    ),
+                  );
+                }
+               ),
+            ],
           ),
+        ),
         ),
       ),
     );
   }
 
   Widget paginationWidget(int totalPages) {
+    final theme = Theme.of(context);
     return BlocBuilder<OrderPageCubit, OrderPageState>(
       builder: (context, pageState) {
         return Row(
@@ -465,7 +435,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
-                        pageState.currentPage == pageNum ? Colors.blue : Colors.grey[200],
+                        pageState.currentPage == pageNum ? theme.colorScheme.primary : theme.colorScheme.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6),
                     ),
@@ -473,7 +443,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                   child: Text(
                     pageNum.toString(),
                     style: TextStyle(
-                      color: pageState.currentPage == pageNum ? Colors.white : Colors.black,
+                      color: pageState.currentPage == pageNum ? theme.colorScheme.onPrimary : theme.textTheme.bodyLarge?.color,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -537,7 +507,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                     vertical: Responsive.scaleSpacing(context, 5),
                   ),
                   decoration: BoxDecoration(
-                    color: getStatusColor(order.orderStatus).withOpacity(0.2),
+                    color: getStatusColor(order.orderStatus).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 20)),
                   ),
                   child: Text(
@@ -685,7 +655,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           vertical: Responsive.scaleSpacing(context, 4),
                         ),
                         decoration: BoxDecoration(
-                          color: getStatusColor(order.orderStatus).withOpacity(0.2),
+                          color: getStatusColor(order.orderStatus).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 12)),
                         ),
                         child: Text(
@@ -856,7 +826,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                           icon: const Icon(Icons.download),
                           onPressed: () => saveOrderPdf(context, order),
                           style: IconButton.styleFrom(
-                            backgroundColor: Colors.blue.withOpacity(0.1),
+                            backgroundColor: Colors.blue.withValues(alpha: 0.1),
                           ),
                         ),
                       ),
@@ -867,7 +837,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                           icon: const Icon(Icons.print),
                           onPressed: () => printOrderDetail(context, order),
                           style: IconButton.styleFrom(
-                            backgroundColor: Colors.blue.withOpacity(0.1),
+                            backgroundColor: Colors.blue.withValues(alpha: 0.1),
                           ),
                         ),
                       ),
@@ -879,7 +849,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                           icon: const Icon(Icons.close),
                           onPressed: () => Navigator.pop(context),
                           style: IconButton.styleFrom(
-                            backgroundColor: Colors.grey.withOpacity(0.1),
+                            backgroundColor: Colors.grey.withValues(alpha: 0.1),
                           ),
                         ),
                       ),
@@ -1056,13 +1026,13 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                 ),
               24.h,
 
-              // ✅ TOTAL AMOUNT
+              // ? TOTAL AMOUNT
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.05),
+                  color: Colors.blue.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.withOpacity(0.2)),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1162,7 +1132,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.blue.withOpacity(0.05),
+          color: Colors.blue.withValues(alpha: 0.05),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
             topRight: Radius.circular(8),

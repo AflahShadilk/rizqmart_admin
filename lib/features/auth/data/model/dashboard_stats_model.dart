@@ -1,4 +1,4 @@
-import 'package:rizqmartadmin/features/auth/domain/entities/main/dashboard_stats_entity.dart';
+﻿import 'package:rizqmartadmin/features/auth/domain/entities/main/dashboard_stats_entity.dart';
 
 class DashboardStatsModel extends DashboardStatsEntity {
   const DashboardStatsModel({

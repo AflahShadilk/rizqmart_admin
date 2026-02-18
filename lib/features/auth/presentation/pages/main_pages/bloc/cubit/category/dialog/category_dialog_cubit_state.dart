@@ -1,4 +1,4 @@
-class CategoryDialogCubitState {
+﻿class CategoryDialogCubitState {
   final String? imageUrl;
   final bool isUploading;
 

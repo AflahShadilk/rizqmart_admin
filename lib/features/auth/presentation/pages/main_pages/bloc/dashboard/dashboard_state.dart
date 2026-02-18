@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+﻿import 'package:equatable/equatable.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/dashboard_stats_entity.dart';
 
 abstract class DashboardState extends Equatable {

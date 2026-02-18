@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rizqmartadmin/features/auth/data/model/add_product_model.dart';
@@ -81,6 +81,9 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/chat/c
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/chat/chat_details_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_bloc.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/chat_repository_impl.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/settings/settings_page.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/notification/notification_bell_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/notification/notifications_page.dart';
 
 class AppRoutes {
   static final GoRouter router = GoRouter(initialLocation: '/', routes: [
@@ -123,8 +126,15 @@ class AppRoutes {
                 }
               }
             },
-            child: BlocProvider(
-              create: (context) => DrawerSelectedIndexCubit(),
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => DrawerSelectedIndexCubit(),
+                ),
+                BlocProvider(
+                  create: (context) => NotificationBellCubit(),
+                ),
+              ],
               child: MainPages(child: child),
             ),
           );
@@ -507,6 +517,19 @@ class AppRoutes {
                   userId: extra['userId'] ?? '',
                 ),
                );
+            },
+           ),
+
+          GoRoute(
+            path: '/settings',
+            builder: (context, state) {
+              return const SettingsPage();
+            },
+          ),
+          GoRoute(
+            path: '/notifications',
+            builder: (context, state) {
+              return const NotificationsPage();
             },
           ),
 

@@ -1,4 +1,4 @@
-import 'package:rizqmartadmin/features/auth/domain/repository/main/product_repository.dart';
+﻿import 'package:rizqmartadmin/features/auth/domain/repository/main/product_repository.dart';
 
 class DeleteProductUsecase {
   ProductRepository repository;

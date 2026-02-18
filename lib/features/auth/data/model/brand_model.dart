@@ -1,4 +1,4 @@
-
+﻿
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.dart';
 

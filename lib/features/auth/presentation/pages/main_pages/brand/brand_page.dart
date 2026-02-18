@@ -1,10 +1,9 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/brand/page/brand_page_cubit.dart';
@@ -49,6 +48,7 @@ class BrandPageState extends State<BrandPage> {
   }
 
   Widget buildAddButton(BuildContext context) {
+    final theme = Theme.of(context);
     return ElevatedButton.icon(
       onPressed: () {
         showDialog(
@@ -68,14 +68,13 @@ class BrandPageState extends State<BrandPage> {
         ),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
         padding: const EdgeInsets.symmetric(
           horizontal: 24,
           vertical: 14,
         ),
-        elevation: 2,
-        shadowColor: Colors.green.withOpacity(0.3),
+        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -114,13 +113,13 @@ class BrandPageState extends State<BrandPage> {
                 'Brands',
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.blackHeading,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
               elevation: 0,
-              backgroundColor: Colors.blueAccent[50],
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             ),
-            backgroundColor: Colors.blueAccent[50],
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             body: BlocBuilder<BrandPageCubit,BrandPageCubitState>(
               builder: (context, pageState) {
                 if (state is BrandLoadingState) {
@@ -133,7 +132,7 @@ class BrandPageState extends State<BrandPage> {
                         Text(
                           'Loading brands...',
                           style: GoogleFonts.poppins(
-                            color: Colors.grey.shade600,
+                            color: Theme.of(context).textTheme.bodySmall?.color,
                             fontSize: 14,
                           ),
                         ),
@@ -151,14 +150,14 @@ class BrandPageState extends State<BrandPage> {
                           Icon(
                             Icons.shopping_bag_outlined,
                             size: 64,
-                            color: Colors.grey.shade300,
+                            color: Theme.of(context).textTheme.bodySmall?.color,
                           ),
                           16.h,
                           Text(
                             'No brands found',
                             style: GoogleFonts.poppins(
                               fontSize: 18,
-                              color: Colors.grey.shade600,
+                              color: Theme.of(context).textTheme.bodySmall?.color,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -177,10 +176,10 @@ class BrandPageState extends State<BrandPage> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppColors.white,
+                          color: Theme.of(context).cardTheme.color,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.1),
+                              color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -197,7 +196,7 @@ class BrandPageState extends State<BrandPage> {
                                     style: GoogleFonts.poppins(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.blackHeading,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                     ),
                                   ),
                                   4.h,
@@ -205,7 +204,7 @@ class BrandPageState extends State<BrandPage> {
                                     '${allBrands.length} ${allBrands.length == 1 ? 'brand' : 'brands'} available',
                                     style: GoogleFonts.poppins(
                                       fontSize: 13,
-                                      color: Colors.grey.shade600,
+                                      color: Theme.of(context).textTheme.bodySmall?.color,
                                     ),
                                   ),
                                 ],
@@ -225,18 +224,18 @@ class BrandPageState extends State<BrandPage> {
                           decoration: InputDecoration(
                             hintText: 'Search brands...',
                             hintStyle: GoogleFonts.poppins(
-                              color: Colors.grey.shade400,
+                              color: Theme.of(context).hintColor,
                             ),
-                            prefixIcon: const Icon(
+                            prefixIcon:  Icon(
                               Icons.search,
-                              color: AppColors.charcoal,
+                              color: Theme.of(context).iconTheme.color,
                               size: 24,
                             ),
                             suffixIcon: pageState.searchQuery.isNotEmpty
                                 ? IconButton(
-                                    icon: const Icon(
+                                    icon:  Icon(
                                       Icons.clear,
-                                      color: AppColors.charcoal,
+                                      color: Theme.of(context).iconTheme.color,
                                       size: 24,
                                     ),
                                     onPressed: () {
@@ -255,13 +254,13 @@ class BrandPageState extends State<BrandPage> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: AppColors.blueAccent,
+                              borderSide:  BorderSide(
+                                color: Theme.of(context).colorScheme.primary,
                                 width: 2,
                               ),
                             ),
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: Theme.of(context).cardTheme.color,
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 12,
@@ -278,13 +277,13 @@ class BrandPageState extends State<BrandPage> {
                                     Icon(
                                       Icons.search_off,
                                       size: 64,
-                                      color: Colors.grey.shade300,
+                                      color: Theme.of(context).textTheme.bodySmall?.color,
                                     ),
                                     16.h,
                                     Text(
                                       'No brands match "${pageState.searchQuery}"',
                                       style: GoogleFonts.poppins(
-                                        color: Colors.grey.shade600,
+                                        color: Theme.of(context).textTheme.bodySmall?.color,
                                         fontSize: 14,
                                       ),
                                     ),

@@ -14,7 +14,6 @@ dependencies:
   # Cupertino icons for iOS-style UI
   cupertino_icons: ^1.0.8
   flutter_bloc: ^9.1.1
-  camera_web: ^0.3.5
   go_router: ^16.1.0
   flutter_svg: ^2.2.0
   lottie: ^3.3.1
@@ -41,6 +40,8 @@ dependencies:
   flutter_local_notifications: ^19.5.0
   badges: ^3.1.2
   responsive_display: ^1.0.0
+  flutter_launcher_icons: ^0.14.4
+  cached_network_image: ^3.4.1
   
 
 

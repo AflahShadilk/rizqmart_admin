@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -77,13 +77,13 @@ class _UnitsPageState extends State<UnitsPage> {
                 'Units',
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.blackHeading,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
               elevation: 0,
-              backgroundColor: AppColors.backgroundColor,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             ),
-            backgroundColor: AppColors.backgroundColor,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             body: Builder(builder: (context) {
               if (state is UnitLoadingState) {
                 return Center(
@@ -95,7 +95,7 @@ class _UnitsPageState extends State<UnitsPage> {
                       Text(
                         'Loading units...',
                         style: GoogleFonts.poppins(
-                          color: Colors.grey.shade600,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 14,
                         ),
                       ),
@@ -119,7 +119,7 @@ class _UnitsPageState extends State<UnitsPage> {
                           'No units found',
                           style: GoogleFonts.poppins(
                             fontSize: 18,
-                            color: Colors.grey.shade600,
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -137,10 +137,10 @@ class _UnitsPageState extends State<UnitsPage> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: AppColors.white,
+                            color: Theme.of(context).cardTheme.color,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.gray.withOpacity(0.1),
+                                color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -157,7 +157,7 @@ class _UnitsPageState extends State<UnitsPage> {
                                       style: GoogleFonts.poppins(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.blackHeading,
+                                        color: Theme.of(context).textTheme.bodyLarge?.color,
                                       ),
                                     ),
                                     4.h,
@@ -165,7 +165,7 @@ class _UnitsPageState extends State<UnitsPage> {
                                       '${allUnits.length} ${allUnits.length == 1 ? 'Unit' : 'Units'} available',
                                       style: GoogleFonts.poppins(
                                         fontSize: 13,
-                                        color: Colors.grey.shade600,
+                                        color: Theme.of(context).textTheme.bodySmall?.color,
                                       ),
                                     ),
                                   ],
@@ -186,18 +186,18 @@ class _UnitsPageState extends State<UnitsPage> {
                             decoration: InputDecoration(
                               hintText: 'Search Units...',
                               hintStyle: GoogleFonts.poppins(
-                                color: Colors.grey.shade400,
+                                color: Theme.of(context).hintColor,
                               ),
-                              prefixIcon: const Icon(
+                              prefixIcon: Icon(
                                 Icons.search,
-                                color: AppColors.charcoal,
+                                color: Theme.of(context).iconTheme.color,
                                 size: 24,
                               ),
                               suffixIcon: searchQuery.isNotEmpty
                                   ? IconButton(
-                                      icon: const Icon(
+                                      icon: Icon(
                                         Icons.clear,
-                                        color: AppColors.charcoal,
+                                        color: Theme.of(context).iconTheme.color,
                                         size: 24,
                                       ),
                                       onPressed: () {
@@ -216,13 +216,13 @@ class _UnitsPageState extends State<UnitsPage> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppColors.blueAccent,
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary,
                                   width: 2,
                                 ),
                               ),
                               filled: true,
-                              fillColor: AppColors.white,
+                              fillColor: Theme.of(context).cardTheme.color,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 12,
@@ -246,7 +246,7 @@ class _UnitsPageState extends State<UnitsPage> {
                                       Text(
                                         'No Units match "$searchQuery"',
                                         style: GoogleFonts.poppins(
-                                          color: Colors.grey.shade600,
+                                          color: Theme.of(context).textTheme.bodyMedium?.color,
                                           fontSize: 14,
                                         ),
                                       ),
@@ -426,7 +426,7 @@ class BuildAddButtonUnits extends StatelessWidget {
           vertical: 14,
         ),
         elevation: 2,
-        shadowColor: AppColors.green.withOpacity(0.3),
+        shadowColor: AppColors.green.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),

@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+﻿import 'package:equatable/equatable.dart';
 
 class AddProductEntity extends Equatable {
   final String id;
@@ -7,32 +7,24 @@ class AddProductEntity extends Equatable {
   final String category;
   final String brand;
   final double? discount;
-  // final List<String> variant;
-  // final List<String> imageUrls;
   final DateTime createdAt;
   final DateTime? updateAt;
-  final bool ?features;
-  final bool ? status;
-  final List<Map<String,dynamic>>? variantDetails;
- const AddProductEntity(
-      {
-        required this.id,
-        required this.name,
-      // required this.price,
-      // required this.mrp,
-       this.description,
-      required this.category,
-      required this.brand,
-      // required this.quantity,
-      this.discount,
-      // required this.variant,
-      // required this.imageUrls,
-      required this.createdAt,
-      this.updateAt,
-      this.features,
-      this.status,
-      this.variantDetails
-      });
+  final bool? features;
+  final bool? status;
+  final List<Map<String, dynamic>>? variantDetails;
+  const AddProductEntity({
+    required this.id,
+    required this.name,
+    this.description,
+    required this.category,
+    required this.brand,
+    this.discount,
+    required this.createdAt,
+    this.updateAt,
+    this.features,
+    this.status,
+    this.variantDetails,
+  });
 
   @override
 

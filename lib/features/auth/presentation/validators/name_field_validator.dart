@@ -1,4 +1,4 @@
-String? nameFieldValidator(String? value){
+﻿String? nameFieldValidator(String? value){
   if(value==null||value.trim().isEmpty){
     return 'Name field required';
   }

@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -36,11 +36,11 @@ class UsersView extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
         title: Row(
           children: [
             Container(
@@ -52,10 +52,10 @@ class UsersView extends StatelessWidget {
               child: Icon(Icons.people_rounded, color: Colors.blue.shade700, size: 24),
             ),
             12.w,
-            const Text(
+             Text(
               'Users Management',
               style: TextStyle(
-                color: Color(0xFF1A1F36),
+                color: Theme.of(context).textTheme.bodyLarge?.color,
                 fontWeight: FontWeight.w600,
                 fontSize: 20,
               ),
@@ -96,10 +96,10 @@ class SearchAndStatsBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -135,25 +135,25 @@ class SearchBar extends StatelessWidget {
             maxWidth: isMobile ? double.infinity : 400,
           ),
           decoration: BoxDecoration(
-            color: const Color(0xFFF5F7FA),
+            color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: searchQuery.isNotEmpty 
-                  ? Colors.blue.shade200 
-                  : Colors.grey.shade200,
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.5) 
+                  : Theme.of(context).dividerColor,
               width: 1.5,
             ),
           ),
           child: TextField(
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Color(0xFF1A1F36),
+              color: Theme.of(context).textTheme.bodyLarge?.color,
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
               hintText: 'Search users...',
               hintStyle: TextStyle(
-                color: Colors.grey.shade500,
+                color: Theme.of(context).hintColor,
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
               ),
@@ -270,16 +270,16 @@ class StatsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: color, size: 20),
@@ -304,7 +304,7 @@ class StatsCard extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade600,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -332,11 +332,11 @@ class UsersBody extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardTheme.color,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
@@ -373,11 +373,11 @@ class UsersBody extends StatelessWidget {
                 margin: const EdgeInsets.all(32),
                 padding: const EdgeInsets.all(48),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardTheme.color,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 20,
                       offset: const Offset(0, 4),
                     ),
@@ -404,7 +404,7 @@ class UsersBody extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade800,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                         letterSpacing: 0.3,
                       ),
                     ),
@@ -447,11 +447,11 @@ class ErrorView extends StatelessWidget {
         padding: const EdgeInsets.all(40),
         constraints: const BoxConstraints(maxWidth: 500),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 30,
               offset: const Offset(0, 8),
             ),
@@ -478,7 +478,7 @@ class ErrorView extends StatelessWidget {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey.shade900,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
                 letterSpacing: 0.3,
               ),
               textAlign: TextAlign.center,
@@ -510,7 +510,7 @@ class ErrorView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 0,
-                  shadowColor: Colors.blue.withOpacity(0.3),
+                  shadowColor: Colors.blue.withValues(alpha: 0.3),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -547,7 +547,7 @@ class MobileView extends StatelessWidget {
       children: [
         Container(
           padding: const EdgeInsets.all(16),
-          color: Colors.white,
+          color: Theme.of(context).cardTheme.color,
           child: const MobileStatsCards(),
         ),
         Expanded(
@@ -625,11 +625,11 @@ class DesktopView extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),

@@ -1,4 +1,4 @@
-String? emailValidator(String? value) {
+﻿String? emailValidator(String? value) {
   if (value == null || value.trim().isEmpty) {
     return 'Email is required';
   }

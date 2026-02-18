@@ -1,10 +1,9 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/coupon_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/coupon_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/coupons/add_coupon_page.dart';
@@ -91,13 +90,13 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
               'Offers',
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w600,
-                color: AppColors.blackHeading,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
             ),
             elevation: 0,
-            backgroundColor: AppColors.backgroundColor,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
-          backgroundColor: AppColors.backgroundColor,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: Builder(
             builder: (context) {
               if (state is LoadingCouponState) {
@@ -120,7 +119,7 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                             'No offers found',
                             style: GoogleFonts.poppins(
                               fontSize: 18,
-                              color: Colors.grey.shade600,
+                              color: Theme.of(context).textTheme.bodyMedium?.color,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -151,10 +150,10 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).cardTheme.color,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
+                                color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -171,7 +170,7 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                                       style: GoogleFonts.poppins(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.blackHeading,
+                                        color: Theme.of(context).textTheme.bodyLarge?.color,
                                       ),
                                     ),
                                     4.h,
@@ -179,7 +178,7 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                                       '${allCoupons.length} ${allCoupons.length == 1 ? 'offer' : 'offers'} available',
                                       style: GoogleFonts.poppins(
                                         fontSize: 13,
-                                        color: Colors.grey.shade600,
+                                        color: Theme.of(context).textTheme.bodySmall?.color,
                                       ),
                                     ),
                                   ],
@@ -214,14 +213,14 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                             },
                             decoration: InputDecoration(
                               hintText: 'Search offers...',
-                              hintStyle: GoogleFonts.poppins(color: Colors.grey.shade400),
-                              prefixIcon: const Icon(Icons.search, color: AppColors.charcoal),
+                              hintStyle: GoogleFonts.poppins(color: Theme.of(context).hintColor),
+                              prefixIcon: Icon(Icons.search, color: Theme.of(context).iconTheme.color),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
                               ),
                               filled: true,
-                              fillColor: Colors.white,
+                              fillColor: Theme.of(context).cardTheme.color,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               suffixIcon: cubitState.searchQuery.isNotEmpty
                                 ? IconButton(
@@ -242,7 +241,7 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                               ? Center(
                                   child: Text(
                                     'No offers match "${cubitState.searchQuery}"',
-                                    style: GoogleFonts.poppins(color: Colors.grey.shade600),
+                                    style: GoogleFonts.poppins(color: Theme.of(context).textTheme.bodyMedium?.color),
                                   ),
                                 )
                               : ListView.builder(

@@ -1,4 +1,4 @@
-class CategoryPageState {
+﻿class CategoryPageState {
   final String searchQuery;
 
   const CategoryPageState({

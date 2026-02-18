@@ -1,4 +1,4 @@
-String? validatePhoneNumber(String? value) {
+﻿String? validatePhoneNumber(String? value) {
   if (value == null || value.trim().isEmpty) {
     return 'Please enter a phone number';
   }

@@ -1,4 +1,4 @@
-class OrderItemEntity {
+﻿class OrderItemEntity {
   final String productId;
   final String productName;
   final double price;

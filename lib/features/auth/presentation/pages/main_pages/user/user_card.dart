@@ -15,16 +15,17 @@ class UserCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      color: Theme.of(context).cardTheme.color,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
+            _buildHeader(context),
             16.h,
             const Divider(),
             8.h,
-            _buildInfo(),
+            _buildInfo(context),
             16.h,
             _buildActions(context),
           ],
@@ -33,7 +34,7 @@ class UserCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
         CircleAvatar(
@@ -55,12 +56,19 @@ class UserCard extends StatelessWidget {
             children: [
               Text(
                 user.name ?? 'No Name',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
               ),
               4.h,
               Text(
                 user.email,
-                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
@@ -88,20 +96,22 @@ class UserCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfo() {
+  Widget _buildInfo(BuildContext context) {
     return Column(
       children: [
-        _buildInfoRow(Icons.phone, user.phoneNumber ?? 'No phone'),
+        _buildInfoRow(context, Icons.phone, user.phoneNumber ?? 'No phone'),
         8.h,
-        _buildInfoRow(Icons.badge, user.role.toUpperCase()),
+        _buildInfoRow(context, Icons.badge, user.role.toUpperCase()),
         8.h,
         _buildInfoRow(
+          context,
           Icons.calendar_today,
           'Joined: ${DateFormat('MMM dd, yyyy').format(user.createdAt)}',
         ),
         if (user.lastLoginAt != null) ...[
           8.h,
           _buildInfoRow(
+            context,
             Icons.login,
             'Last login: ${DateFormat('MMM dd, yyyy').format(user.lastLoginAt!)}',
           ),
@@ -110,15 +120,18 @@ class UserCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String text) {
+  Widget _buildInfoRow(BuildContext context, IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: Colors.grey[600]),
+        Icon(icon, size: 16, color: Theme.of(context).textTheme.bodySmall?.color),
         8.w,
         Expanded(
           child: Text(
             text,
-            style: TextStyle(color: Colors.grey[700], fontSize: 14),
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+              fontSize: 14,
+            ),
           ),
         ),
       ],

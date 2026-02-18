@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +15,7 @@ class UsersDataTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Theme.of(context).cardTheme.color,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
@@ -73,7 +74,7 @@ class UsersDataTable extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
+        color: Colors.blue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -92,8 +93,8 @@ class UsersDataTable extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: isActive
-            ? Colors.green.withOpacity(0.1)
-            : Colors.red.withOpacity(0.1),
+            ? Colors.green.withValues(alpha: 0.1)
+            : Colors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(

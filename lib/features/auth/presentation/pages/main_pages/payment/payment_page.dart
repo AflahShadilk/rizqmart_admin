@@ -1,5 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
-
+﻿
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,8 +48,10 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 768;
 
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: buildPaymentAppBar(),
+      appBar: buildPaymentAppBar(theme),
       body: BlocListener<PaymentBloc, PaymentState>(
         listener: (context, state) {
           if (state is PaymentRefunded) {
@@ -60,7 +61,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
           }
         },
         child: Container(
-          color: Colors.grey[50],
+          color: theme.scaffoldBackgroundColor,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -83,10 +84,10 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
     );
   }
 
-  AppBar buildPaymentAppBar() {
+  AppBar buildPaymentAppBar(ThemeData theme) {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       toolbarHeight: 70,
       title: Row(
         children: [
@@ -103,13 +104,13 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             ),
           ),
           12.w,
-          const Column(
+           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Payments',
                 style: TextStyle(
-                  color: Colors.black87,
+                  color: theme.textTheme.bodyLarge?.color,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -117,7 +118,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
               Text(
                 'Transaction history & management',
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: theme.textTheme.bodySmall?.color,
                   fontSize: 11,
                   fontWeight: FontWeight.w400,
                 ),
@@ -183,7 +184,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
 
   Widget buildPaymentHeaderSection() {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).cardTheme.color,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
       child: BlocBuilder<PaymentBloc, PaymentState>(
         builder: (context, state) {
@@ -196,7 +197,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                     Expanded(
                       child: buildPaymentMetricCard(
                         'Total Revenue',
-                        '₹${analytics.totalRevenue.toStringAsFixed(2)}',
+                        analytics.totalRevenue.toStringAsFixed(2),
                         Colors.green,
                         Icons.trending_up,
                       ),
@@ -236,7 +237,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                     Expanded(
                       child: buildPaymentAmountCard(
                         'Completed Amount',
-                        '₹${analytics.completedAmount.toStringAsFixed(2)}',
+                        analytics.completedAmount.toStringAsFixed(2),
                         Colors.green,
                       ),
                     ),
@@ -244,7 +245,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                     Expanded(
                       child: buildPaymentAmountCard(
                         'Pending Amount',
-                        '₹${analytics.pendingAmount.toStringAsFixed(2)}',
+                        analytics.pendingAmount.toStringAsFixed(2),
                         Colors.orange,
                       ),
                     ),
@@ -252,7 +253,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                     Expanded(
                       child: buildPaymentAmountCard(
                         'Refunded Amount',
-                        '₹${analytics.refundedAmount.toStringAsFixed(2)}',
+                        analytics.refundedAmount.toStringAsFixed(2),
                         Colors.purple,
                       ),
                     ),
@@ -276,9 +277,9 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -310,9 +311,9 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,7 +323,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 12,
-              color: Colors.grey[700],
+              color: Theme.of(context).textTheme.bodySmall?.color,
             ),
           ),
           8.h,
@@ -349,7 +350,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
     ];
 
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).cardTheme.color,
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -369,7 +370,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                     label: Text(filter.$2),
                     selected: context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1,
                     backgroundColor: Colors.grey[100],
-                    selectedColor: filter.$4.withOpacity(0.2),
+                    selectedColor: filter.$4.withValues(alpha: 0.2),
                     side: BorderSide(
                       color: context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1
                           ? filter.$4
@@ -506,7 +507,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             Text(
               'Loading payments...',
               style: TextStyle(
-                color: Colors.grey[600],
+                color: Theme.of(context).textTheme.bodySmall?.color,
                 fontSize: 14,
               ),
             ),
@@ -557,7 +558,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             Text(
               'No payments found',
               style: TextStyle(
-                color: Colors.grey[600],
+                color: Theme.of(context).textTheme.bodySmall?.color,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
@@ -600,7 +601,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
-                        pageState.currentPage == pageNum ? Colors.green : Colors.grey[200],
+                        pageState.currentPage == pageNum ? Theme.of(context).colorScheme.primary : Theme.of(context).cardTheme.color,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6),
                     ),
@@ -608,7 +609,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                   child: Text(
                     pageNum.toString(),
                     style: TextStyle(
-                      color: pageState.currentPage == pageNum ? Colors.white : Colors.black,
+                      color: pageState.currentPage == pageNum ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).textTheme.bodyLarge?.color,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -632,9 +633,10 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
   Widget buildPaymentCardMobile(PaymentEntity payment) {
     return Card(
       elevation: 0,
+      color: Theme.of(context).cardTheme.color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -673,7 +675,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                   ),
                   decoration: BoxDecoration(
                     color: buildPaymentStatusColor(payment.status)
-                        .withOpacity(0.2),
+                        .withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -691,7 +693,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             Divider(color: Colors.grey[200]),
             12.h,
             Text(
-              '₹${payment.amount.toStringAsFixed(2)}',
+              '?${payment.amount.toStringAsFixed(2)}',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -699,7 +701,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             ),
             8.h,
             Text(
-              '${payment.method} • ${DateFormat('dd MMM').format(payment.createdAt)}',
+              '${payment.method} � ${DateFormat('dd MMM').format(payment.createdAt)}',
               style: TextStyle(
                 fontSize: 11,
                 color: Colors.grey[600],
@@ -750,9 +752,10 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
   Widget buildPaymentCardDesktop(PaymentEntity payment) {
     return Card(
       elevation: 0,
+      color: Theme.of(context).cardTheme.color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -761,7 +764,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: buildPaymentStatusColor(payment.status).withOpacity(0.1),
+                color: buildPaymentStatusColor(payment.status).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -798,7 +801,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '₹${payment.amount.toStringAsFixed(2)}',
+                    '?${payment.amount.toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
@@ -845,7 +848,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                 ),
                 decoration: BoxDecoration(
                   color: buildPaymentStatusColor(payment.status)
-                      .withOpacity(0.2),
+                      .withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -943,7 +946,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                     buildPaymentDetailItem('Order ID', payment.orderId),
                     buildPaymentDetailItem(
                       'Amount',
-                      '₹${payment.amount.toStringAsFixed(2)}',
+                      '?${payment.amount.toStringAsFixed(2)}',
                     ),
                     buildPaymentDetailItem('Currency', payment.currency),
                     buildPaymentDetailItem('Method', payment.method),
@@ -992,7 +995,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                       [
                         buildPaymentDetailItem(
                           'Refunded Amount',
-                          '₹${payment.refundedAmount!.toStringAsFixed(2)}',
+                          '?${payment.refundedAmount!.toStringAsFixed(2)}',
                         ),
                       ],
                     ),
@@ -1136,7 +1139,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                 decoration: InputDecoration(
                   labelText: 'Refund Amount',
                   hintText: payment.amount.toStringAsFixed(2),
-                  prefixText: '₹ ',
+                  prefixText: '? ',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),

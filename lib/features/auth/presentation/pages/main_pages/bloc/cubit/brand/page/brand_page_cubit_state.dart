@@ -1,4 +1,4 @@
-class BrandPageCubitState {
+﻿class BrandPageCubitState {
   final String searchQuery;
 
   const BrandPageCubitState({

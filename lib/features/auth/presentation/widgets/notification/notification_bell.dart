@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use, unnecessary_to_list_in_spreads
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -13,10 +13,7 @@ class NotificationBell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => NotificationBellCubit(),
-      child: const _NotificationBellView(),
-    );
+    return const _NotificationBellView();
   }
 }
 
@@ -32,9 +29,11 @@ class _NotificationBellView extends StatelessWidget {
       listener: (context, state) {
         if (state.lastAddedChat != null) {
           _showChatSnackbar(context, state.lastAddedChat!);
+          context.read<NotificationBellCubit>().resetLastAdded();
         }
         if (state.lastAddedNotification != null) {
           _showNotificationSnackbar(context, state.lastAddedNotification!);
+          context.read<NotificationBellCubit>().resetLastAdded();
         }
       },
       child: BlocBuilder<NotificationBellCubit, NotificationBellState>(
@@ -76,7 +75,7 @@ class _NotificationBellView extends StatelessWidget {
                           bottom: BorderSide(color: Colors.grey[300]!),
                           left: const BorderSide(color: Colors.blue, width: 4),
                         ),
-                        color: Colors.blue.withOpacity(0.05),
+                        color: Colors.blue.withValues(alpha: 0.05),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,16 +173,28 @@ class _NotificationBellView extends StatelessWidget {
                       ),
                     ),
                   );
-                }).toList(),
-                if (state.notifications.isNotEmpty)
+                }),
+                if (state.notifications.isNotEmpty || state.unreadChats.isNotEmpty)
                   PopupMenuItem(
-                    child: Center(
-                      child: TextButton(
-                        onPressed: () => context
-                            .read<NotificationBellCubit>()
-                            .clearNotifications(),
-                        child: const Text('Clear All'),
-                      ),
+                    child: Column(
+                      children: [
+                        const Divider(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            TextButton(
+                              onPressed: () => context.push('/notifications'),
+                              child: const Text('View All'),
+                            ),
+                            TextButton(
+                              onPressed: () => context
+                                  .read<NotificationBellCubit>()
+                                  .clearNotifications(),
+                              child: const Text('Clear All'),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
               ];
@@ -233,6 +244,7 @@ class _NotificationBellView extends StatelessWidget {
           label: 'View',
           textColor: Colors.yellow,
           onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             context.push('/chat_details', extra: {
               'chatId': chat.id,
               'productName': chat.productName,
@@ -241,7 +253,7 @@ class _NotificationBellView extends StatelessWidget {
           },
         ),
         backgroundColor: const Color(0xFF1E88E5),
-        duration: const Duration(seconds: 4),
+        duration: const Duration(seconds: 5),
       ),
     );
   }
@@ -277,7 +289,7 @@ class _NotificationBellView extends StatelessWidget {
           ],
         ),
         backgroundColor: Colors.green,
-        duration: const Duration(seconds: 4),
+        duration: const Duration(seconds: 5),
       ),
     );
   }

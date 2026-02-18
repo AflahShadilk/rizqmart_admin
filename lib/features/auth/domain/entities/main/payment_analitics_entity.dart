@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+﻿import 'package:equatable/equatable.dart';
 
 class PaymentAnalyticsEntity extends Equatable {
   final double totalRevenue;

@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/chat_entity.dart';
 
 class ChatModel extends ChatEntity {
@@ -9,6 +9,7 @@ class ChatModel extends ChatEntity {
     required super.userId,
     required super.adminId,
     required super.lastMessage,
+    required super.lastMessageSenderRole,
     required super.timestamp,
   });
 
@@ -21,6 +22,7 @@ class ChatModel extends ChatEntity {
       userId: data['userId'] ?? '',
       adminId: data['adminId'] ?? 'admin',
       lastMessage: data['lastMessage'] ?? '',
+      lastMessageSenderRole: data['lastMessageSenderRole'] ?? '',
       timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -32,6 +34,7 @@ class ChatModel extends ChatEntity {
       'userId': userId,
       'adminId': adminId,
       'lastMessage': lastMessage,
+      'lastMessageSenderRole': lastMessageSenderRole,
       'timestamp': Timestamp.fromDate(timestamp),
     };
   }
@@ -43,6 +46,7 @@ class ChatModel extends ChatEntity {
     String? userId,
     String? adminId,
     String? lastMessage,
+    String? lastMessageSenderRole,
     DateTime? timestamp,
   }) {
     return ChatModel(
@@ -52,6 +56,7 @@ class ChatModel extends ChatEntity {
       userId: userId ?? this.userId,
       adminId: adminId ?? this.adminId,
       lastMessage: lastMessage ?? this.lastMessage,
+      lastMessageSenderRole: lastMessageSenderRole ?? this.lastMessageSenderRole,
       timestamp: timestamp ?? this.timestamp,
     );
   }

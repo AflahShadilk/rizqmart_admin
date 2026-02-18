@@ -1,4 +1,4 @@
-import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
+﻿import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 
 class ProductsPageState {
   final List<AddProductEntity> filterProducts;

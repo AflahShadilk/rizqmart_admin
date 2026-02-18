@@ -1,4 +1,4 @@
-class PaymentPageState {
+﻿class PaymentPageState {
   final String selectedFilter;
   final int currentPage;
 

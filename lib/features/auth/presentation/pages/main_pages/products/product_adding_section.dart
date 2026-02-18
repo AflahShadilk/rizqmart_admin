@@ -1,4 +1,4 @@
-﻿// ignore_for_file: use_build_context_synchronously, deprecated_member_use, prefer_final_fields
+﻿// ignore_for_file: use_build_context_synchronously, prefer_final_fields
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -505,7 +505,7 @@ class _FormProductsState extends State<FormProducts> {
           return Container(
             width: MediaQuery.of(context).size.width * 0.95,
             decoration: BoxDecoration(
-              color: AppColors.charcoal.withOpacity(0.1),
+              color: AppColors.charcoal.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: AppColors.lightBlue,
@@ -640,7 +640,7 @@ class _FormProductsState extends State<FormProducts> {
                   child: Container(
                     height: 100,
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.gray.withOpacity(.3)),
+                      border: Border.all(color: AppColors.gray.withValues(alpha: .3)),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: imageUrl.isNotEmpty
@@ -678,7 +678,7 @@ class _FormProductsState extends State<FormProducts> {
                             child: Icon(
                               Icons.add_photo_alternate,
                               size: 30,
-                              color: AppColors.gray.withOpacity(.4),
+                              color: AppColors.gray.withValues(alpha: .4),
                             ),
                           ),
                   ),

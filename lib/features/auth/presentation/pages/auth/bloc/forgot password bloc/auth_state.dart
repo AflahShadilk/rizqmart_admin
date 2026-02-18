@@ -1,4 +1,4 @@
-abstract class ForgotPasswordState{}
+﻿abstract class ForgotPasswordState{}
 
 class ForgotPasswordInitial extends ForgotPasswordState{}
 class ForgotPasswordLoading extends ForgotPasswordState{}

@@ -1,4 +1,4 @@
-
+﻿
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rizqmartadmin/features/auth/data/model/add_product_model.dart';
@@ -64,19 +64,11 @@ class ProductFirestoreSource {
         bool updated = false;
 
         List<dynamic> newVariants = variants.map((v) {
-          // Identify variant by ID if available, or name/unit combination if that's what we have
-          // Based on previous code, variantDetails has 'unitName', etc.
-          // IF we have a unique ID for variant, use it. Otherwise, standard fallback needed?
-          // Since we added variantId to OrderItemEntity, let's assume valid variantId matching
-          // or fallback to checking equality if no ID.
-          
           if (variantId != null && v['id'] == variantId) {
              double currentQty = (v['quantity'] as num? ?? 0).toDouble();
              v['quantity'] = currentQty + quantityChange;
              updated = true;
-          } 
-          // Fallback: if we don't have IDs in variants (legacy data), maybe match by unitName?
-          // But strict ID matching is safer if IDs exist.
+          }
           return v;
         }).toList();
 

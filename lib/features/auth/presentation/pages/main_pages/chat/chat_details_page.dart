@@ -1,10 +1,9 @@
-// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/message_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_event.dart';
@@ -57,14 +56,14 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               widget.productName.isNotEmpty ? widget.productName : 'Order ${widget.chatId}',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: AppColors.blackHeading, fontSize: 16),
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16),
             ),
             Text(
               'User: ${widget.userId}',
@@ -72,9 +71,9 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
             ),
           ],
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 1,
-        iconTheme: const IconThemeData(color: AppColors.blackHeading),
+        iconTheme: IconThemeData(color: Theme.of(context).iconTheme.color),
       ),
       body: Column(
         children: [
@@ -110,7 +109,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                             maxWidth: MediaQuery.of(context).size.width * 0.7,
                           ),
                           decoration: BoxDecoration(
-                            color: isMe ? AppColors.darkBlue : Colors.white,
+                            color: isMe ? Theme.of(context).primaryColor : Theme.of(context).cardTheme.color,
                             borderRadius: BorderRadius.only(
                               topLeft: const Radius.circular(12),
                               topRight: const Radius.circular(12),
@@ -119,7 +118,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
+                                color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               )
@@ -142,7 +141,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                               Text(
                                 message.text,
                                 style: GoogleFonts.poppins(
-                                  color: isMe ? Colors.white : Colors.black87,
+                                  color: isMe ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).textTheme.bodyLarge?.color,
                                   fontSize: 14,
                                 ),
                               ),
@@ -169,7 +168,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
           // Input Area
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.white,
+            color: Theme.of(context).cardTheme.color,
             child: Row(
               children: [
                 Expanded(
@@ -179,7 +178,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                       hintText: 'Type a message...',
                       hintStyle: GoogleFonts.poppins(color: Colors.grey.shade400),
                       filled: true,
-                      fillColor: Colors.grey.shade100,
+                      fillColor: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).scaffoldBackgroundColor,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide.none,
@@ -191,10 +190,10 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                 ),
                 8.w,
                 CircleAvatar(
-                  backgroundColor: AppColors.darkBlue,
+                  backgroundColor: Theme.of(context).primaryColor,
                   radius: 24,
                   child: IconButton(
-                    icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                    icon: Icon(Icons.send_rounded, color: Theme.of(context).colorScheme.onPrimary, size: 20),
                     onPressed: _sendMessage,
                   ),
                 ),

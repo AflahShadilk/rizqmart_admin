@@ -1,4 +1,4 @@
-class SearchFilterState {
+﻿class SearchFilterState {
   final String? selectedCategory;
   final String? selectedBrand;
 

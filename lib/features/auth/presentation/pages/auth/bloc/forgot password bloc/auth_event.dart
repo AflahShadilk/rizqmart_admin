@@ -1,4 +1,4 @@
-abstract class ForgotPasswordEvent{}
+﻿abstract class ForgotPasswordEvent{}
 
 class ForgotPasswordSubmitted extends ForgotPasswordEvent{
   final String email;

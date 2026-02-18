@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rizqmartadmin/features/auth/data/model/order_received_model.dart';
 
 abstract class OrderReceivedDataSource {
@@ -28,13 +28,9 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
 
       
       return snapshot.docs
-          .map((doc) {
-            doc.data();
-            return OrderReceivedModel.fromFirestore(doc);
-          })
+          .map((doc) => OrderReceivedModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-
       throw Exception('Failed to fetch new orders: $e');
     }
   }
@@ -68,15 +64,9 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
 
       
       return snapshot.docs
-          .map((doc) {
-            // ignore: unused_local_variable
-            final data = doc.data();
-
-            return OrderReceivedModel.fromFirestore(doc);
-          })
+          .map((doc) => OrderReceivedModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-
       throw Exception('Failed to fetch orders by status: $e');
     }
   }

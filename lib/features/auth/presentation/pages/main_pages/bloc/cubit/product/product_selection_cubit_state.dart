@@ -1,4 +1,4 @@
-class ProductSelectionState {
+﻿class ProductSelectionState {
   final List<String> selectedIds;
   final String searchQuery;
 

@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +50,7 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   Widget buildAddButton(BuildContext context, List<CategoryModel> categories) {
+    final theme = Theme.of(context);
     return ElevatedButton.icon(
       onPressed: () {
         showDialog(
@@ -71,14 +72,13 @@ class _CategoryPageState extends State<CategoryPage> {
         ),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
         padding: const EdgeInsets.symmetric(
           horizontal: 24,
           vertical: 14,
         ),
-        elevation: 2,
-        shadowColor: Colors.green.withOpacity(0.3),
+        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -117,13 +117,13 @@ class _CategoryPageState extends State<CategoryPage> {
                 'Categories',
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.blackHeading,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
               elevation: 0,
-              backgroundColor: AppColors.backgroundColor,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             ),
-            backgroundColor: AppColors.backgroundColor,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             body: BlocBuilder<CategoryPageCubit, CategoryPageState>(
               builder: (context, pageState) {
                 if (state is CategoryLoadingState) {
@@ -136,7 +136,7 @@ class _CategoryPageState extends State<CategoryPage> {
                         Text(
                           'Loading categories...',
                           style: GoogleFonts.poppins(
-                            color: Colors.grey.shade600,
+                        color: Theme.of(context).textTheme.bodySmall?.color,
                             fontSize: 14,
                           ),
                         ),
@@ -154,14 +154,14 @@ class _CategoryPageState extends State<CategoryPage> {
                           Icon(
                             Icons.category_outlined,
                             size: 64,
-                            color: Colors.grey.shade300,
+                            color: Theme.of(context).textTheme.bodySmall?.color,
                           ),
                           16.h,
                           Text(
                             'No categories found',
                             style: GoogleFonts.poppins(
                               fontSize: 18,
-                              color: Colors.grey.shade600,
+                              color: Theme.of(context).textTheme.bodySmall?.color,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -180,10 +180,10 @@ class _CategoryPageState extends State<CategoryPage> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardTheme.color,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.1),
+                              color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -200,7 +200,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                     style: GoogleFonts.poppins(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.blackHeading,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                     ),
                                   ),
                                   4.h,
@@ -208,7 +208,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                     '${allCategories.length} ${allCategories.length == 1 ? 'category' : 'categories'} available',
                                     style: GoogleFonts.poppins(
                                       fontSize: 13,
-                                      color: Colors.grey.shade600,
+                                      color: Theme.of(context).textTheme.bodySmall?.color,
                                     ),
                                   ),
                                 ],
@@ -228,18 +228,18 @@ class _CategoryPageState extends State<CategoryPage> {
                           decoration: InputDecoration(
                             hintText: 'Search categories...',
                             hintStyle: GoogleFonts.poppins(
-                              color: Colors.grey.shade400,
+                              color: Theme.of(context).hintColor,
                             ),
-                            prefixIcon: const Icon(
+                            prefixIcon:  Icon(
                               Icons.search,
-                              color: AppColors.charcoal,
+                              color: Theme.of(context).iconTheme.color,
                               size: 24,
                             ),
                             suffixIcon: pageState.searchQuery.isNotEmpty
                                 ? IconButton(
-                                    icon: const Icon(
+                                    icon:  Icon(
                                       Icons.clear,
-                                      color: AppColors.charcoal,
+                                      color: Theme.of(context).iconTheme.color,
                                       size: 24,
                                     ),
                                     onPressed: () {
@@ -258,13 +258,13 @@ class _CategoryPageState extends State<CategoryPage> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: AppColors.blueAccent,
+                              borderSide:  BorderSide(
+                                color: Theme.of(context).colorScheme.primary,
                                 width: 2,
                               ),
                             ),
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: Theme.of(context).cardTheme.color,
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 12,
@@ -281,13 +281,13 @@ class _CategoryPageState extends State<CategoryPage> {
                                     Icon(
                                       Icons.search_off,
                                       size: 64,
-                                      color: Colors.grey.shade300,
+                                      color: Theme.of(context).textTheme.bodySmall?.color,
                                     ),
                                     16.h,
                                     Text(
                                       'No categories match "${pageState.searchQuery}"',
                                       style: GoogleFonts.poppins(
-                                        color: Colors.grey.shade600,
+                                        color: Theme.of(context).textTheme.bodySmall?.color,
                                         fontSize: 14,
                                       ),
                                     ),
@@ -374,19 +374,15 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
-            blurRadius: 8,
-            spreadRadius: 1,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.15),
+        ),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(
@@ -397,7 +393,7 @@ class CategoryCard extends StatelessWidget {
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-            color: AppColors.blueAccent.withOpacity(0.1),
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: ClipRRect(
@@ -407,16 +403,16 @@ class CategoryCard extends StatelessWidget {
                     category.logoUrl!,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
+                      return  Icon(
                         Icons.category,
-                        color: AppColors.blueAccent,
+                        color: theme.colorScheme.primary,
                         size: 24,
                       );
                     },
                   )
-                : const Icon(
+                :  Icon(
                     Icons.category,
-                    color: AppColors.blueAccent,
+                    color: theme.colorScheme.primary,
                     size: 24,
                   ),
           ),
@@ -426,7 +422,7 @@ class CategoryCard extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: AppColors.blackHeading,
+            color: theme.textTheme.bodyLarge?.color,
           ),
         ),
         trailing: Row(

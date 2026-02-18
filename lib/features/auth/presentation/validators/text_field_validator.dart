@@ -1,4 +1,4 @@
-class ProductTextValidators {
+﻿class ProductTextValidators {
   //Product name — required, at least 3 characters
   static String? name(String? value) {
     if (value == null || value.trim().isEmpty) {

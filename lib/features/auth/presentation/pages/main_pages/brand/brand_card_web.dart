@@ -1,4 +1,4 @@
-﻿// ignore_for_file: unnecessary_null_comparison, deprecated_member_use
+﻿// ignore_for_file: unnecessary_null_comparison
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -92,8 +92,8 @@ class BrandCardWeb extends StatelessWidget {
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: brand!.status
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
+                          ? Colors.green.withValues(alpha: 0.1)
+                          : Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(

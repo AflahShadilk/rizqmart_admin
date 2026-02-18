@@ -47,5 +47,8 @@ android/.idea/
 .DS_Store
 Thumbs.db
 
+# Secrets
+.env
+
 # Misc
 *.log

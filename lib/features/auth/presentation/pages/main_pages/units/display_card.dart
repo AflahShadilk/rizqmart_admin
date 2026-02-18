@@ -1,7 +1,6 @@
 ﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/units_entity.dart';
 
 class UnitCard extends StatelessWidget {
@@ -21,12 +20,11 @@ class UnitCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
-            color: Colors.grey.withOpacity(0.15),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.15),
             blurRadius: 8,
             spreadRadius: 1,
             offset: const Offset(0, 2),
@@ -41,13 +39,12 @@ class UnitCard extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            // ignore: deprecated_member_use
-            color: AppColors.blueAccent.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.category,
-            color: AppColors.blueAccent,
+            color: Theme.of(context).colorScheme.primary,
             size: 24,
           ),
         ),
@@ -56,7 +53,7 @@ class UnitCard extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: AppColors.blackHeading,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
           ),
         ),
         subtitle: Text(
@@ -64,7 +61,7 @@ class UnitCard extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: AppColors.blackHeading,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
           ),
         ),
         trailing: Row(

@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -117,7 +117,7 @@ class _ProductSelectionDialogView extends StatelessWidget {
                                  width: 40,
                                  height: 40,
                                  decoration: BoxDecoration(
-                                   color: AppColors.blueAccent.withOpacity(0.1),
+                                   color: AppColors.blueAccent.withValues(alpha: 0.1),
                                    borderRadius: BorderRadius.circular(8),
                                  ),
                                  child: const Icon(Icons.inventory_2_outlined, size: 20, color: AppColors.blueAccent),

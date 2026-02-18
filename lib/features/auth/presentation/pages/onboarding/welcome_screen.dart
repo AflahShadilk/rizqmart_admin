@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+﻿
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -148,7 +148,7 @@ class _WelcomePageState extends State<WelcomePage>
                         height: 200,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                         ),
                       ),
                     ),
@@ -160,7 +160,7 @@ class _WelcomePageState extends State<WelcomePage>
                         height: 250,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                         ),
                       ),
                     ),
@@ -172,7 +172,7 @@ class _WelcomePageState extends State<WelcomePage>
                         height: 150,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.green.withOpacity(0.15),
+                          color: Colors.green.withValues(alpha: 0.15),
                         ),
                       ),
                     ),
@@ -202,8 +202,8 @@ class _WelcomePageState extends State<WelcomePage>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.white.withOpacity(0.15),
-                            Colors.white.withOpacity(0.05),
+                            Colors.white.withValues(alpha: 0.15),
+                            Colors.white.withValues(alpha: 0.05),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -226,7 +226,7 @@ class _WelcomePageState extends State<WelcomePage>
                                 padding: EdgeInsets.fromLTRB(8, paddingTop, 0, 5),
                                 fontSize: fontMedium,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 align: TextAlign.left,
                               );
                             },
@@ -252,7 +252,7 @@ class _WelcomePageState extends State<WelcomePage>
                                 padding: const EdgeInsets.fromLTRB(8, 0, 0, 5),
                                 fontSize: fontMedium,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 align: TextAlign.left,
                               );
                             },
@@ -271,7 +271,7 @@ class _WelcomePageState extends State<WelcomePage>
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: fontSmall,
-                                      color: Colors.white.withOpacity(0.85),
+                                      color: Colors.white.withValues(alpha: 0.85),
                                       height: 1.5,
                                     ),
                                   ),
@@ -287,7 +287,7 @@ class _WelcomePageState extends State<WelcomePage>
                                 borderRadius: BorderRadius.circular(30),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.greenAccent.withOpacity(0.3),
+                                    color: Colors.greenAccent.withValues(alpha: 0.3),
                                     blurRadius: 20,
                                     spreadRadius: 2,
                                   ),
@@ -359,16 +359,16 @@ class _WelcomePageState extends State<WelcomePage>
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   width: 2,
                 ),
               ),
               child: Icon(
                 icon,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 size: 24,
               ),
             ),

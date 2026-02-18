@@ -1,25 +1,20 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 
 class ProductModel extends AddProductEntity {
- const ProductModel(
-      {required super.id,
+ const ProductModel({
+      required super.id,
       required super.name,
-      // required super.price,
-      // required super.mrp,
-       super.description,
+      super.description,
       required super.category,
       required super.brand,
-  
       super.discount,
-      // required super.variant,
-      // required super.imageUrls,
       required super.createdAt,
       super.updateAt,
-       super.features,
-       super.status,
-       super.variantDetails
-       });
+      super.features,
+      super.status,
+      super.variantDetails,
+  });
 
   
 factory ProductModel.fromFirestore(DocumentSnapshot doc) {
@@ -57,38 +52,29 @@ factory ProductModel.fromFirestore(DocumentSnapshot doc) {
   return ProductModel(
     id: doc.id,
     name: data['name'] ?? 'Unknown',
-    // price: (data['price'] ?? 0).toDouble(),
-    // mrp: (data['mrp'] ?? 0).toDouble(),
     description: data['description'] ?? '',
     category: data['category'] ?? '',
     brand: data['brand'] ?? '',
     discount: (data['discount'] ?? 0).toDouble(),
-    // variant: List<String>.from(data['variant']??[] ),
-    // imageUrls: List<String>.from(data['imageUrls'] ?? []),
     createdAt: createdAt,
     updateAt: updateAt,
     features: data['features'] ?? false,
     status: data['status'] ?? false,
-    variantDetails: variantDetails
+    variantDetails: variantDetails,
   );
 }
 
   Map<String, dynamic> toFirestore() {
     return {
-    
       'name': name,
-      // 'price': price,
-      // 'mrp'  :mrp,
       'description': description,
       'category': category,
       'brand': brand,
       'discount': discount,
-      // 'variant': variant,
-      // 'imageUrls': imageUrls,
       'createdAt': createdAt,
       'updateAt': updateAt,
       'features': features,
-      'status'  :status,
+      'status': status,
       'variantDetails': variantDetails,
     };
   }

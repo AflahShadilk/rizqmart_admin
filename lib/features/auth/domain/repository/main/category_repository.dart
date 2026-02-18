@@ -1,4 +1,4 @@
-import 'package:rizqmartadmin/features/auth/domain/entities/main/category_model.dart';
+﻿import 'package:rizqmartadmin/features/auth/domain/entities/main/category_model.dart';
 
 abstract class CategoryRepository {
   Stream <List<CategoryModel>>getCategories();
