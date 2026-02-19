@@ -17,7 +17,7 @@ dependencies:
   go_router: ^16.1.0
   flutter_svg: ^2.2.0
   lottie: ^3.3.1
-  google_fonts: ^6.2.1
+  google_fonts: 6.2.1
   shared_preferences: ^2.5.3
   icons_plus: ^5.0.0
   firebase_core: ^4.1.0
