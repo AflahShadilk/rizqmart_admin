@@ -1,7 +1,7 @@
 ﻿import 'dart:convert';
-import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ImageUploadService {
@@ -35,21 +35,34 @@ class ImageUploadService {
     final cloudName = dotenv.env['CLOUDINARY_CLOUD_NAME'] ?? '';
     final preset = dotenv.env['PRESET_NAME'] ?? '';
 
+    if (cloudName.isEmpty || preset.isEmpty) {
+      debugPrint('Cloudinary Error: CLOUDINARY_CLOUD_NAME or PRESET_NAME is not configured in .env');
+      return null;
+    }
+
     final uri = Uri.parse(
       "https://api.cloudinary.com/v1_1/$cloudName/image/upload",
     );
-    final request = http.MultipartRequest("POST", uri);
-    request.fields['upload_preset'] = preset;
-    request.files.add(
-      http.MultipartFile.fromBytes('file', bytes, filename: fileName),
-    );
+    
+    try {
+      final request = http.MultipartRequest("POST", uri);
+      request.fields['upload_preset'] = preset;
+      request.files.add(
+        http.MultipartFile.fromBytes('file', bytes, filename: fileName),
+      );
 
-    final response = await request.send();
-    final responseBody = await response.stream.bytesToString();
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(responseBody);
-      return data['secure_url'];
+      if (response.statusCode == 200) {
+        final data = jsonDecode(responseBody);
+        return data['secure_url'];
+      } else {
+        debugPrint('Cloudinary Upload Failed: Status ${response.statusCode}');
+        debugPrint('Response Body: $responseBody');
+      }
+    } catch (e) {
+      debugPrint('Cloudinary Upload Exception: $e');
     }
     return null;
   }

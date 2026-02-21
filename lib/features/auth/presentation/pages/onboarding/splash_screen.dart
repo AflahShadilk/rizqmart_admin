@@ -56,13 +56,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     }
 
     if (state is AuthAuthenticated) {
-      context.go('/dashboard');
+      context.go('/dashBoard');
     } else {
-      // If state is not determined yet (unlikely given the delay), check again or go to login
-      // Or we can rely on the fact that CheckAuthStatusEvent was fired at app start.
-      // If it's still Initial or Loading, we might want to wait, but 2 seconds is usually enough.
-      // Let's add a small listener or just default to login if not authenticated.
-       context.go('/loginPage');
+      context.go('/loginPage');
     }
   }
 
@@ -77,9 +73,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-             context.go('/dashboard');
+          context.go('/dashBoard');
         } else if (state is AuthUnauthenticated) {
-             context.go('/loginPage');
+          context.go('/loginPage');
         }
       },
       child: Scaffold(

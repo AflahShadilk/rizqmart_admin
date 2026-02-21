@@ -20,7 +20,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/c
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "assets/config.env");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

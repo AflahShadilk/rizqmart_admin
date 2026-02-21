@@ -80,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
           } else {
             await pref.remove('saved_email');
           }
+          await pref.setBool('isLoggedIn', true);
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
