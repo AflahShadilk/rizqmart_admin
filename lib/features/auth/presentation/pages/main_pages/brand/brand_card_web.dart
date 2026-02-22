@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_state.dart';
@@ -39,31 +40,11 @@ class BrandCardWeb extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: brand!.logourl.isNotEmpty
-                  ? Image.network(
-                      brand!.logourl,
+                  ? ShimmerImage(
+                      imageUrl: brand!.logourl,
                       width: 100,
                       height: 70,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 100,
-                          height: 70,
-                          color: Colors.grey.shade200,
-                          child: const Icon(Icons.broken_image,
-                              size: 40, color: Colors.grey),
-                        );
-                      },
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          width: 100,
-                          height: 70,
-                          color: Colors.grey.shade200,
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      },
+                      borderRadius: 12,
                     )
                   : Container(
                       width: 100,

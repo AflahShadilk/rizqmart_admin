@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
+import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_event.dart';
@@ -43,12 +44,22 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
   Future<void> _pickImage(BuildContext context) async {
     context.read<AddBrandFormCubit>().setUploading(true);
 
-    final url = await ImageUploadService().pickAndUpload();
-    if (url != null) {
-      context.read<AddBrandFormCubit>().setImage(url);
+    try {
+      final url = await ImageUploadService().pickAndUpload();
+      if (url != null) {
+        context.read<AddBrandFormCubit>().setImage(url);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image upload failed: $e')),
+        );
+      }
     }
 
-    context.read<AddBrandFormCubit>().setUploading(false);
+    if (context.mounted) {
+      context.read<AddBrandFormCubit>().setUploading(false);
+    }
   }
 
   @override
@@ -149,9 +160,11 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                                           child: CircularProgressIndicator(),
                                         )
                                       : cubitState.imageUrl != null
-                                          ? Image.network(
-                                              cubitState.imageUrl!,
-                                              fit: BoxFit.cover,
+                                          ? ShimmerImage(
+                                              imageUrl: cubitState.imageUrl!,
+                                              width: 100,
+                                              height: 100,
+                                              borderRadius: 8,
                                             )
                                           : const Icon(
                                               Icons.add_a_photo,

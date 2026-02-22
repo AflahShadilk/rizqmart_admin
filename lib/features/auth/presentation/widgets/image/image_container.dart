@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/widgets.dart';
 
 Column imageContainer({
@@ -35,9 +36,11 @@ Column imageContainer({
                         child: CircularProgressIndicator(),
                       )
                     : imageUrl != null && imageUrl.isNotEmpty
-                        ? Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
+                        ? ShimmerImage(
+                            imageUrl: imageUrl,
+                            width: width,
+                            height: height,
+                            borderRadius: 8,
                           )
                         : const Icon(
                             Icons.add_a_photo,

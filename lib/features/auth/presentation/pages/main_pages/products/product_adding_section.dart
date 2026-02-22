@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
+import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/data/model/add_product_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/units_entity.dart';
@@ -647,8 +648,8 @@ class _FormProductsState extends State<FormProducts> {
                         ? Stack(
                             fit: StackFit.expand,
                             children: [
-                              Image.network(
-                                imageUrl,
+                              ShimmerImage(
+                                imageUrl: imageUrl,
                                 fit: BoxFit.cover,
                               ),
                               Positioned(

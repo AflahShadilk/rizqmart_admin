@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
+import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/category_model.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_event.dart';
@@ -46,11 +47,20 @@ class CategoryDialogState extends State<CategoryDialog> {
 
   Future<void> pickImage() async {
     dialogCubit.setUploading(true);
-    final url = await ImageUploadService().pickAndUpload();
-    if (url != null) {
-      dialogCubit.updateImage(url);
-    } else {
+    try {
+      final url = await ImageUploadService().pickAndUpload();
+      if (url != null) {
+        dialogCubit.updateImage(url);
+      } else {
+        dialogCubit.setUploading(false);
+      }
+    } catch (e) {
       dialogCubit.setUploading(false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image upload failed: $e')),
+        );
+      }
     }
   }
 
@@ -259,12 +269,11 @@ class CategoryDialogState extends State<CategoryDialog> {
                                 child: state.isUploading
                                     ? const Center(child: CircularProgressIndicator())
                                     : state.imageUrl != null
-                                        ? ClipRRect(
-                                            borderRadius: BorderRadius.circular(8),
-                                            child: Image.network(
-                                              state.imageUrl!,
-                                              fit: BoxFit.cover,
-                                            ),
+                                        ? ShimmerImage(
+                                            imageUrl: state.imageUrl!,
+                                            width: 100,
+                                            height: 100,
+                                            borderRadius: 8,
                                           )
                                         : const Icon(
                                             Icons.add_a_photo,

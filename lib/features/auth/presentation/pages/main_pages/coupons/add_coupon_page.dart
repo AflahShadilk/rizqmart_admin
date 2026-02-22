@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
+import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/coupon_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/coupon_bloc.dart';
 import 'package:file_picker/file_picker.dart';
@@ -336,7 +337,10 @@ class _AddCouponPageViewState extends State<_AddCouponPageView> {
                                 : couponState.existingImageUrl != null && couponState.existingImageUrl!.isNotEmpty
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
-                                        child: Image.network(couponState.existingImageUrl!, fit: BoxFit.cover),
+                                        child: ShimmerImage(
+                                          imageUrl: couponState.existingImageUrl!,
+                                          fit: BoxFit.cover,
+                                        ),
                                       )
                                     : Column(
                                         mainAxisAlignment: MainAxisAlignment.center,

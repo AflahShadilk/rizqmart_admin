@@ -2,6 +2,7 @@
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
 
 Widget imageAddingSection({
   required List<bool> isUploading,
@@ -94,15 +95,11 @@ Widget imageAddingSection({
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(6),
-                            child: Image.network(
-                              imageUrls[index],
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: Colors.grey.shade200,
-                                  child: const Icon(Icons.error, color: Colors.red),
-                                );
-                              },
+                            child: ShimmerImage(
+                              imageUrl: imageUrls[index],
+                              width: 100,
+                              height: 100,
+                              borderRadius: 6,
                             ),
                           ),
                         ),

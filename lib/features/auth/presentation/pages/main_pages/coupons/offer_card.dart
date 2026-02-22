@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/coupon_entity.dart';
+import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/coupon_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/coupons/add_coupon_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
@@ -45,10 +46,11 @@ class OfferCard extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: offer.imageurl.isNotEmpty
-                    ? Image.network(
-                        offer.imageurl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.local_offer, color: Colors.grey),
+                    ? ShimmerImage(
+                        imageUrl: offer.imageurl,
+                        width: 80,
+                        height: 80,
+                        borderRadius: 12,
                       )
                     : const Icon(Icons.local_offer, color: Colors.blueAccent, size: 30),
               ),

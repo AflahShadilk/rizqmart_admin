@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
+import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
@@ -492,12 +493,11 @@ class ProductCard extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 8)),
                 child: getFirstVariantImage().isNotEmpty
-                    ? Image.network(
-                        getFirstVariantImage(),
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(Icons.image_not_supported, size: Responsive.scaleFont(context, 32));
-                        },
+                    ? ShimmerImage(
+                        imageUrl: getFirstVariantImage(),
+                        width: Responsive.scaleRadius(context, 80),
+                        height: Responsive.scaleRadius(context, 80),
+                        borderRadius: Responsive.scaleRadius(context, 8),
                       )
                     : Icon(Icons.image_not_supported, size: Responsive.scaleFont(context, 32)),
               ),
