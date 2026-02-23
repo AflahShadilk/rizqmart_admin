@@ -317,7 +317,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                                               context.pop();
                                             },
                                             child: Text(
-                                              '? Back to Login',
+                                              ' Back to Login',
                                               style: GoogleFonts.poppins(
                                                 fontSize:
                                                     Responsive.isMobile(
