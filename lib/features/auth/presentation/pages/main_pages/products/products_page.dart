@@ -205,6 +205,15 @@ class _ProductsPageState extends State<ProductsPage> {
                       ? filterProductsbySearch(allProducts, _searchController.text)
                       : pageState.filterProducts;
 
+                  // Client-side pagination
+                  final totalItems = productsToDisplay.length;
+                  final totalPages = (totalItems / pageState.itemsPerPage).ceil();
+                  final startIndex = (pageState.currentPage - 1) * pageState.itemsPerPage;
+                  final endIndex = (startIndex + pageState.itemsPerPage).clamp(0, totalItems);
+                  final paginatedProducts = totalItems > 0
+                      ? productsToDisplay.sublist(startIndex, endIndex)
+                      : <AddProductEntity>[];
+
                   return Column(
                     children: [
                       Container(
@@ -257,7 +266,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: theme.colorScheme.primary,
+                                backgroundColor: AppColors.blueAccent,
                                 foregroundColor: theme.colorScheme.onPrimary,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 24,
@@ -378,9 +387,9 @@ class _ProductsPageState extends State<ProductsPage> {
                                               horizontal: 16,
                                               vertical: 8,
                                             ),
-                                            itemCount: productsToDisplay.length,
+                                            itemCount: paginatedProducts.length,
                                             itemBuilder: (context, index) {
-                                              final product = productsToDisplay[index];
+                                              final product = paginatedProducts[index];
 
                                               return ProductCard(
                                                 product: product,
@@ -402,6 +411,56 @@ class _ProductsPageState extends State<ProductsPage> {
                                         child: Text('No state available'),
                                       ),
                       ),
+                      // Pagination Bar
+                      if (totalPages > 1)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: theme.cardTheme.color,
+                            border: Border(
+                              top: BorderSide(
+                                color: theme.dividerColor.withValues(alpha: 0.2),
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.chevron_left),
+                                onPressed: pageState.currentPage > 1
+                                    ? () => _pageCubit.previousPage()
+                                    : null,
+                                tooltip: 'Previous page',
+                              ),
+                              8.w,
+                              Text(
+                                'Page ${pageState.currentPage} of $totalPages',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: theme.textTheme.bodyMedium?.color,
+                                ),
+                              ),
+                              4.w,
+                              Text(
+                                '(${startIndex + 1}–$endIndex of $totalItems)',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  color: theme.textTheme.bodySmall?.color,
+                                ),
+                              ),
+                              8.w,
+                              IconButton(
+                                icon: const Icon(Icons.chevron_right),
+                                onPressed: pageState.currentPage < totalPages
+                                    ? () => _pageCubit.nextPage(totalItems)
+                                    : null,
+                                tooltip: 'Next page',
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   );
                 },

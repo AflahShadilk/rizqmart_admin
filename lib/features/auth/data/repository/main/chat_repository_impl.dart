@@ -20,7 +20,7 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<void> sendMessage(String chatId, MessageEntity message) async {
+  Future<void> sendMessage(String chatId, MessageEntity message, {String? userId, String? productName}) async {
     final messageModel = MessageModel(
       senderId: message.senderId,
       text: message.text,
@@ -29,7 +29,12 @@ class ChatRepositoryImpl implements ChatRepository {
       orderId: message.orderId,
       senderRole: message.senderRole,
     );
-    return dataSource.sendMessage(chatId, messageModel);
+    return dataSource.sendMessage(
+      chatId,
+      messageModel,
+      userId: userId,
+      productName: productName,
+    );
   }
 
   @override

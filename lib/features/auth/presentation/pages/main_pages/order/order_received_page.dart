@@ -548,8 +548,9 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                     onPressed: () {
                       if (order.userId.isNotEmpty) {
                         context.push('/chat_details', extra: {
+                          'chatId': order.orderId,
                           'userId': order.userId,
-                          'userName': order.userName,
+                          'productName': 'Order ${order.orderNumber}',
                         });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -709,8 +710,9 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         child: OutlinedButton.icon(
                           onPressed: () {
                             context.push('/chat_details', extra: {
+                              'chatId': order.orderId,
                               'userId': order.userId,
-                              'userName': order.userName,
+                              'productName': 'Order ${order.orderNumber}',
                             });
                           },
                           icon: Icon(Icons.chat_bubble_outline, size: Responsive.scaleFont(context, 14)),
@@ -871,6 +873,9 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                   ),
                   detailItem('Order Status', order.orderStatus.toUpperCase()),
                   detailItem('Payment Status', order.paymentStatus),
+                  detailItem('Payment Method', order.paymentMethod),
+                  if (order.deliveryMethod != null)
+                    detailItem('Delivery Method', order.deliveryMethod!),
                 ],
               ),
               24.h,
@@ -976,8 +981,16 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                                             ),
                                             overflow: TextOverflow.ellipsis,
                                           ),
+                                          if (item.unit != null)
+                                            Text(
+                                              item.unit!,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.grey[500],
+                                              ),
+                                            ),
                                           Text(
-                                            'Quantity: ${item.quantity}',
+                                            'Qty: ${item.quantity.toInt()} × ₹${item.mrp.toStringAsFixed(2)}',
                                             style: TextStyle(
                                               fontSize: 11,
                                               color: Colors.grey[600],
@@ -991,14 +1004,14 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                                           CrossAxisAlignment.end,
                                       children: [
                                         Text(
-                                          '₹${item.price.toStringAsFixed(2)}',
+                                          '₹${item.mrp.toStringAsFixed(2)}',
                                           style:  TextStyle(
                                             fontSize: 11,
                                             color: Colors.grey[600],
                                           ),
                                         ),
                                         Text(
-                                          '₹${(item.price * item.quantity).toStringAsFixed(2)}',
+                                          '₹${(item.mrp * item.quantity).toStringAsFixed(2)}',
                                           style: const TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w600,
@@ -1026,7 +1039,7 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                 ),
               24.h,
 
-              // ? TOTAL AMOUNT
+              // ? PRICE BREAKDOWN
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -1034,23 +1047,53 @@ void showDetailsModal(BuildContext context, OrderReceivedEntity order) {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
                   children: [
-                    const Text(
-                      'Total Amount',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Subtotal', style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+                        Text('₹${order.subtotal.toStringAsFixed(2)}', style: const TextStyle(fontSize: 12)),
+                      ],
                     ),
-                    Text(
-                      '₹${order.totalAmount.toStringAsFixed(2)}',
-                      style:  TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green[700],
+                    8.h,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Delivery Fee', style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+                        Text('₹${order.deliveryFee.toStringAsFixed(2)}', style: const TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                    if (order.discount > 0) ...[
+                      8.h,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Discount', style: TextStyle(fontSize: 12, color: Colors.green[700])),
+                          Text('-₹${order.discount.toStringAsFixed(2)}', style: TextStyle(fontSize: 12, color: Colors.green[700])),
+                        ],
                       ),
+                    ],
+                    const Divider(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total Amount',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          '₹${order.totalAmount.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green[700],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

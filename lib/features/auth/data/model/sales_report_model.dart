@@ -7,6 +7,7 @@ class SalesReportModel extends SalesReportEntity {
     required super.totalOrders,
     required super.completedOrders,
     required super.cancelledOrders,
+    required super.pendingOrders,
     required super.totalItemsSold,
     required super.averageOrderValue,
     required super.dailySales,
@@ -19,7 +20,9 @@ class SalesReportModel extends SalesReportEntity {
     required int totalOrders,
     required int completedOrders,
     required int cancelledOrders,
+    required int pendingOrders,
     required int totalItemsSold,
+    required int revenueContributingOrders,
     required List<SalesDataPoint> dailySales,
     required DateTime startDate,
     required DateTime endDate,
@@ -29,11 +32,15 @@ class SalesReportModel extends SalesReportEntity {
       totalOrders: totalOrders,
       completedOrders: completedOrders,
       cancelledOrders: cancelledOrders,
+      pendingOrders: pendingOrders,
       totalItemsSold: totalItemsSold,
-      averageOrderValue: totalOrders > 0 ? totalRevenue / totalOrders : 0.0,
+      averageOrderValue: revenueContributingOrders > 0
+          ? totalRevenue / revenueContributingOrders
+          : 0.0,
       dailySales: dailySales,
       startDate: startDate,
       endDate: endDate,
     );
   }
 }
+

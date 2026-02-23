@@ -13,46 +13,57 @@ class DashboardDataSourceImpl implements DashboardDataSource {
   @override
   Future<DashboardStatsModel> getDashboardStats() async {
     try {
-      // 1. Calculate Revenue and Order Counts
-      // Note: In a real large-scale app, we should use aggregation queries or cloud functions.
-      // For now, we will use default queries or aggregation if available in this SDK version.
-      // Assuming standard queries for now to be safe with existing dependencies.
-      
-      // Total Orders & Revenue
       final ordersSnapshot = await firestore.collection('orders').get();
-      double totalRevenue = 0;
+      double dailyRevenue = 0;
       int pendingOrders = 0;
+      
+      final now = DateTime.now();
+      final todayStart = DateTime(now.year, now.month, now.day);
+      final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59, 999);
       
       for (var doc in ordersSnapshot.docs) {
         final data = doc.data();
+        
+        if (data['orderStatus'] == 'pending' || data['orderStatus'] == 'processing') {
+          pendingOrders++;
+        }
+
         if (data['paymentStatus'] == 'succeeded' && 
             data['orderStatus'] != 'cancelled' && 
             data['orderStatus'] != 'rejected' &&
             data['orderStatus'] != 'refunded') {
             
-             // Parse amount safely
              var amount = data['totalAmount'] ?? data['total'] ?? data['totalCost'] ?? 0.0;
              if (amount is int) amount = amount.toDouble();
              if (amount is String) amount = double.tryParse(amount) ?? 0.0;
              
-             totalRevenue += amount;
-        }
-
-        if (data['orderStatus'] == 'pending' || data['orderStatus'] == 'processing') {
-          pendingOrders++;
+             dynamic createdAtData = data['createdAt'];
+             DateTime? createdAt;
+             if (createdAtData is Timestamp) {
+               createdAt = createdAtData.toDate();
+             } else if (createdAtData is String) {
+               createdAt = DateTime.tryParse(createdAtData);
+             }
+             
+             if (createdAt != null && 
+                 createdAt.isAfter(todayStart) && 
+                 createdAt.isBefore(todayEnd)) {
+               dailyRevenue += amount;
+             }
         }
       }
 
-      // 2. Product Count
       final productsSnapshot = await firestore.collection('products').count().get();
       final totalProducts = productsSnapshot.count ?? 0;
 
-      // 3. User Count
-      final usersSnapshot = await firestore.collection('users').count().get();
-      final totalUsers = usersSnapshot.count ?? 0;
+      final allUsersSnapshot = await firestore.collection('users').get();
+      final totalUsers = allUsersSnapshot.docs.where((doc) {
+        final data = doc.data();
+        return (data['role'] ?? 'user') == 'user';
+      }).length;
 
       return DashboardStatsModel.fromData(
-        totalRevenue: totalRevenue,
+        dailyRevenue: dailyRevenue,
         totalOrders: ordersSnapshot.size,
         pendingOrders: pendingOrders,
         totalProducts: totalProducts,

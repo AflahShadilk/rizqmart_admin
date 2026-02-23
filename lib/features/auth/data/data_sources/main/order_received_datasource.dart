@@ -94,12 +94,11 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
     try {
       await firestore.collection('orders').doc(orderId).update({
         'orderStatus': status,
+        'status': status,
         'updatedAt': FieldValue.serverTimestamp(),
       });
       
-
     } catch (e) {
-
       throw Exception('Failed to update order status: $e');
     }
   }
@@ -109,12 +108,11 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
     try {
       await firestore.collection('orders').doc(orderId).update({
         'orderStatus': 'received',
+        'status': 'received',
         'receivedAt': FieldValue.serverTimestamp(),
       });
       
-
     } catch (e) {
-
       throw Exception('Failed to mark order as received: $e');
     }
   }

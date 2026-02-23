@@ -56,7 +56,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   Future<void> _onSendMessage(SendMessageEvent event, Emitter<ChatState> emit) async {
     try {
-      await repository.sendMessage(event.chatId, event.message);
+      await repository.sendMessage(
+        event.chatId,
+        event.message,
+        userId: event.userId,
+        productName: event.productName,
+      );
       // Success: Stream will update UI automatically.
     } catch (e) {
       emit(ChatError("Failed to send: $e"));

@@ -59,7 +59,9 @@ class NotificationBellCubit extends Cubit<NotificationBellState> {
     // Only trigger notification if the last message was NOT from an admin
     if (chats.isNotEmpty && 
         chats.first.lastMessageSenderRole != 'admin' &&
-        (state.unreadChats.isEmpty || chats.first.timestamp.isAfter(state.unreadChats.first.timestamp))) {
+        (state.unreadChats.isEmpty || 
+         (chats.first.timestamp.isAfter(state.unreadChats.first.timestamp) &&
+          chats.first.lastMessage != state.unreadChats.first.lastMessage))) {
       lastChat = chats.first;
     }
 

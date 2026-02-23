@@ -11,7 +11,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/s
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/sales_report/sales_report_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/sales_report/sales_report_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/salesreport/sales_report_page_cubit.dart';
-
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/salesreport/sales_report_page_cubit_state.dart';
 
 class SalesReportPage extends StatelessWidget {
   const SalesReportPage({super.key});
@@ -120,20 +120,39 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
         iconTheme: IconThemeData(color: Theme.of(context).iconTheme.color),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: TextButton.icon(
-              onPressed: _selectDateRange,
-              icon: const Icon(Icons.calendar_today, size: 18),
-              label: Text(
-                '${DateFormat('dd MMM yyyy').format(dateState.startDate)} - ${DateFormat('dd MMM yyyy').format(dateState.endDate)}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.primary,
-                backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
+            padding: const EdgeInsets.only(right: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildFilterChip('Today', SalesFilter.today, dateState),
+                const SizedBox(width: 4),
+                _buildFilterChip('Week', SalesFilter.thisWeek, dateState),
+                const SizedBox(width: 4),
+                _buildFilterChip('Month', SalesFilter.thisMonth, dateState),
+                const SizedBox(width: 8),
+                TextButton.icon(
+                  onPressed: _selectDateRange,
+                  icon: const Icon(Icons.calendar_today, size: 16),
+                  label: Text(
+                    '${DateFormat('dd MMM').format(dateState.startDate)} – ${DateFormat('dd MMM').format(dateState.endDate)}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: dateState.selectedFilter == SalesFilter.custom
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: dateState.selectedFilter == SalesFilter.custom
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -300,7 +319,17 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                 ? const Center(child: Text('No revenue data available'))
                 : LineChart(
                     LineChartData(
-                      gridData: FlGridData(show: true, drawVerticalLine: false),
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        horizontalInterval: null,
+                        getDrawingHorizontalLine: (value) {
+                          return FlLine(
+                            color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
+                            strokeWidth: 1,
+                          );
+                        },
+                      ),
                       titlesData: FlTitlesData(
                         rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                         topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -325,14 +354,31 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                         ),
                       ),
                       borderData: FlBorderData(show: false),
+                      lineTouchData: LineTouchData(
+                        touchTooltipData: LineTouchTooltipData(
+                          getTooltipItems: (touchedSpots) {
+                            return touchedSpots.map((spot) {
+                              final dataPoint = data[spot.x.toInt()];
+                              return LineTooltipItem(
+                                '${DateFormat('MMM dd').format(dataPoint.date)}\n₹${dataPoint.amount.toStringAsFixed(2)}\n${dataPoint.orderCount} orders',
+                                TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              );
+                            }).toList();
+                          },
+                        ),
+                      ),
                       lineBarsData: [
                         LineChartBarData(
                           spots: data.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.amount)).toList(),
                           isCurved: true,
-                          color: Colors.blue,
-                          barWidth: 4,
+                          color: Theme.of(context).colorScheme.primary,
+                          barWidth: 3,
                           isStrokeCapRound: true,
-                          dotData: FlDotData(show: false),
+                          dotData: FlDotData(show: data.length <= 14),
                           belowBarData: BarAreaData(
                             show: true,
                             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
@@ -346,6 +392,7 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
       ),
     );
   }
+
 
   Widget _buildOrderStatusChart(SalesReportEntity report) {
     return Container(
@@ -362,36 +409,92 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
           const Text('Order Status', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           24.h,
           Expanded(
-            child: PieChart(
+            child: (report.completedOrders == 0 && report.cancelledOrders == 0 && report.pendingOrders == 0)
+                ? const Center(child: Text('No order data available'))
+                : PieChart(
               PieChartData(
                 sectionsSpace: 2,
                 centerSpaceRadius: 40,
                 sections: [
-                  PieChartSectionData(
-                    color: Colors.purple,
-                    value: report.completedOrders.toDouble(),
-                    title: '${report.completedOrders}',
-                    radius: 50,
-                    titleStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                   PieChartSectionData(
-                    color: Colors.red,
-                    value: report.cancelledOrders.toDouble(),
-                    title: '${report.cancelledOrders}',
-                    radius: 50,
-                    titleStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
+                  if (report.completedOrders > 0)
+                    PieChartSectionData(
+                      color: const Color(0xFF10B981),
+                      value: report.completedOrders.toDouble(),
+                      title: '${report.completedOrders}',
+                      radius: 50,
+                      titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  if (report.pendingOrders > 0)
+                    PieChartSectionData(
+                      color: const Color(0xFFF59E0B),
+                      value: report.pendingOrders.toDouble(),
+                      title: '${report.pendingOrders}',
+                      radius: 50,
+                      titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  if (report.cancelledOrders > 0)
+                    PieChartSectionData(
+                      color: const Color(0xFFEF4444),
+                      value: report.cancelledOrders.toDouble(),
+                      title: '${report.cancelledOrders}',
+                      radius: 50,
+                      titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
                 ],
               ),
             ),
           ),
           16.h,
-          _buildLegendItem(Colors.purple, 'Completed: ${report.completedOrders}'),
+          _buildLegendItem(const Color(0xFF10B981), 'Completed: ${report.completedOrders}'),
           8.h,
-          _buildLegendItem(Colors.red, 'Cancelled: ${report.cancelledOrders}'),
+          _buildLegendItem(const Color(0xFFF59E0B), 'Pending: ${report.pendingOrders}'),
+          8.h,
+          _buildLegendItem(const Color(0xFFEF4444), 'Cancelled: ${report.cancelledOrders}'),
         ],
       ),
     );
+  }
+
+  Widget _buildFilterChip(String label, SalesFilter filter, SalesReportPageState dateState) {
+    final isSelected = dateState.selectedFilter == filter;
+    return ActionChip(
+      label: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: isSelected
+              ? Theme.of(context).colorScheme.onPrimary
+              : Theme.of(context).colorScheme.primary,
+        ),
+      ),
+      backgroundColor: isSelected
+          ? Theme.of(context).colorScheme.primary
+          : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+      side: BorderSide.none,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      onPressed: () => _applyFilter(filter),
+    );
+  }
+
+  void _applyFilter(SalesFilter filter) {
+    final cubit = context.read<SalesReportPageCubit>();
+    switch (filter) {
+      case SalesFilter.today:
+        cubit.setToday();
+        break;
+      case SalesFilter.thisWeek:
+        cubit.setThisWeek();
+        break;
+      case SalesFilter.thisMonth:
+        cubit.setThisMonth();
+        break;
+      case SalesFilter.custom:
+        _selectDateRange();
+        return;
+    }
+    _loadReport();
   }
 
   Widget _buildLegendItem(Color color, String text) {

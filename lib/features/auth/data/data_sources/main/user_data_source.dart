@@ -36,13 +36,15 @@ class UserDataSourceImpl implements UserDataSource {
     try {
       final snapshot = await firestore
           .collection('users')
-          .where('role', isEqualTo: role)
-          .orderBy('createdAt', descending: true)
           .get();
 
-      return snapshot.docs
+      final allUsers = snapshot.docs
           .map((doc) => UserModel.fromFirestore(doc))
           .toList();
+          
+      final users = allUsers.where((user) => user.role == role).toList();
+      users.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return users;
     } catch (e) {
 
       throw Exception('Failed to fetch users by role: $e');

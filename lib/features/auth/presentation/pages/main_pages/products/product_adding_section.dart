@@ -561,6 +561,7 @@ class _FormProductsState extends State<FormProducts> {
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
+                color: AppColors.blackHeading
               ),
             ),
             15.h,

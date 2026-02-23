@@ -5,7 +5,7 @@ import 'package:rizqmartadmin/features/auth/data/model/message_model.dart';
 abstract class ChatDataSource {
   Stream<List<ChatModel>> getChats();
   Stream<List<MessageModel>> getMessages(String chatId);
-  Future<void> sendMessage(String chatId, MessageModel message);
+  Future<void> sendMessage(String chatId, MessageModel message, {String? userId, String? productName});
   Future<void> markChatAsRead(String chatId);
 }
 
@@ -38,7 +38,7 @@ class ChatDataSourceImpl implements ChatDataSource {
   }
 
   @override
-  Future<void> sendMessage(String chatId, MessageModel message) async {
+  Future<void> sendMessage(String chatId, MessageModel message, {String? userId, String? productName}) async {
     if (chatId.isEmpty) return;
     DocumentReference chatRef = _firestore.collection('chatRooms').doc(chatId);
     final messagesRef = chatRef.collection('messages');
@@ -49,11 +49,15 @@ class ChatDataSourceImpl implements ChatDataSource {
     batch.set(newMessageRef, message.toFirestore());
 
     // 2. Update chat room metadata
-    batch.set(chatRef, {
+    final metadata = <String, dynamic>{
       'lastMessage': message.type == 'image' ? 'Image' : message.text,
       'lastMessageSenderRole': message.senderRole,
       'timestamp': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+    };
+    if (userId != null && userId.isNotEmpty) metadata['userId'] = userId;
+    if (productName != null && productName.isNotEmpty) metadata['productName'] = productName;
+
+    batch.set(chatRef, metadata, SetOptions(merge: true));
 
     await batch.commit();
   }

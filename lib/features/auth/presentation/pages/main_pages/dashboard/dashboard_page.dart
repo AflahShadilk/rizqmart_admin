@@ -93,8 +93,8 @@ class _DashboardPageState extends State<DashboardPage> {
                             children: [
                               _buildStatCard(
                                 theme,
-                                'Total Revenue',
-                                state.stats.totalRevenue.toStringAsFixed(2),
+                                'Daily Revenue',
+                                state.stats.dailyRevenue.toStringAsFixed(2),
                                 Icons.currency_rupee,
                                 const Color(0xFF10B981),
                               ),

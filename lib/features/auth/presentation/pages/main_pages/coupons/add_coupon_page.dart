@@ -171,238 +171,284 @@ class _AddCouponPageViewState extends State<_AddCouponPageView> {
 
   @override
   Widget build(BuildContext context) {
+    final isWide = Responsive.isDesktop(context);
+    final screenSize = MediaQuery.of(context).size;
+
     return BlocBuilder<AddCouponCubit, AddCouponState>(
       builder: (context, couponState) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           contentPadding: EdgeInsets.zero,
           content: Container(
-            width: Responsive.isDesktop(context) ? 800 : 400,
-            height: 600,
-            padding: const EdgeInsets.all(24),
+            width: isWide
+                ? 800
+                : (screenSize.width * 0.9).clamp(300.0, 500.0),
+            constraints: BoxConstraints(
+              maxHeight: screenSize.height * 0.85,
+            ),
+            padding: EdgeInsets.all(isWide ? 24 : 16),
             child: Form(
               key: _formKey,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Left Column: Inputs
-                  Expanded(
-                    flex: 3,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.couponToEdit != null ? 'Edit Offer' : 'Add New Offer',
-                            style: GoogleFonts.poppins(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.blackHeading,
-                            ),
-                          ),
-                          24.h,
-                          
-                          // Offer Name / Code
-                          TextFormField(
-                            controller: _nameController,
-                            decoration: InputDecoration(
-                              labelText: 'Offer Name / Code (e.g., SUMMER50)',
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                              prefixIcon: const Icon(Icons.confirmation_number_outlined),
-                            ),
-                            validator: (v) => v!.isEmpty ? 'Required' : null,
-                          ),
-                          16.h,
-
-                          // Discount Type
-                          DropdownButtonFormField<String>(
-                            value: couponState.discountType,
-                            decoration: InputDecoration(
-                              labelText: 'Discount Type',
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                            items: ['Percentage', 'Fixed Amount']
-                                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                                .toList(),
-                            onChanged: (v) => context.read<AddCouponCubit>().setDiscountType(v!),
-                          ),
-                          16.h,
-
-                          // Amount / Percentage
-                          TextFormField(
-                            controller: _amountController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: couponState.discountType == 'Percentage' ? 'Percentage Value (%)' : 'Amount Value (₹)',
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                              prefixIcon: Icon(
-                                 couponState.discountType == 'Percentage' ? Icons.percent : Icons.currency_rupee, 
-                                 size: 20
-                              ),
-                            ),
-                            validator: (v) {
-                              if (v!.isEmpty) return 'Required';
-                              if (couponState.discountType == 'Percentage' && (double.tryParse(v)! > 100)) {
-                                return 'Percentage cannot exceed 100';
-                              }
-                              return null;
-                            },
-                          ),
-                          16.h,
-
-                          // Min Order Value
-                          TextFormField(
-                            controller: _minOrderController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: 'Minimum Order Value',
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                              prefixIcon: const Icon(Icons.currency_rupee, size: 20),
-                            ),
-                            validator: (v) => v!.isEmpty ? 'Required' : null,
-                          ),
-                          16.h,
-                          
-                           // Usage Limit
-                          TextFormField(
-                            controller: _usageLimitController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: 'Usage Limit',
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                              prefixIcon: const Icon(Icons.repeat),
-                            ),
-                            validator: (v) => v!.isEmpty ? 'Required' : null,
-                          ),
-                          16.h,
-
-                          // Expiry Date
-                          InkWell(
-                            onTap: _pickDate,
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                labelText: 'Expiry Date',
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                                prefixIcon: const Icon(Icons.calendar_today),
-                              ),
-                              child: Text(
-                                couponState.expiryDate == null 
-                                    ? 'Select Date' 
-                                    : '${couponState.expiryDate!.day}/${couponState.expiryDate!.month}/${couponState.expiryDate!.year}',
-                                style: TextStyle(color: couponState.expiryDate == null ? Colors.grey : Colors.black),
-                              ),
-                            ),
-                          ),
-                          16.h,
-
-                          // Status
-                          Row(
-                            children: [
-                              const Text('Active Status'),
-                              const Spacer(),
-                              Switch(
-                                value: couponState.isActive, 
-                                onChanged: (v) => context.read<AddCouponCubit>().setActive(v),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  
-                  24.w,
-                  
-                  // Right Column: Image & Product Select & Actions
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      children: [
-                        // Image Upload
-                        GestureDetector(
-                          onTap: _pickImage,
-                          child: Container(
-                            height: 200,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              border: Border.all(color: Colors.grey.shade300),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: couponState.pickedImage != null
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.memory(couponState.pickedImage!.bytes!, fit: BoxFit.cover),
-                                  )
-                                : couponState.existingImageUrl != null && couponState.existingImageUrl!.isNotEmpty
-                                    ? ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: ShimmerImage(
-                                          imageUrl: couponState.existingImageUrl!,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey.shade400),
-                                          Text('Upload Image', style: GoogleFonts.poppins(color: Colors.grey)),
-                                        ],
-                                      ),
-                          ),
-                        ),
-                        16.h,
-
-                        // Select Products
-                        OutlinedButton.icon(
-                          onPressed: _selectProducts,
-                          icon: const Icon(Icons.inventory_2_outlined),
-                          label: Text(couponState.applicableProductIds.isEmpty 
-                              ? 'Select Applicable Products' 
-                              : 'Selected (${couponState.applicableProductIds.length}) Products'),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            minimumSize: const Size(double.infinity, 50),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          ),
-                        ),
-                        
-                        const Spacer(),
-                        
-                        // Save Buttons
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Cancel'),
-                            ),
-                            16.w,
-                            ElevatedButton(
-                              onPressed: couponState.isLoading ? null : _saveOffer,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.darkBlue,
-                                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                              ),
-                              child: couponState.isLoading 
-                                  ? const CircularProgressIndicator(color: Colors.white)
-                                  : Text(
-                                      widget.couponToEdit != null ? 'Update' : 'Save',
-                                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                    ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              child: isWide
+                  ? _buildDesktopLayout(couponState)
+                  : _buildMobileLayout(couponState),
             ),
           ),
         );
       },
+    );
+  }
+
+  // ── Desktop: side-by-side ──
+  Widget _buildDesktopLayout(AddCouponState couponState) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 3,
+          child: SingleChildScrollView(
+            child: _buildFormFields(couponState),
+          ),
+        ),
+        24.w,
+        Expanded(
+          flex: 2,
+          child: Column(
+            children: [
+              _buildImagePicker(couponState, 200),
+              16.h,
+              _buildProductSelectButton(couponState),
+              const Spacer(),
+              _buildActionButtons(couponState),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Mobile / Tablet: single column, fully scrollable ──
+  Widget _buildMobileLayout(AddCouponState couponState) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildFormFields(couponState),
+          24.h,
+          _buildImagePicker(couponState, 160),
+          16.h,
+          _buildProductSelectButton(couponState),
+          24.h,
+          _buildActionButtons(couponState),
+        ],
+      ),
+    );
+  }
+
+  // ── Shared form fields ──
+  Widget _buildFormFields(AddCouponState couponState) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.couponToEdit != null ? 'Edit Offer' : 'Add New Offer',
+          style: GoogleFonts.poppins(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: AppColors.blackHeading,
+          ),
+        ),
+        24.h,
+        TextFormField(
+          controller: _nameController,
+          decoration: InputDecoration(
+            labelText: 'Offer Name / Code (e.g., SUMMER50)',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            prefixIcon: const Icon(Icons.confirmation_number_outlined),
+          ),
+          validator: (v) => v!.isEmpty ? 'Required' : null,
+        ),
+        16.h,
+        DropdownButtonFormField<String>(
+          value: couponState.discountType,
+          decoration: InputDecoration(
+            labelText: 'Discount Type',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          items: ['Percentage', 'Fixed Amount']
+              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+              .toList(),
+          onChanged: (v) => context.read<AddCouponCubit>().setDiscountType(v!),
+        ),
+        16.h,
+        TextFormField(
+          controller: _amountController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: couponState.discountType == 'Percentage'
+                ? 'Percentage Value (%)'
+                : 'Amount Value (₹)',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            prefixIcon: Icon(
+              couponState.discountType == 'Percentage'
+                  ? Icons.percent
+                  : Icons.currency_rupee,
+              size: 20,
+            ),
+          ),
+          validator: (v) {
+            if (v!.isEmpty) return 'Required';
+            if (couponState.discountType == 'Percentage' &&
+                (double.tryParse(v)! > 100)) {
+              return 'Percentage cannot exceed 100';
+            }
+            return null;
+          },
+        ),
+        16.h,
+        TextFormField(
+          controller: _minOrderController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: 'Minimum Order Value',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            prefixIcon: const Icon(Icons.currency_rupee, size: 20),
+          ),
+          validator: (v) => v!.isEmpty ? 'Required' : null,
+        ),
+        16.h,
+        TextFormField(
+          controller: _usageLimitController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: 'Usage Limit',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            prefixIcon: const Icon(Icons.repeat),
+          ),
+          validator: (v) => v!.isEmpty ? 'Required' : null,
+        ),
+        16.h,
+        InkWell(
+          onTap: _pickDate,
+          child: InputDecorator(
+            decoration: InputDecoration(
+              labelText: 'Expiry Date',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              prefixIcon: const Icon(Icons.calendar_today),
+            ),
+            child: Text(
+              couponState.expiryDate == null
+                  ? 'Select Date'
+                  : '${couponState.expiryDate!.day}/${couponState.expiryDate!.month}/${couponState.expiryDate!.year}',
+              style: TextStyle(
+                color: couponState.expiryDate == null ? Colors.grey : Colors.black,
+              ),
+            ),
+          ),
+        ),
+        16.h,
+        Row(
+          children: [
+            const Text('Active Status'),
+            const Spacer(),
+            Switch(
+              value: couponState.isActive,
+              onChanged: (v) => context.read<AddCouponCubit>().setActive(v),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── Image picker ──
+  Widget _buildImagePicker(AddCouponState couponState, double height) {
+    return GestureDetector(
+      onTap: _pickImage,
+      child: Container(
+        height: height,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: couponState.pickedImage != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.memory(couponState.pickedImage!.bytes!, fit: BoxFit.cover),
+              )
+            : couponState.existingImageUrl != null &&
+                    couponState.existingImageUrl!.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: ShimmerImage(
+                      imageUrl: couponState.existingImageUrl!,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey.shade400),
+                      Text('Upload Image', style: GoogleFonts.poppins(color: Colors.grey)),
+                    ],
+                  ),
+      ),
+    );
+  }
+
+  // ── Product select button ──
+  Widget _buildProductSelectButton(AddCouponState couponState) {
+    return OutlinedButton.icon(
+      onPressed: _selectProducts,
+      icon: const Icon(Icons.inventory_2_outlined),
+      label: Text(
+        couponState.applicableProductIds.isEmpty
+            ? 'Select Applicable Products'
+            : 'Selected (${couponState.applicableProductIds.length}) Products',
+      ),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        minimumSize: const Size(double.infinity, 50),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  // ── Action buttons ──
+  Widget _buildActionButtons(AddCouponState couponState) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Flexible(
+          child: TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ),
+        8.w,
+        Flexible(
+          child: ElevatedButton(
+            onPressed: couponState.isLoading ? null : _saveOffer,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.darkBlue,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: couponState.isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                : Text(
+                    widget.couponToEdit != null ? 'Update' : 'Save',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -226,6 +226,11 @@ class AppTheme {
       brightness: Brightness.dark,
       primaryColor: _primaryDark,
       scaffoldBackgroundColor: _scaffoldDark,
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: _primaryDark,
+        selectionColor: Color(0x402DD4BF),
+        selectionHandleColor: _primaryDark,
+      ),
       colorScheme: ColorScheme.dark(
         primary: _primaryDark,
         secondary: const Color(0xFF818CF8),
@@ -280,14 +285,14 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: _cardDark,
+        fillColor: const Color(0xFF1A2332),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: _borderDark),
+          borderSide: BorderSide(color: _borderDark.withValues(alpha: 0.7)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: _borderDark),
+          borderSide: BorderSide(color: _borderDark.withValues(alpha: 0.7)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -297,8 +302,18 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: error.withValues(alpha: 0.7)),
         ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: error, width: 1.8),
+        ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        hintStyle: GoogleFonts.inter(color: _textSecondaryDark, fontSize: 14),
+        hintStyle: GoogleFonts.inter(color: _textSecondaryDark.withValues(alpha: 0.7), fontSize: 14),
+        labelStyle: GoogleFonts.inter(color: _textSecondaryDark, fontSize: 14),
+        floatingLabelStyle: GoogleFonts.inter(color: _primaryDark, fontSize: 14, fontWeight: FontWeight.w500),
+        errorStyle: GoogleFonts.inter(color: const Color(0xFFFCA5A5), fontSize: 12),
+        prefixIconColor: _textSecondaryDark,
+        suffixIconColor: _textSecondaryDark,
+        iconColor: _textSecondaryDark,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

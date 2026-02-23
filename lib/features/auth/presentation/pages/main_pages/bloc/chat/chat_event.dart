@@ -23,11 +23,18 @@ class LoadMessagesEvent extends ChatEvent {
 class SendMessageEvent extends ChatEvent {
   final String chatId;
   final MessageEntity message;
+  final String? userId;
+  final String? productName;
 
-  const SendMessageEvent({required this.chatId, required this.message});
+  const SendMessageEvent({
+    required this.chatId,
+    required this.message,
+    this.userId,
+    this.productName,
+  });
 
   @override
-  List<Object> get props => [chatId, message];
+  List<Object> get props => [chatId, message, userId ?? '', productName ?? ''];
 }
 
 class UpdateChatsEvent extends ChatEvent {

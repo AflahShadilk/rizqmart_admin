@@ -6,6 +6,7 @@ class SalesReportEntity extends Equatable {
   final int totalOrders;
   final int completedOrders;
   final int cancelledOrders;
+  final int pendingOrders;
   final int totalItemsSold;
   final double averageOrderValue;
   final List<SalesDataPoint> dailySales;
@@ -17,6 +18,7 @@ class SalesReportEntity extends Equatable {
     required this.totalOrders,
     required this.completedOrders,
     required this.cancelledOrders,
+    required this.pendingOrders,
     required this.totalItemsSold,
     required this.averageOrderValue,
     required this.dailySales,
@@ -30,6 +32,7 @@ class SalesReportEntity extends Equatable {
         totalOrders,
         completedOrders,
         cancelledOrders,
+        pendingOrders,
         totalItemsSold,
         averageOrderValue,
         dailySales,

@@ -49,7 +49,14 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
       senderRole: 'admin',
     );
 
-    context.read<ChatBloc>().add(SendMessageEvent(chatId: widget.chatId, message: message));
+    context.read<ChatBloc>().add(
+      SendMessageEvent(
+        chatId: widget.chatId,
+        message: message,
+        userId: widget.userId,
+        productName: widget.productName,
+      ),
+    );
     _messageController.clear();
   }
 
@@ -147,7 +154,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                               ),
                               4.h,
                               Text(
-                                DateFormat('h:mm a').format(message.timestamp),
+                                DateFormat('dd MMM, h:mm a').format(message.timestamp),
                                 style: TextStyle(
                                   color: isMe ? Colors.white70 : Colors.grey.shade500,
                                   fontSize: 10,

@@ -48,9 +48,9 @@ Future<void> printOrderDetail(BuildContext context, OrderReceivedEntity order) a
 Future<pw.Document> _generatePdfDocument(OrderReceivedEntity order) async {
   final doc = pw.Document();
   
-  // Load a font that supports Unicode (specifically the Rupee symbol)
-  final font = await PdfGoogleFonts.openSansRegular();
-  final fontBold = await PdfGoogleFonts.openSansBold();
+  // Load Noto Sans which has full Unicode support (including ₹ Rupee symbol)
+  final font = await PdfGoogleFonts.notoSansRegular();
+  final fontBold = await PdfGoogleFonts.notoSansBold();
 
   doc.addPage(
     pw.MultiPage(
@@ -112,7 +112,7 @@ pw.Widget _buildModernHeader(OrderReceivedEntity order) {
           _buildHeaderItem('Invoice #', order.orderNumber),
           _buildHeaderItem('Date', DateFormat('dd MMM yyyy').format(order.createdAt)),
           _buildHeaderItem('Status', order.orderStatus.toUpperCase()),
-          _buildHeaderItem('Payment', order.paymentStatus),
+          _buildHeaderItem('Payment', '${order.paymentStatus} (${order.paymentMethod})'),
         ],
       ),
     ],
@@ -234,13 +234,13 @@ pw.Widget _buildModernItemsTable(OrderReceivedEntity order) {
         bottom: pw.BorderSide(color: PdfColors.grey100, width: 0.5),
       ),
     ),
-    headers: ['ITEM DESCRIPTION', 'QTY', 'PRICE', 'AMOUNT'],
+    headers: ['ITEM DESCRIPTION', 'QTY', 'MRP', 'AMOUNT'],
     data: order.items.map((item) {
       return [
-        item.productName,
-        item.quantity.toString(),
-        '₹${item.price.toStringAsFixed(2)}',
-        '₹${(item.price * item.quantity).toStringAsFixed(2)}',
+        '${item.productName}${item.unit != null ? ' (${item.unit})' : ''}',
+        item.quantity.toInt().toString(),
+        '₹${item.mrp.toStringAsFixed(2)}',
+        '₹${(item.mrp * item.quantity).toStringAsFixed(2)}',
       ];
     }).toList(),
   );
@@ -251,14 +251,26 @@ pw.Widget _buildModernTotalSection(OrderReceivedEntity order) {
     mainAxisAlignment: pw.MainAxisAlignment.end,
     children: [
       pw.Container(
-        width: 200,
+        width: 250,
         child: pw.Column(
           children: [
-            _buildTotalRow('Subtotal', '₹${order.totalAmount.toStringAsFixed(2)}'),
+            _buildTotalRow('Subtotal', '₹${order.subtotal.toStringAsFixed(2)}'),
+            pw.SizedBox(height: 4),
+            _buildTotalRow('Delivery Fee', '₹${order.deliveryFee.toStringAsFixed(2)}'),
+            if (order.discount > 0) ...[
+              pw.SizedBox(height: 4),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('Discount', style: const pw.TextStyle(fontSize: 11, color: PdfColors.green700)),
+                  pw.Text('-₹${order.discount.toStringAsFixed(2)}', style: const pw.TextStyle(fontSize: 11, color: PdfColors.green700)),
+                ],
+              ),
+            ],
             pw.SizedBox(height: 4),
             pw.Divider(color: PdfColors.grey300),
             pw.SizedBox(height: 4),
-             pw.Row(
+            pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
                 pw.Text(

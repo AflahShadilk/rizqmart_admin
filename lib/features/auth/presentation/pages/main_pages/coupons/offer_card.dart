@@ -62,7 +62,7 @@ class OfferCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                    Text(
-                    offer.name, // Display Name / Code
+                    offer.name, 
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -103,7 +103,7 @@ class OfferCard extends StatelessWidget {
                   ),
                   4.h,
                    Text(
-                    'Min Order: ?${offer.minOrderValue} | Using: ${offer.usageLimit}',
+                    'Min Order: ${offer.minOrderValue} | Using: ${offer.usageLimit}',
                     style: GoogleFonts.poppins(
                       fontSize: 12,
                       color: Theme.of(context).textTheme.bodySmall?.color,

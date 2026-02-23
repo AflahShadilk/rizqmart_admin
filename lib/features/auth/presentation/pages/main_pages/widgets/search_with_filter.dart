@@ -1,9 +1,6 @@
-﻿
-
-import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/search/search_filter_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/search/search_filter_cubit_state.dart';
 
@@ -121,32 +118,51 @@ class _SearchWithFiltersViewState extends State<_SearchWithFiltersView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return BlocListener<SearchFilterCubit, SearchFilterState>(
       listener: (context, state) {
         _filterAndNotify();
       },
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.cardTheme.color ?? theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: theme.shadowColor.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(
+            color: theme.dividerColor.withValues(alpha: 0.1),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Search Input
+            TextField(
               controller: searchController,
               onChanged: (_) {
                 _filterAndNotify();
               },
+              style: TextStyle(color: theme.textTheme.bodyLarge?.color),
               decoration: InputDecoration(
-                hintText: 'Search by name...',
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: AppColors.charcoal,
-                  weight: 30,
+                hintText: 'Search products by name...',
+                hintStyle: TextStyle(color: theme.hintColor),
+                prefixIcon: Icon(
+                  Icons.search_rounded,
+                  color: theme.colorScheme.primary,
                 ),
                 suffixIcon: searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(
-                          Icons.clear,
-                          color: AppColors.charcoal,
-                          weight: 30,
+                        icon: Icon(
+                          Icons.highlight_remove_rounded,
+                          color: theme.iconTheme.color?.withValues(alpha: 0.6),
                         ),
                         onPressed: () {
                           searchController.clear();
@@ -155,90 +171,174 @@ class _SearchWithFiltersViewState extends State<_SearchWithFiltersView> {
                       )
                     : null,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: theme.dividerColor.withValues(alpha: 0.2),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: theme.dividerColor.withValues(alpha: 0.2),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.primary,
+                    width: 2,
+                  ),
                 ),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
-          ),
-          // Filter dropdowns
-          if (widget.showFilters)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: BlocBuilder<SearchFilterCubit, SearchFilterState>(
+            
+            // Filter controls
+            if (widget.showFilters) ...[
+              16.h,
+              BlocBuilder<SearchFilterCubit, SearchFilterState>(
                 builder: (context, filterState) {
-                  return Row(
+                  return Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
+                      // Category Dropdown
                       if (widget.categories != null)
-                        Expanded(
-                          child: DropdownButton<String>(
-                            borderRadius: BorderRadius.circular(8),
-                            dropdownColor: const Color.fromARGB(255, 158, 174, 183),
-                            value: filterState.selectedCategory,
-                            hint: const Text('Category'),
-                            isExpanded: true,
-                            items: [
-                              const DropdownMenuItem(
-                                value: null,
-                                child: Text('All Categories'),
-                              ),
-                              ...widget.categories!
-                                  .map((cat) => DropdownMenuItem(
-                                        value: cat,
-                                        child: Text(cat),
-                                      ))
-                                  ,
-                            ],
-                            onChanged: (value) {
-                              context.read<SearchFilterCubit>().setCategory(value);
-                            },
-                          ),
-                        ),
-                      10.w,
-                      if (widget.brands != null)
-                        Expanded(
-                          child: DropdownButton<String>(
-                            borderRadius: BorderRadius.circular(8),
-                            dropdownColor: const Color.fromARGB(255, 158, 174, 183),
-                            value: filterState.selectedBrand,
-                            hint: const Text('Brand'),
-                            isExpanded: true,
-                            items: [
-                              const DropdownMenuItem(
-                                value: null,
-                                child: Text('All Brands'),
-                              ),
-                              ...widget.brands!
-                                  .map((brand) => DropdownMenuItem(
-                                        value: brand,
-                                        child: Text(brand),
-                                      ))
-                                  ,
-                            ],
-                            onChanged: (value) {
-                              context.read<SearchFilterCubit>().setBrand(value);
-                            },
-                          ),
-                        ),
-                      10.w,
-                      SizedBox(
-                        width: 120,
-                        height: 40,
-                        child: ElevatedButton.icon(
-                            onPressed: () => clearFilters(),
-                            icon: const Icon(
-                              Icons.delete,
-                              color: Colors.red,
+                        Container(
+                          width: 160,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: theme.dividerColor.withValues(alpha: 0.2),
                             ),
-                            label: const Text('Clear')),
-                      )
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              dropdownColor: theme.cardTheme.color,
+                              value: filterState.selectedCategory,
+                              hint: Text(
+                                'Category',
+                                style: TextStyle(
+                                  color: theme.hintColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              icon: Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                color: theme.iconTheme.color?.withValues(alpha: 0.7),
+                              ),
+                              style: TextStyle(
+                                color: theme.textTheme.bodyLarge?.color,
+                                fontSize: 14,
+                              ),
+                              items: [
+                                const DropdownMenuItem(
+                                  value: null,
+                                  child: Text('All Categories'),
+                                ),
+                                ...widget.categories!.map((cat) => DropdownMenuItem(
+                                      value: cat,
+                                      child: Text(cat),
+                                    )),
+                              ],
+                              onChanged: (value) {
+                                context.read<SearchFilterCubit>().setCategory(value);
+                              },
+                            ),
+                          ),
+                        ),
+                      
+                      // Brand Dropdown
+                      if (widget.brands != null)
+                        Container(
+                          width: 160,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: theme.dividerColor.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              dropdownColor: theme.cardTheme.color,
+                              value: filterState.selectedBrand,
+                              hint: Text(
+                                'Brand',
+                                style: TextStyle(
+                                  color: theme.hintColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              icon: Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                color: theme.iconTheme.color?.withValues(alpha: 0.7),
+                              ),
+                              style: TextStyle(
+                                color: theme.textTheme.bodyLarge?.color,
+                                fontSize: 14,
+                              ),
+                              items: [
+                                const DropdownMenuItem(
+                                  value: null,
+                                  child: Text('All Brands'),
+                                ),
+                                ...widget.brands!.map((brand) => DropdownMenuItem(
+                                      value: brand,
+                                      child: Text(brand),
+                                    )),
+                              ],
+                              onChanged: (value) {
+                                context.read<SearchFilterCubit>().setBrand(value);
+                              },
+                            ),
+                          ),
+                        ),
+                      
+                      // Flexible space to push clear button to the end
+                      const SizedBox(width: 8),
+                      
+                      // Clear Button
+                      if ((filterState.selectedCategory != null && filterState.selectedCategory != 'All') ||
+                          (filterState.selectedBrand != null && filterState.selectedBrand != 'All') ||
+                          searchController.text.isNotEmpty)
+                        TextButton.icon(
+                          onPressed: clearFilters,
+                          icon: Icon(
+                            Icons.filter_alt_off_rounded,
+                            size: 18,
+                            color: theme.colorScheme.error,
+                          ),
+                          label: Text(
+                            'Clear Filters',
+                            style: TextStyle(
+                              color: theme.colorScheme.error,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: TextButton.styleFrom(
+                            backgroundColor: theme.colorScheme.error.withValues(alpha: 0.1),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
                     ],
                   );
                 },
               ),
-            ),
-        ],
+            ],
+          ],
+        ),
       ),
     );
   }

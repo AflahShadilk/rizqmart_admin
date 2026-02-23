@@ -2,7 +2,7 @@
 
 class DashboardStatsModel extends DashboardStatsEntity {
   const DashboardStatsModel({
-    required super.totalRevenue,
+    required super.dailyRevenue,
     required super.totalOrders,
     required super.pendingOrders,
     required super.totalProducts,
@@ -10,14 +10,14 @@ class DashboardStatsModel extends DashboardStatsEntity {
   });
 
   factory DashboardStatsModel.fromData({
-    required double totalRevenue,
+    required double dailyRevenue,
     required int totalOrders,
     required int pendingOrders,
     required int totalProducts,
     required int totalUsers,
   }) {
     return DashboardStatsModel(
-      totalRevenue: totalRevenue,
+      dailyRevenue: dailyRevenue,
       totalOrders: totalOrders,
       pendingOrders: pendingOrders,
       totalProducts: totalProducts,

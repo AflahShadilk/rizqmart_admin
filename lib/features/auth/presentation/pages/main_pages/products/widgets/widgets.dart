@@ -1,84 +1,4 @@
-﻿// import 'package:flutter/material.dart';
-// import 'package:google_fonts/google_fonts.dart';
-// import 'package:rizqmartadmin/core/constants/appcolor.dart';
-
-// Text fieldHeadings(String name) {
-//     return Text(name,
-//                   style: GoogleFonts.poppins(
-//                       color: AppColors.blackHeading,
-//                       fontSize: 15,
-//                       fontWeight: FontWeight.w500));
-//   }
-
-//   //TextField
-
-// class ReusableTextField extends StatelessWidget {
-//   final String hintText;
-//   final TextEditingController? controller;
-//   final TextInputType? keyboardType;
-//   final int maxLines;
-//   final String? Function(String?)? validator;
-
-//   /// New optional parameters
-//   final Color? backgroundColor;
-//   final Color? borderColor;
-//   final IconData? prefixIcon;
-
-//   const ReusableTextField({
-//     super.key,
-//     required this.hintText,
-//     this.controller,
-//     this.keyboardType,
-//     this.maxLines = 1,
-//     this.validator,
-//     this.backgroundColor,
-//     this.borderColor,
-//     this.prefixIcon,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return TextFormField(
-//       controller: controller,
-//       keyboardType: keyboardType,
-//       maxLines: maxLines,
-//       validator: validator,
-//       decoration: InputDecoration(
-//         prefixIcon: prefixIcon != null
-//             ? Icon(prefixIcon, color: Colors.grey.shade600)
-//             : null,
-//         hintText: hintText,
-//         hintStyle: GoogleFonts.inter(
-//           color: Colors.grey.shade600,
-//           fontSize: 14,
-//         ),
-//         filled: true,
-
-//         fillColor: backgroundColor ?? Colors.grey.shade100,
-//         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-
-//         enabledBorder: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(16),
-//           borderSide: BorderSide(
-//             color: borderColor ?? Colors.grey.shade300,
-//             width: 1.2,
-//           ),
-//         ),
-//         focusedBorder: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(16),
-//           borderSide: BorderSide(
-//             color: borderColor ?? const Color(0xFF7B61FF), // cute purple-blue
-//             width: 2,
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
-
-import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
@@ -96,7 +16,6 @@ Text pageHeading(String text) {
   );
 }
 
-/// Section heading - Medium sized heading for sections
 Text sectionHeading(String text) {
   return Text(
     text,
@@ -108,7 +27,6 @@ Text sectionHeading(String text) {
   );
 }
 
-/// Field label - For form field labels
 Text fieldLabel(String text) {
   return Text(
     text,
@@ -120,7 +38,6 @@ Text fieldLabel(String text) {
   );
 }
 
-/// Body text - Regular body text
 Text bodyText(String text, {Color? color}) {
   return Text(
     text,
@@ -132,7 +49,6 @@ Text bodyText(String text, {Color? color}) {
   );
 }
 
-/// Error text - For validation errors
 Text errorText(String text) {
   return Text(
     text,
@@ -144,18 +60,6 @@ Text errorText(String text) {
   );
 }
 
-// ============================================================================
-// INPUT COMPONENTS
-// ============================================================================
-
-/// Standard website text input field
-
-
-// ============================================================================
-// BUTTON COMPONENTS
-// ============================================================================
-
-/// Primary action button (blue/accent color)
 class PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
@@ -205,7 +109,6 @@ class PrimaryButton extends StatelessWidget {
   }
 }
 
-/// Secondary action button (outline style)
 class SecondaryButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
@@ -244,7 +147,6 @@ class SecondaryButton extends StatelessWidget {
   }
 }
 
-/// Danger button (red color for delete actions)
 class DangerButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
@@ -280,11 +182,6 @@ class DangerButton extends StatelessWidget {
   }
 }
 
-// ============================================================================
-// FORM CONTAINERS
-// ============================================================================
-
-/// Standard form card wrapper
 class FormCard extends StatelessWidget {
   final String title;
   final List<Widget> children;
@@ -328,8 +225,5 @@ class FormCard extends StatelessWidget {
     );
   }
 }
-
-//Field with drop down
-
 
 

@@ -253,7 +253,7 @@ class _NotificationBellView extends StatelessWidget {
           },
         ),
         backgroundColor: const Color(0xFF1E88E5),
-        duration: const Duration(seconds: 5),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -289,7 +289,7 @@ class _NotificationBellView extends StatelessWidget {
           ],
         ),
         backgroundColor: Colors.green,
-        duration: const Duration(seconds: 5),
+        duration: const Duration(seconds: 2),
       ),
     );
   }

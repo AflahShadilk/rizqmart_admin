@@ -4,7 +4,7 @@ import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/user_entity.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/user/user_search_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/users/user_search_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_state.dart';
@@ -31,7 +31,7 @@ class UsersView extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (context.mounted) {
-        context.read<UsersBloc>().add(LoadAllUsers());
+        context.read<UsersBloc>().add(const LoadUsersByRole('user'));
       }
     });
 
@@ -72,7 +72,7 @@ class UsersView extends StatelessWidget {
             ),
             child: IconButton(
               icon: Icon(Icons.refresh_rounded, color: Colors.blue.shade700, size: 22),
-              onPressed: () => context.read<UsersBloc>().add(LoadAllUsers()),
+              onPressed: () => context.read<UsersBloc>().add(const LoadUsersByRole('user')),
               tooltip: 'Refresh Users',
             ),
           ),
@@ -135,13 +135,13 @@ class SearchBar extends StatelessWidget {
             maxWidth: isMobile ? double.infinity : 400,
           ),
           decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: searchQuery.isNotEmpty 
-                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.5) 
-                  : Theme.of(context).dividerColor,
-              width: 1.5,
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).dividerColor.withValues(alpha: 0.2),
+              width: searchQuery.isNotEmpty ? 2 : 1,
             ),
           ),
           child: TextField(
@@ -501,7 +501,7 @@ class ErrorView extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => context.read<UsersBloc>().add(LoadAllUsers()),
+                onPressed: () => context.read<UsersBloc>().add(const LoadUsersByRole('user')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue.shade600,
                   foregroundColor: Colors.white,
