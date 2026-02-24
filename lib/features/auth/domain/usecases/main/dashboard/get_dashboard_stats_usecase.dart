@@ -1,4 +1,6 @@
-﻿import 'package:rizqmartadmin/features/auth/domain/entities/main/dashboard_stats_entity.dart';
+﻿import 'package:rizqmartadmin/core/error/either.dart';
+import 'package:rizqmartadmin/core/error/failures.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/dashboard_stats_entity.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/dashboard_repository.dart';
 
 class GetDashboardStatsUseCase {
@@ -6,7 +8,7 @@ class GetDashboardStatsUseCase {
 
   GetDashboardStatsUseCase({required this.repository});
 
-  Future<DashboardStatsEntity> call() async {
+  Future<Either<Failure, DashboardStatsEntity>> call() async {
     return await repository.getDashboardStats();
   }
 }

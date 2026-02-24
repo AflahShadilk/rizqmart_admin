@@ -15,85 +15,67 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<LoadMessagesEvent>(_onLoadMessages);
     on<SendMessageEvent>(_onSendMessage);
     on<MarkChatAsReadEvent>(_onMarkChatAsRead);
-    
-    // Internal Events
+
     on<UpdateChatsEvent>(_onUpdateChats);
     on<UpdateMessagesEvent>(_onUpdateMessages);
     on<ChatErrorEvent>(_onChatError);
   }
 
-  // --- External Event Handlers ---
-
   void _onLoadChats(LoadChatsEvent event, Emitter<ChatState> emit) {
     emit(ChatLoading());
-    try {
-      _chatsSubscription?.cancel();
-      _chatsSubscription = repository.getChats().listen(
-        (chats) => add(UpdateChatsEvent(chats)),
-        onError: (error) => add(ChatErrorEvent(error.toString())),
-      );
-    } catch (e) {
-      emit(ChatError(e.toString()));
-    }
+    _chatsSubscription?.cancel();
+    _chatsSubscription = repository.getChats().listen(
+      (chats) => add(UpdateChatsEvent(chats)),
+      onError: (error) => add(ChatErrorEvent(error.toString())),
+    );
   }
 
   void _onLoadMessages(LoadMessagesEvent event, Emitter<ChatState> emit) {
-    emit(ChatLoading()); 
-    
-    // Mark as read immediately when loading messages
+    emit(ChatLoading());
     add(MarkChatAsReadEvent(event.chatId));
-
-    try {
-      _messagesSubscription?.cancel();
-      _messagesSubscription = repository.getMessages(event.chatId).listen(
-        (messages) => add(UpdateMessagesEvent(messages, event.chatId)), // Pass chatId
-        onError: (error) => add(ChatErrorEvent(error.toString())),
-      );
-    } catch (e) {
-      emit(ChatError(e.toString()));
-    }
+    _messagesSubscription?.cancel();
+    _messagesSubscription = repository.getMessages(event.chatId).listen(
+      (messages) => add(UpdateMessagesEvent(messages, event.chatId)),
+      onError: (error) => add(ChatErrorEvent(error.toString())),
+    );
   }
 
   Future<void> _onSendMessage(SendMessageEvent event, Emitter<ChatState> emit) async {
-    try {
-      await repository.sendMessage(
-        event.chatId,
-        event.message,
-        userId: event.userId,
-        productName: event.productName,
-      );
-      // Success: Stream will update UI automatically.
-    } catch (e) {
-      emit(ChatError("Failed to send: $e"));
-    }
+    final result = await repository.sendMessage(
+      event.chatId,
+      event.message,
+      userId: event.userId,
+      productName: event.productName,
+    );
+    result.fold(
+      (failure) => emit(ChatError(failure.message)),
+      (_) {},
+    );
   }
 
   Future<void> _onMarkChatAsRead(MarkChatAsReadEvent event, Emitter<ChatState> emit) async {
-    try {
-      await repository.markChatAsRead(event.chatId);
-    } catch (_) {
-      // Silently handle — don't disrupt UI for this background action
-    }
+    final result = await repository.markChatAsRead(event.chatId);
+    result.fold(
+      (_) {},
+      (_) {},
+    );
   }
-
-  // --- Internal Event Handlers ---
 
   void _onUpdateChats(UpdateChatsEvent event, Emitter<ChatState> emit) {
     emit(ChatsLoaded(event.chats));
   }
 
   void _onUpdateMessages(UpdateMessagesEvent event, Emitter<ChatState> emit) {
-    // Check for new messages to trigger notification
     if (state is MessagesLoaded) {
       final oldMessages = (state as MessagesLoaded).messages;
       if (event.messages.length > oldMessages.length && event.messages.isNotEmpty) {
         final lastMessage = event.messages.last;
-        if (lastMessage.senderRole != 'admin') { 
-           WebMessagingService.triggerLocalNotification(
-              'New Message', 
-              lastMessage.text.isNotEmpty ? lastMessage.text : 'Sent an image',
-              data: {'type': 'chat_message', 'senderId': lastMessage.senderId, 'chatId': event.chatId} // Include chatId
-           );
+        if (lastMessage.senderRole != 'admin') {
+          WebMessagingService.triggerLocalNotification(
+            'New Message',
+            lastMessage.text.isNotEmpty ? lastMessage.text : 'Sent an image',
+            data: {'type': 'chat_message', 'senderId': lastMessage.senderId, 'chatId': event.chatId},
+          );
         }
       }
     }

@@ -1,4 +1,7 @@
-﻿import 'package:rizqmartadmin/features/auth/data/data_sources/main/order_received_datasource.dart';
+﻿import 'package:rizqmartadmin/core/error/either.dart';
+import 'package:rizqmartadmin/core/error/error_handler.dart';
+import 'package:rizqmartadmin/core/error/failures.dart';
+import 'package:rizqmartadmin/features/auth/data/data_sources/main/order_received_datasource.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/order_recieved_entity.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/order_received_repository.dart';
 
@@ -13,35 +16,32 @@ class OrderReceivedRepositoryImpl implements OrderReceivedRepository {
   }
 
   @override
-  Future<List<OrderReceivedEntity>> getNewOrders() async {
-    final models = await dataSource.getNewOrders();
-    return models;
+  Future<Either<Failure, List<OrderReceivedEntity>>> getNewOrders() async {
+    return ErrorHandler.execute(() => dataSource.getNewOrders());
   }
 
   @override
-  Future<List<OrderReceivedEntity>> getOrdersByStatus(String status) async {
-    final models = await dataSource.getOrdersByStatus(status);
-    return models;
+  Future<Either<Failure, List<OrderReceivedEntity>>> getOrdersByStatus(String status) async {
+    return ErrorHandler.execute(() => dataSource.getOrdersByStatus(status));
   }
 
   @override
-  Future<OrderReceivedEntity> getOrderById(String orderId) async {
-    final model = await dataSource.getOrderById(orderId);
-    return model;
+  Future<Either<Failure, OrderReceivedEntity>> getOrderById(String orderId) async {
+    return ErrorHandler.execute(() => dataSource.getOrderById(orderId));
   }
 
   @override
-  Future<void> updateOrderStatus(String orderId, String status) async {
-    await dataSource.updateOrderStatus(orderId, status);
+  Future<Either<Failure, void>> updateOrderStatus(String orderId, String status) async {
+    return ErrorHandler.execute(() => dataSource.updateOrderStatus(orderId, status));
   }
 
   @override
-  Future<void> markOrderAsReceived(String orderId) async {
-    await dataSource.markOrderAsReceived(orderId);
+  Future<Either<Failure, void>> markOrderAsReceived(String orderId) async {
+    return ErrorHandler.execute(() => dataSource.markOrderAsReceived(orderId));
   }
 
   @override
-  Future<List<OrderReceivedEntity>> getOrdersByUserId(String userId) async {
-    return await dataSource.getOrdersByUserId(userId);
+  Future<Either<Failure, List<OrderReceivedEntity>>> getOrdersByUserId(String userId) async {
+    return ErrorHandler.execute(() => dataSource.getOrdersByUserId(userId));
   }
 }

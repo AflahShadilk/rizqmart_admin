@@ -1,4 +1,6 @@
-﻿import 'package:rizqmartadmin/features/auth/domain/entities/main/payment_entity.dart';
+﻿import 'package:rizqmartadmin/core/error/either.dart';
+import 'package:rizqmartadmin/core/error/failures.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/payment_entity.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/payment_repository.dart';
 
 class GetPaymentByOrderIdUseCase {
@@ -6,7 +8,7 @@ class GetPaymentByOrderIdUseCase {
 
   GetPaymentByOrderIdUseCase({required this.repository});
 
-  Future<PaymentEntity> call(String orderId) async {
+  Future<Either<Failure, PaymentEntity>> call(String orderId) async {
     return await repository.getPaymentByOrderId(orderId);
   }
 }

@@ -11,12 +11,12 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/b
 
 class BrandBloc extends Bloc<BrandEvent, BrandState> {
   final GetBrandUsecases getBrandUsecase;
-  final AddBrandUsecase  addBrandUsecase;
+  final AddBrandUsecase addBrandUsecase;
   final UpdateBrandUsecase updateBrandUsecase;
   final DeleteBrandUsecase deleteBrandUsecase;
   StreamSubscription<List<BrandEntity>>? brandsSubscription;
 
-  BrandBloc({required this.getBrandUsecase,required this.addBrandUsecase,required this.updateBrandUsecase,required this.deleteBrandUsecase}) : super(BrandLoadingState()) {
+  BrandBloc({required this.getBrandUsecase, required this.addBrandUsecase, required this.updateBrandUsecase, required this.deleteBrandUsecase}) : super(BrandLoadingState()) {
     on<UploadingBrandEvent>(uploadingBrands);
     on<UploadedBrandEvent>(uploadedBrand);
     on<AddBrandEvent>(addBrand);
@@ -24,12 +24,12 @@ class BrandBloc extends Bloc<BrandEvent, BrandState> {
     on<DeleteBrandEvent>(deleteBrand);
     add(UploadingBrandEvent());
   }
+
   void uploadingBrands(UploadingBrandEvent event, Emitter<BrandState> emit) {
     emit(BrandLoadingState());
     brandsSubscription?.cancel();
     brandsSubscription = getBrandUsecase().listen((brands) {
       add(UploadedBrandEvent(brands));
-
     });
   }
 
@@ -37,43 +37,35 @@ class BrandBloc extends Bloc<BrandEvent, BrandState> {
     emit(BrandLoadedState(event.products));
   }
 
- Future <void> addBrand(AddBrandEvent event, Emitter<BrandState> emit) async {
-    try{
-      final currentState=state;
-      if(currentState is BrandLoadedState){
-        final updatedList=List<BrandEntity>.from(currentState.brand)
+  Future<void> addBrand(AddBrandEvent event, Emitter<BrandState> emit) async {
+    final currentState = state;
+    if (currentState is BrandLoadedState) {
+      final updatedList = List<BrandEntity>.from(currentState.brand)
         ..add(event.brandEntity);
-        emit(BrandLoadedState(updatedList));
-      }
-    await addBrandUsecase(event.brandEntity);
-    
-    emit(BrandLoadingSuccessState('Brand added successfully'));
-    }catch(e){
-      emit(BrandFailureState('Adding failed: $e'));
+      emit(BrandLoadedState(updatedList));
     }
-  }
-  
-  Future<void>updateBrand(UpdateBrandEvent event,Emitter<BrandState>emit)async{
-    try{
-      await updateBrandUsecase(event.brandEntity);
-    emit(BrandLoadingSuccessState('Brand Updating successfully'));
-
-    }catch(e){
-      emit(BrandFailureState('Updating failed: $e'));
-       
-    }
+    final result = await addBrandUsecase(event.brandEntity);
+    result.fold(
+      (failure) => emit(BrandFailureState(failure.message)),
+      (_) => emit(BrandLoadingSuccessState('Brand added successfully')),
+    );
   }
 
-  Future<void>deleteBrand(DeleteBrandEvent event,Emitter<BrandState>emit)async{
-    try{
-      add(UploadingBrandEvent());
-      await deleteBrandUsecase(event.id);
-    // emit(BrandLoadingSuccessState('Brand Deleting successfully'));
+  Future<void> updateBrand(UpdateBrandEvent event, Emitter<BrandState> emit) async {
+    final result = await updateBrandUsecase(event.brandEntity);
+    result.fold(
+      (failure) => emit(BrandFailureState(failure.message)),
+      (_) => emit(BrandLoadingSuccessState('Brand Updating successfully')),
+    );
+  }
 
-    }catch(e){
-      emit(BrandFailureState('Deleting failed: $e'));
-
-    }
+  Future<void> deleteBrand(DeleteBrandEvent event, Emitter<BrandState> emit) async {
+    add(UploadingBrandEvent());
+    final result = await deleteBrandUsecase(event.id);
+    result.fold(
+      (failure) => emit(BrandFailureState(failure.message)),
+      (_) {},
+    );
   }
 
   @override

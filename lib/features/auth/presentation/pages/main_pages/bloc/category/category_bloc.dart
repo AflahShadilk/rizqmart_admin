@@ -19,7 +19,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final DeleteVariantUsecase deleteVariantusecase;
   StreamSubscription<List<CategoryModel>>? _categoriesSubscription;
 
-  CategoryBloc({required this.getCategoryUsecases,required this.addCategoryUsecases,required this.addVariantUsecase,required this.updateCategoryUsecase,required this.deleteCategoryUsecase,required this.deleteVariantusecase})
+  CategoryBloc({required this.getCategoryUsecases, required this.addCategoryUsecases, required this.addVariantUsecase, required this.updateCategoryUsecase, required this.deleteCategoryUsecase, required this.deleteVariantusecase})
       : super(CategoryLoadingState()) {
     on<LoadingCategoryEvent>(_onLoadingCategories);
     on<CategoryLoadedEvent>(_onCategoriesLoaded);
@@ -32,74 +32,61 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     add(LoadingCategoryEvent());
   }
 
-  void _onLoadingCategories(
-      LoadingCategoryEvent event, Emitter<CategoryState> emit) {
+  void _onLoadingCategories(LoadingCategoryEvent event, Emitter<CategoryState> emit) {
     emit(CategoryLoadingState());
-
     _categoriesSubscription?.cancel();
-
-    _categoriesSubscription =
-        getCategoryUsecases().listen((categories) {
+    _categoriesSubscription = getCategoryUsecases().listen((categories) {
       add(CategoryLoadedEvent(categories));
     });
   }
 
-  void _onCategoriesLoaded(
-      CategoryLoadedEvent event, Emitter<CategoryState> emit) {
+  void _onCategoriesLoaded(CategoryLoadedEvent event, Emitter<CategoryState> emit) {
     emit(CategoryLoadedState(event.categories));
   }
 
-  void _onAddCategory(
-      AddCategoryEvent event, Emitter<CategoryState> emit) async {
-    try {
-      await addCategoryUsecases(event.category);
-      emit(CategorySuccessState("Category added successfully"));
-    } catch (e) {
-      emit(CategoryFailureState("Failed to add category: $e"));
-    }
+  void _onAddCategory(AddCategoryEvent event, Emitter<CategoryState> emit) async {
+    final result = await addCategoryUsecases(event.category);
+    result.fold(
+      (failure) => emit(CategoryFailureState(failure.message)),
+      (_) => emit(CategorySuccessState("Category added successfully")),
+    );
   }
 
-  Future<void> _onAddVariant(
-      AddVariantEvent event, Emitter<CategoryState> emit) async {
-    try {
-      await addVariantUsecase(event.categoryId, event.variant);
-      add(LoadingCategoryEvent());
-      emit(CategorySuccessState('Variant added successfully'));
-    } catch (e) {
-      emit(CategoryFailureState('Failed to add variant: $e'));
-    }
+  Future<void> _onAddVariant(AddVariantEvent event, Emitter<CategoryState> emit) async {
+    final result = await addVariantUsecase(event.categoryId, event.variant);
+    result.fold(
+      (failure) => emit(CategoryFailureState(failure.message)),
+      (_) {
+        add(LoadingCategoryEvent());
+        emit(CategorySuccessState('Variant added successfully'));
+      },
+    );
   }
 
-  Future<void> _onUpdateCategory(
-      UpdateCategoryEvent event, Emitter<CategoryState> emit) async {
-    try {
-      await updateCategoryUsecase(event.model);
-      emit(CategorySuccessState('Category updated successfully'));
-    } catch (e) {
-      emit(CategoryFailureState("Failed to update category: $e"));
-    }
-  }
-  
-  Future<void> _onDeleteVariant(
-      DeleteVariantEvent event, Emitter<CategoryState> emit) async {
-    try {
-      await deleteVariantusecase(event.categoryId, event.variant);
-      add(LoadingCategoryEvent());
-    } catch (e) {
-      emit(CategoryFailureState('Failed to delete variant: $e'));
-    }
+  Future<void> _onUpdateCategory(UpdateCategoryEvent event, Emitter<CategoryState> emit) async {
+    final result = await updateCategoryUsecase(event.model);
+    result.fold(
+      (failure) => emit(CategoryFailureState(failure.message)),
+      (_) => emit(CategorySuccessState('Category updated successfully')),
+    );
   }
 
-  Future<void> _onCategoryDelete(
-      DeleteCategoryEvent event, Emitter<CategoryState> emit) async {
-    try {
-      add(LoadingCategoryEvent());
-      await deleteCategoryUsecase(event.id);
-    } catch (e) {
-      emit(CategoryFailureState('Failed to delete category: $e'));
-    }
+  Future<void> _onDeleteVariant(DeleteVariantEvent event, Emitter<CategoryState> emit) async {
+    final result = await deleteVariantusecase(event.categoryId, event.variant);
+    result.fold(
+      (failure) => emit(CategoryFailureState(failure.message)),
+      (_) => add(LoadingCategoryEvent()),
+    );
   }
 
+  Future<void> _onCategoryDelete(DeleteCategoryEvent event, Emitter<CategoryState> emit) async {
+    add(LoadingCategoryEvent());
+    final result = await deleteCategoryUsecase(event.id);
+    result.fold(
+      (failure) => emit(CategoryFailureState(failure.message)),
+      (_) {},
+    );
+  }
 
   @override
   Future<void> close() {

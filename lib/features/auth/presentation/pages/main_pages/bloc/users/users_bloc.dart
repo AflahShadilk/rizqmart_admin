@@ -31,12 +31,11 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
     Emitter<UsersState> emit,
   ) async {
     emit(UsersLoading());
-    try {
-      final users = await getAllUsersUseCase();
-      emit(UsersLoaded(users: users, filteredUsers: users));
-    } catch (e) {
-      emit(UsersError(e.toString()));
-    }
+    final result = await getAllUsersUseCase();
+    result.fold(
+      (failure) => emit(UsersError(failure.message)),
+      (users) => emit(UsersLoaded(users: users, filteredUsers: users)),
+    );
   }
 
   Future<void> _onLoadUsersByRole(
@@ -44,41 +43,40 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
     Emitter<UsersState> emit,
   ) async {
     emit(UsersLoading());
-    try {
-      final users = await getUsersByRoleUseCase(event.role);
-      emit(UsersLoaded(users: users, filteredUsers: users));
-    } catch (e) {
-      emit(UsersError(e.toString()));
-    }
+    final result = await getUsersByRoleUseCase(event.role);
+    result.fold(
+      (failure) => emit(UsersError(failure.message)),
+      (users) => emit(UsersLoaded(users: users, filteredUsers: users)),
+    );
   }
 
   Future<void> _onUpdateUserStatus(
     UpdateUserStatus event,
     Emitter<UsersState> emit,
   ) async {
-    try {
-      await updateUserStatusUseCase(event.userId, event.isActive);
-      add(LoadAllUsers());
-    } catch (e) {
-      emit(UsersError(e.toString()));
-    }
+    final result = await updateUserStatusUseCase(event.userId, event.isActive);
+    result.fold(
+      (failure) => emit(UsersError(failure.message)),
+      (_) => add(LoadAllUsers()),
+    );
   }
 
   Future<void> _onDeleteUser(
     DeleteUser event,
     Emitter<UsersState> emit,
   ) async {
-    try {
-      await deleteUserUseCase(event.userId);
-      WebMessagingService.triggerLocalNotification(
-        'User Deleted', 
-        'User has been deleted successfully.',
-        data: {'type': 'user', 'id': event.userId}
-      );
-      add(LoadAllUsers());
-    } catch (e) {
-      emit(UsersError(e.toString()));
-    }
+    final result = await deleteUserUseCase(event.userId);
+    result.fold(
+      (failure) => emit(UsersError(failure.message)),
+      (_) {
+        WebMessagingService.triggerLocalNotification(
+          'User Deleted',
+          'User has been deleted successfully.',
+          data: {'type': 'user', 'id': event.userId},
+        );
+        add(LoadAllUsers());
+      },
+    );
   }
 
   Future<void> _onSearchUsers(

@@ -1,4 +1,7 @@
-﻿import 'package:rizqmartadmin/features/auth/data/data_sources/main/coupon_firestore_source.dart';
+﻿import 'package:rizqmartadmin/core/error/either.dart';
+import 'package:rizqmartadmin/core/error/error_handler.dart';
+import 'package:rizqmartadmin/core/error/failures.dart';
+import 'package:rizqmartadmin/features/auth/data/data_sources/main/coupon_firestore_source.dart';
 import 'package:rizqmartadmin/features/auth/data/model/coupon_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/coupon_entity.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/coupons_repository.dart';
@@ -13,7 +16,7 @@ class CouponRepositoryImpl implements CouponsRepository {
   }
 
   @override
-  Future<void> addCoupons(CouponEntity coupon) async {
+  Future<Either<Failure, void>> addCoupons(CouponEntity coupon) async {
     final model = CouponModel(
         id: coupon.id,
         name: coupon.name,
@@ -25,11 +28,11 @@ class CouponRepositoryImpl implements CouponsRepository {
         isActive: coupon.isActive,
         expiryDate: coupon.expiryDate,
         applicableProductIds: coupon.applicableProductIds);
-    await couponFirestoreSource.addCoupons(model);
+    return ErrorHandler.execute(() => couponFirestoreSource.addCoupons(model));
   }
 
   @override
-  Future<void> updateCoupons(CouponEntity coupon) async {
+  Future<Either<Failure, void>> updateCoupons(CouponEntity coupon) async {
     final model = CouponModel(
         id: coupon.id,
         name: coupon.name,
@@ -41,11 +44,11 @@ class CouponRepositoryImpl implements CouponsRepository {
         isActive: coupon.isActive,
         expiryDate: coupon.expiryDate,
         applicableProductIds: coupon.applicableProductIds);
-    await couponFirestoreSource.updateCoupons(model);
+    return ErrorHandler.execute(() => couponFirestoreSource.updateCoupons(model));
   }
 
   @override
-  Future<void> delete(String id) async {
-    await couponFirestoreSource.deleteCoupons(id);
+  Future<Either<Failure, void>> delete(String id) async {
+    return ErrorHandler.execute(() => couponFirestoreSource.deleteCoupons(id));
   }
 }

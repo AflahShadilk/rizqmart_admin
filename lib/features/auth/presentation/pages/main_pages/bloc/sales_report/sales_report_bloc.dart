@@ -15,11 +15,10 @@ class SalesReportBloc extends Bloc<SalesReportEvent, SalesReportState> {
     Emitter<SalesReportState> emit,
   ) async {
     emit(SalesReportLoading());
-    try {
-      final report = await getSalesReportUseCase(event.startDate, event.endDate);
-      emit(SalesReportLoaded(report: report));
-    } catch (e) {
-      emit(SalesReportError(message: e.toString()));
-    }
+    final result = await getSalesReportUseCase(event.startDate, event.endDate);
+    result.fold(
+      (failure) => emit(SalesReportError(message: failure.message)),
+      (report) => emit(SalesReportLoaded(report: report)),
+    );
   }
 }

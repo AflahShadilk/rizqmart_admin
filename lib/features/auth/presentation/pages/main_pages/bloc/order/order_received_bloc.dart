@@ -41,7 +41,6 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     on<NewOrdersStreamUpdate>(_onNewOrdersStreamUpdate);
     on<FetchOrdersByUserIdEvent>(_onFetchOrdersByUserId);
 
-    // Subscribe to stream immediately
     _subscribeToNewOrders();
   }
 
@@ -53,66 +52,61 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
       (orders) {
         add(NewOrdersStreamUpdate(orders));
       },
-      onError: (error) {
-        // Handle stream error if necessary
-      },
+      onError: (error) {},
     );
   }
-  
+
   Future<void> _onNewOrdersStreamUpdate(
     NewOrdersStreamUpdate event,
     Emitter<OrderReceivedState> emit,
   ) async {
     if (state is NewOrdersLoaded) {
-       final oldOrders = (state as NewOrdersLoaded).orders;
-       final newOrders = event.orders;
-       
-       // Check for new orders
-       if (newOrders.length > oldOrders.length) {
-          final newOrderIds = newOrders.map((o) => o.orderId).toSet();
-          final oldOrderIds = oldOrders.map((o) => o.orderId).toSet();
-          final addedIds = newOrderIds.difference(oldOrderIds);
-          
-          if (addedIds.isNotEmpty) {
+      final oldOrders = (state as NewOrdersLoaded).orders;
+      final newOrders = event.orders;
+
+      if (newOrders.length > oldOrders.length) {
+        final newOrderIds = newOrders.map((o) => o.orderId).toSet();
+        final oldOrderIds = oldOrders.map((o) => o.orderId).toSet();
+        final addedIds = newOrderIds.difference(oldOrderIds);
+
+        if (addedIds.isNotEmpty) {
+          WebMessagingService.triggerLocalNotification(
+            'New Order Received',
+            'You have received ${addedIds.length} new order(s)!',
+            data: {'type': 'order', 'action': 'new'},
+          );
+        }
+      }
+
+      for (var newOrder in newOrders) {
+        final oldOrder = oldOrders.where((o) => o.orderId == newOrder.orderId).isNotEmpty
+            ? oldOrders.where((o) => o.orderId == newOrder.orderId).first
+            : null;
+
+        if (oldOrder != null && oldOrder.orderStatus != newOrder.orderStatus) {
+          final status = newOrder.orderStatus.toLowerCase();
+
+          if (status == 'cancelled' || status == 'canceled') {
             WebMessagingService.triggerLocalNotification(
-              'New Order Received', 
-              'You have received ${addedIds.length} new order(s)!',
-              data: {'type': 'order', 'action': 'new'}
+              'Order Cancelled',
+              'Order ${newOrder.orderId} has been cancelled by the customer',
+              data: {'type': 'order', 'action': 'cancelled', 'orderId': newOrder.orderId},
+            );
+          } else if (status == 'delivered') {
+            WebMessagingService.triggerLocalNotification(
+              'Order Delivered',
+              'Order ${newOrder.orderId} has been marked as delivered',
+              data: {'type': 'order', 'action': 'delivered', 'orderId': newOrder.orderId},
+            );
+          } else if (status == 'returned' || status == 'return') {
+            WebMessagingService.triggerLocalNotification(
+              'Order Returned',
+              'Order ${newOrder.orderId} has been returned',
+              data: {'type': 'order', 'action': 'returned', 'orderId': newOrder.orderId},
             );
           }
-       }
-       
-       // Check for status changes (especially cancellations)
-       for (var newOrder in newOrders) {
-         final oldOrder = oldOrders.where((o) => o.orderId == newOrder.orderId).isNotEmpty
-             ? oldOrders.where((o) => o.orderId == newOrder.orderId).first
-             : null;
-         
-         if (oldOrder != null && oldOrder.orderStatus != newOrder.orderStatus) {
-           // Status changed - trigger notification
-           final status = newOrder.orderStatus.toLowerCase();
-           
-           if (status == 'cancelled' || status == 'canceled') {
-             WebMessagingService.triggerLocalNotification(
-               'Order Cancelled', 
-               'Order ${newOrder.orderId} has been cancelled by the customer',
-               data: {'type': 'order', 'action': 'cancelled', 'orderId': newOrder.orderId}
-             );
-           } else if (status == 'delivered') {
-             WebMessagingService.triggerLocalNotification(
-               'Order Delivered', 
-               'Order ${newOrder.orderId} has been marked as delivered',
-               data: {'type': 'order', 'action': 'delivered', 'orderId': newOrder.orderId}
-             );
-           } else if (status == 'returned' || status == 'return') {
-             WebMessagingService.triggerLocalNotification(
-               'Order Returned', 
-               'Order ${newOrder.orderId} has been returned',
-               data: {'type': 'order', 'action': 'returned', 'orderId': newOrder.orderId}
-             );
-           }
-         }
-       }
+        }
+      }
     }
     emit(NewOrdersLoaded(orders: event.orders));
   }
@@ -128,13 +122,11 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     Emitter<OrderReceivedState> emit,
   ) async {
     emit(const OrderReceivedLoading());
-
-    try {
-      final orders = await getNewOrdersUseCase.call();
-      emit(NewOrdersLoaded(orders: orders));
-    } catch (e) {
-      emit(OrderReceivedError(message: e.toString()));
-    }
+    final result = await getNewOrdersUseCase.call();
+    result.fold(
+      (failure) => emit(OrderReceivedError(message: failure.message)),
+      (orders) => emit(NewOrdersLoaded(orders: orders)),
+    );
   }
 
   Future<void> _onFetchByStatus(
@@ -142,16 +134,11 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     Emitter<OrderReceivedState> emit,
   ) async {
     emit(const OrderReceivedLoading());
-
-    try {
-      final orders = await getOrdersByStatusUseCase.call(event.status);
-      emit(OrdersByStatusLoaded(
-        orders: orders,
-        status: event.status,
-      ));
-    } catch (e) {
-      emit(OrderReceivedError(message: e.toString()));
-    }
+    final result = await getOrdersByStatusUseCase.call(event.status);
+    result.fold(
+      (failure) => emit(OrderReceivedError(message: failure.message)),
+      (orders) => emit(OrdersByStatusLoaded(orders: orders, status: event.status)),
+    );
   }
 
   Future<void> _onUpdateStatus(
@@ -160,63 +147,66 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
   ) async {
     emit(const OrderReceivedLoading());
 
-    try {
-      // Check if status is cancelled or rejected to trigger refund and stock refill
-      if (event.status.toLowerCase() == 'cancelled' || 
-          event.status.toLowerCase() == 'rejected' || 
-          event.status.toLowerCase() == 'return') {
-          
-        try {
-           // Refill stock logic
-           if (refillOrderStockUseCase != null) {
-              OrderReceivedEntity? orderToRefill;
-              if (state is NewOrdersLoaded) {
-                // Use firstWhere with orElse to avoid StateError if not found
-                final matchingOrders = (state as NewOrdersLoaded).orders
-                    .where((o) => o.orderId == event.orderId);
-                orderToRefill = matchingOrders.isNotEmpty ? matchingOrders.first : null;
-              } else if (state is OrdersByStatusLoaded) {
-                 final matchingOrders = (state as OrdersByStatusLoaded).orders
-                    .where((o) => o.orderId == event.orderId);
-                 orderToRefill = matchingOrders.isNotEmpty ? matchingOrders.first : null;
-              }
+    if (event.status.toLowerCase() == 'cancelled' ||
+        event.status.toLowerCase() == 'rejected' ||
+        event.status.toLowerCase() == 'return') {
+      if (refillOrderStockUseCase != null) {
+        OrderReceivedEntity? orderToRefill;
+        if (state is NewOrdersLoaded) {
+          final matchingOrders = (state as NewOrdersLoaded).orders.where((o) => o.orderId == event.orderId);
+          orderToRefill = matchingOrders.isNotEmpty ? matchingOrders.first : null;
+        } else if (state is OrdersByStatusLoaded) {
+          final matchingOrders = (state as OrdersByStatusLoaded).orders.where((o) => o.orderId == event.orderId);
+          orderToRefill = matchingOrders.isNotEmpty ? matchingOrders.first : null;
+        }
 
-              if (orderToRefill != null) {
-                  await refillOrderStockUseCase!.call(orderToRefill);
-              } else {
-                   // Skip refill if order not found in current state
-              }
-           }
-
-           final payment = await getPaymentByOrderIdUseCase.call(event.orderId);
-           // Only refund if not already refunded
-           if (payment.status != 'refunded') {
-             await refundPaymentUseCase.call(payment.paymentId, payment.amount);
-             WebMessagingService.triggerLocalNotification(
-              'Order Cancelled', 
-              'Order ${event.orderId} has been cancelled, refunded, and stock refilled.',
-              data: {'type': 'order', 'id': event.orderId}
-             );
-             emit(OrderStatusUpdated(
-               orderId: event.orderId, 
-               message: 'Order cancelled, payment refunded, and stock refilled successfully'
-             ));
-           }
-        } catch (e) {
-          emit(OrderReceivedError(message: 'Failed to refund/refill: ${e.toString()}'));
-          return; 
+        if (orderToRefill != null) {
+          await refillOrderStockUseCase!.call(orderToRefill);
         }
       }
 
-      await updateOrderStatusUseCase.call(event.orderId, event.status);
-      emit(OrderStatusUpdated(
-        orderId: event.orderId,
-        message: 'Order status updated to ${event.status}',
-      ));
-      add(const FetchNewOrdersEvent());
-    } catch (e) {
-      emit(OrderReceivedError(message: e.toString()));
+      final paymentResult = await getPaymentByOrderIdUseCase.call(event.orderId);
+      final shouldReturn = paymentResult.fold(
+        (failure) {
+          emit(OrderReceivedError(message: failure.message));
+          return true;
+        },
+        (payment) => false,
+      );
+      if (shouldReturn) return;
+
+      paymentResult.fold(
+        (_) {},
+        (payment) async {
+          if (payment.status != 'refunded') {
+            final refundResult = await refundPaymentUseCase.call(payment.paymentId, payment.amount);
+            refundResult.fold(
+              (failure) => emit(OrderReceivedError(message: failure.message)),
+              (_) {
+                WebMessagingService.triggerLocalNotification(
+                  'Order Cancelled',
+                  'Order ${event.orderId} has been cancelled, refunded, and stock refilled.',
+                  data: {'type': 'order', 'id': event.orderId},
+                );
+                emit(OrderStatusUpdated(
+                  orderId: event.orderId,
+                  message: 'Order cancelled, payment refunded, and stock refilled successfully',
+                ));
+              },
+            );
+          }
+        },
+      );
     }
+
+    final updateResult = await updateOrderStatusUseCase.call(event.orderId, event.status);
+    updateResult.fold(
+      (failure) => emit(OrderReceivedError(message: failure.message)),
+      (_) {
+        emit(OrderStatusUpdated(orderId: event.orderId, message: 'Order status updated to ${event.status}'));
+        add(const FetchNewOrdersEvent());
+      },
+    );
   }
 
   Future<void> _onMarkAsReceived(
@@ -224,22 +214,19 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     Emitter<OrderReceivedState> emit,
   ) async {
     emit(const OrderReceivedLoading());
-
-    try {
-      await markOrderReceivedUseCase.call(event.orderId);
-      emit(OrderMarkedAsReceived(
-        orderId: event.orderId,
-        message: 'Order marked as received',
-      ));
-      WebMessagingService.triggerLocalNotification(
-        'Order Received', 
-        'Order ${event.orderId} has been marked as received.',
-        data: {'type': 'order', 'id': event.orderId}
-      );
-      add(const FetchNewOrdersEvent());
-    } catch (e) {
-      emit(OrderReceivedError(message: e.toString()));
-    }
+    final result = await markOrderReceivedUseCase.call(event.orderId);
+    result.fold(
+      (failure) => emit(OrderReceivedError(message: failure.message)),
+      (_) {
+        emit(OrderMarkedAsReceived(orderId: event.orderId, message: 'Order marked as received'));
+        WebMessagingService.triggerLocalNotification(
+          'Order Received',
+          'Order ${event.orderId} has been marked as received.',
+          data: {'type': 'order', 'id': event.orderId},
+        );
+        add(const FetchNewOrdersEvent());
+      },
+    );
   }
 
   Future<void> _onFetchOrdersByUserId(
@@ -247,15 +234,14 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     Emitter<OrderReceivedState> emit,
   ) async {
     emit(const OrderReceivedLoading());
-    try {
-      if (getOrdersByUserIdUseCase != null) {
-        final orders = await getOrdersByUserIdUseCase!.call(event.userId);
-        emit(OrdersByUserIdLoaded(orders));
-      } else {
-        emit(const OrderReceivedError(message: 'UseCase not initialized'));
-      }
-    } catch (e) {
-      emit(OrderReceivedError(message: e.toString()));
+    if (getOrdersByUserIdUseCase != null) {
+      final result = await getOrdersByUserIdUseCase!.call(event.userId);
+      result.fold(
+        (failure) => emit(OrderReceivedError(message: failure.message)),
+        (orders) => emit(OrdersByUserIdLoaded(orders)),
+      );
+    } else {
+      emit(const OrderReceivedError(message: 'UseCase not initialized'));
     }
   }
 }

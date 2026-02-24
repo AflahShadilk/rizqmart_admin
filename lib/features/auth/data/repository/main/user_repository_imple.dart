@@ -1,4 +1,7 @@
-﻿import 'package:rizqmartadmin/features/auth/data/data_sources/main/user_data_source.dart';
+﻿import 'package:rizqmartadmin/core/error/either.dart';
+import 'package:rizqmartadmin/core/error/error_handler.dart';
+import 'package:rizqmartadmin/core/error/failures.dart';
+import 'package:rizqmartadmin/features/auth/data/data_sources/main/user_data_source.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/user_entity.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/user_repository.dart';
 
@@ -8,30 +11,36 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl({required this.dataSource});
 
   @override
-  Future<List<UserEntity>> getAllUsers() async {
-    final models = await dataSource.getAllUsers();
-    return models.map((model) => model.toEntity()).toList();
+  Future<Either<Failure, List<UserEntity>>> getAllUsers() async {
+    return ErrorHandler.execute(() async {
+      final models = await dataSource.getAllUsers();
+      return models.map((model) => model.toEntity()).toList();
+    });
   }
 
   @override
-  Future<List<UserEntity>> getUsersByRole(String role) async {
-    final models = await dataSource.getUsersByRole(role);
-    return models.map((model) => model.toEntity()).toList();
+  Future<Either<Failure, List<UserEntity>>> getUsersByRole(String role) async {
+    return ErrorHandler.execute(() async {
+      final models = await dataSource.getUsersByRole(role);
+      return models.map((model) => model.toEntity()).toList();
+    });
   }
 
   @override
-  Future<UserEntity> getUserById(String userId) async {
-    final model = await dataSource.getUserById(userId);
-    return model.toEntity();
+  Future<Either<Failure, UserEntity>> getUserById(String userId) async {
+    return ErrorHandler.execute(() async {
+      final model = await dataSource.getUserById(userId);
+      return model.toEntity();
+    });
   }
 
   @override
-  Future<void> updateUserStatus(String userId, bool isActive) async {
-    await dataSource.updateUserStatus(userId, isActive);
+  Future<Either<Failure, void>> updateUserStatus(String userId, bool isActive) async {
+    return ErrorHandler.execute(() => dataSource.updateUserStatus(userId, isActive));
   }
 
   @override
-  Future<void> deleteUser(String userId) async {
-    await dataSource.deleteUser(userId);
+  Future<Either<Failure, void>> deleteUser(String userId) async {
+    return ErrorHandler.execute(() => dataSource.deleteUser(userId));
   }
 }

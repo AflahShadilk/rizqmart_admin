@@ -29,13 +29,11 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     Emitter<PaymentState> emit,
   ) async {
     emit(const PaymentLoading());
-
-    try {
-      final payments = await getAllPaymentsUseCase.call();
-      emit(AllPaymentsLoaded(payments: payments));
-    } catch (e) {
-      emit(PaymentError(message: e.toString()));
-    }
+    final result = await getAllPaymentsUseCase.call();
+    result.fold(
+      (failure) => emit(PaymentError(message: failure.message)),
+      (payments) => emit(AllPaymentsLoaded(payments: payments)),
+    );
   }
 
   Future<void> _onFetchByStatus(
@@ -43,16 +41,11 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     Emitter<PaymentState> emit,
   ) async {
     emit(const PaymentLoading());
-
-    try {
-      final payments = await getPaymentsByStatusUseCase.call(event.status);
-      emit(PaymentsByStatusLoaded(
-        payments: payments,
-        status: event.status,
-      ));
-    } catch (e) {
-      emit(PaymentError(message: e.toString()));
-    }
+    final result = await getPaymentsByStatusUseCase.call(event.status);
+    result.fold(
+      (failure) => emit(PaymentError(message: failure.message)),
+      (payments) => emit(PaymentsByStatusLoaded(payments: payments, status: event.status)),
+    );
   }
 
   Future<void> _onFetchAnalytics(
@@ -60,13 +53,11 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     Emitter<PaymentState> emit,
   ) async {
     emit(const PaymentLoading());
-
-    try {
-      final analytics = await getPaymentAnalyticsUseCase.call();
-      emit(PaymentAnalyticsLoaded(analytics: analytics));
-    } catch (e) {
-      emit(PaymentError(message: e.toString()));
-    }
+    final result = await getPaymentAnalyticsUseCase.call();
+    result.fold(
+      (failure) => emit(PaymentError(message: failure.message)),
+      (analytics) => emit(PaymentAnalyticsLoaded(analytics: analytics)),
+    );
   }
 
   Future<void> _onRefundPayment(
@@ -74,16 +65,13 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     Emitter<PaymentState> emit,
   ) async {
     emit(const PaymentLoading());
-
-    try {
-      await refundPaymentUseCase.call(event.paymentId, event.amount);
-      emit(PaymentRefunded(
-        message: 'Payment refunded successfully',
-        paymentId: event.paymentId,
-      ));
-      add(const FetchAllPaymentsEvent());
-    } catch (e) {
-      emit(PaymentError(message: e.toString()));
-    }
+    final result = await refundPaymentUseCase.call(event.paymentId, event.amount);
+    result.fold(
+      (failure) => emit(PaymentError(message: failure.message)),
+      (_) {
+        emit(PaymentRefunded(message: 'Payment refunded successfully', paymentId: event.paymentId));
+        add(const FetchAllPaymentsEvent());
+      },
+    );
   }
 }

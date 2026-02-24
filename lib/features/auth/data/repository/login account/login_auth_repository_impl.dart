@@ -1,4 +1,6 @@
-﻿import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'package:rizqmartadmin/core/error/either.dart';
+import 'package:rizqmartadmin/core/error/error_handler.dart';
+import 'package:rizqmartadmin/core/error/failures.dart';
 import 'package:rizqmartadmin/features/auth/data/data_sources/auth/login_account/login_acc_datasource.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/auth/login/login_user_entity.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/auth/login_repository.dart';
@@ -9,52 +11,17 @@ class LoginRepositoryImpl implements LoginRepository {
   LoginRepositoryImpl({required this.loginAccDatasource});
 
   @override
-  Future<LoginUserEntity> login(String email, String password) async {
-    try {
-      return await loginAccDatasource.login(email, password);
-    } on FirebaseAuthException catch (e) {
-      // Handle specific Firebase Auth errors
-      throw _handleFirebaseAuthException(e);
-    } catch (e) {
-      // Handle any other errors
-      throw Exception('An unexpected error occurred: ${e.toString()}');
-    }
+  Future<Either<Failure, LoginUserEntity>> login(String email, String password) async {
+    return ErrorHandler.execute(() => loginAccDatasource.login(email, password));
   }
 
   @override
-  Future<void> logout() async {
-    try {
-      await loginAccDatasource.logout();
-    } catch (e) {
-      throw Exception('Logout failed: ${e.toString()}');
-    }
+  Future<Either<Failure, void>> logout() async {
+    return ErrorHandler.execute(() => loginAccDatasource.logout());
   }
 
   @override
-  Future<LoginUserEntity?> getCurrentUser() async {
-    try {
-      return await loginAccDatasource.getCurrentUser();
-    } catch (e) {
-      throw Exception('Failed to get current user: ${e.toString()}');
-    }
-  }
-
-  Exception _handleFirebaseAuthException(FirebaseAuthException e) {
-    switch (e.code) {
-      case 'user-not-found':
-        return Exception('No user found with this email.');
-      case 'wrong-password':
-        return Exception('Wrong password provided.');
-      case 'invalid-email':
-        return Exception('The email address is badly formatted.');
-      case 'user-disabled':
-        return Exception('This user account has been disabled.');
-      case 'too-many-requests':
-        return Exception('Too many attempts. Please try again later.');
-      case 'invalid-credential':
-        return Exception('Invalid email or password.');
-      default:
-        return Exception(e.message ?? 'Authentication failed.');
-    }
+  Future<Either<Failure, LoginUserEntity?>> getCurrentUser() async {
+    return ErrorHandler.execute(() => loginAccDatasource.getCurrentUser());
   }
 }

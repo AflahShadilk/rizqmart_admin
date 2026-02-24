@@ -1,4 +1,7 @@
-﻿import 'package:rizqmartadmin/features/auth/data/data_sources/main/product_firestore_source.dart';
+﻿import 'package:rizqmartadmin/core/error/either.dart';
+import 'package:rizqmartadmin/core/error/error_handler.dart';
+import 'package:rizqmartadmin/core/error/failures.dart';
+import 'package:rizqmartadmin/features/auth/data/data_sources/main/product_firestore_source.dart';
 import 'package:rizqmartadmin/features/auth/data/model/add_product_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/product_repository.dart';
@@ -13,57 +16,44 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<void> addProduct(AddProductEntity entities) async {
+  Future<Either<Failure, void>> addProduct(AddProductEntity entities) async {
     final data = ProductModel(
         id: entities.id,
         name: entities.name,
-        // price: entities.price,
-        // mrp: entities.mrp,
         description: entities.description,
         category: entities.category,
         brand: entities.brand,
-        // quantity: entities.quantity,
         discount: entities.discount,
-        // variant: entities.variant,
-        // imageUrls: entities.imageUrls,
         createdAt: entities.createdAt,
         features: entities.features,
         status: entities.status,
-        variantDetails: entities.variantDetails
-
-        );
-    await fireStore.addProduct(data);
+        variantDetails: entities.variantDetails);
+    return ErrorHandler.execute(() => fireStore.addProduct(data));
   }
 
   @override
-  Future<void> updateProduct(AddProductEntity entities) async {
+  Future<Either<Failure, void>> updateProduct(AddProductEntity entities) async {
     final data = ProductModel(
         id: entities.id,
         name: entities.name,
-        // price: entities.price,
-        // mrp: entities.mrp,
         description: entities.description,
         category: entities.category,
         brand: entities.brand,
-        // quantity: entities.quantity,
         discount: entities.discount,
-        // variant: entities.variant,
-        // imageUrls: entities.imageUrls,
         createdAt: entities.createdAt,
         features: entities.features,
         status: entities.status,
-        variantDetails:entities.variantDetails
-        );
-    await fireStore.updateProduct(data);
+        variantDetails: entities.variantDetails);
+    return ErrorHandler.execute(() => fireStore.updateProduct(data));
   }
 
   @override
-  Future<void> deleteProduct(String id) async {
-    await fireStore.deleteProduct(id);
+  Future<Either<Failure, void>> deleteProduct(String id) async {
+    return ErrorHandler.execute(() => fireStore.deleteProduct(id));
   }
 
   @override
-  Future<void> updateProductStock(String productId, String? variantId, double quantityChange) async {
-    await fireStore.updateStock(productId, variantId, quantityChange);
+  Future<Either<Failure, void>> updateProductStock(String productId, String? variantId, double quantityChange) async {
+    return ErrorHandler.execute(() => fireStore.updateStock(productId, variantId, quantityChange));
   }
 }

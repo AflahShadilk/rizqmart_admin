@@ -1,4 +1,7 @@
-﻿import 'package:rizqmartadmin/features/auth/data/data_sources/main/chat_datasource.dart';
+﻿import 'package:rizqmartadmin/core/error/either.dart';
+import 'package:rizqmartadmin/core/error/error_handler.dart';
+import 'package:rizqmartadmin/core/error/failures.dart';
+import 'package:rizqmartadmin/features/auth/data/data_sources/main/chat_datasource.dart';
 import 'package:rizqmartadmin/features/auth/data/model/message_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/chat_entity.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/message_entity.dart';
@@ -20,7 +23,7 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<void> sendMessage(String chatId, MessageEntity message, {String? userId, String? productName}) async {
+  Future<Either<Failure, void>> sendMessage(String chatId, MessageEntity message, {String? userId, String? productName}) async {
     final messageModel = MessageModel(
       senderId: message.senderId,
       text: message.text,
@@ -29,16 +32,16 @@ class ChatRepositoryImpl implements ChatRepository {
       orderId: message.orderId,
       senderRole: message.senderRole,
     );
-    return dataSource.sendMessage(
+    return ErrorHandler.execute(() => dataSource.sendMessage(
       chatId,
       messageModel,
       userId: userId,
       productName: productName,
-    );
+    ));
   }
 
   @override
-  Future<void> markChatAsRead(String chatId) async {
-    return dataSource.markChatAsRead(chatId);
+  Future<Either<Failure, void>> markChatAsRead(String chatId) async {
+    return ErrorHandler.execute(() => dataSource.markChatAsRead(chatId));
   }
 }

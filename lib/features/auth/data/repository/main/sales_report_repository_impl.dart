@@ -1,4 +1,7 @@
-﻿import 'package:rizqmartadmin/features/auth/data/data_sources/main/sales_report_datasource.dart';
+﻿import 'package:rizqmartadmin/core/error/either.dart';
+import 'package:rizqmartadmin/core/error/error_handler.dart';
+import 'package:rizqmartadmin/core/error/failures.dart';
+import 'package:rizqmartadmin/features/auth/data/data_sources/main/sales_report_datasource.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/sales_report_entity.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/sales_report_repository.dart';
 
@@ -8,7 +11,7 @@ class SalesReportRepositoryImpl implements SalesReportRepository {
   SalesReportRepositoryImpl({required this.dataSource});
 
   @override
-  Future<SalesReportEntity> getSalesReport(DateTime startDate, DateTime endDate) async {
-    return await dataSource.getSalesReport(startDate, endDate);
+  Future<Either<Failure, SalesReportEntity>> getSalesReport(DateTime startDate, DateTime endDate) async {
+    return ErrorHandler.execute(() => dataSource.getSalesReport(startDate, endDate));
   }
 }

@@ -15,11 +15,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     Emitter<DashboardState> emit,
   ) async {
     emit(DashboardLoading());
-    try {
-      final stats = await getDashboardStatsUseCase.call();
-      emit(DashboardLoaded(stats));
-    } catch (e) {
-      emit(DashboardError(e.toString().replaceFirst('Exception: ', '')));
-    }
+    final result = await getDashboardStatsUseCase.call();
+    result.fold(
+      (failure) => emit(DashboardError(failure.message)),
+      (stats) => emit(DashboardLoaded(stats)),
+    );
   }
 }

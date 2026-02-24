@@ -1,4 +1,7 @@
-﻿import 'package:rizqmartadmin/features/auth/data/data_sources/main/category_firestore_source.dart';
+﻿import 'package:rizqmartadmin/core/error/either.dart';
+import 'package:rizqmartadmin/core/error/error_handler.dart';
+import 'package:rizqmartadmin/core/error/failures.dart';
+import 'package:rizqmartadmin/features/auth/data/data_sources/main/category_firestore_source.dart';
 import 'package:rizqmartadmin/features/auth/data/model/category_firestore_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/category_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/category_repository.dart';
@@ -13,28 +16,29 @@ class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @override
-  Future<void>addcategory(CategoryModel category)async{
-    final model=CategoryFirestoreModel(id: category.id, name: category.name,logoUrl:category.logoUrl,variants: category.variants);
-    await firestoreSource.addcategory(model);
+  Future<Either<Failure, void>> addcategory(CategoryModel category) async {
+    final model = CategoryFirestoreModel(id: category.id, name: category.name, logoUrl: category.logoUrl, variants: category.variants);
+    return ErrorHandler.execute(() => firestoreSource.addcategory(model));
   }
-  @override
-  Future<void>updateCategory(CategoryModel category)async{
-    final model=CategoryFirestoreModel(id: category.id, name:category.name,logoUrl: category.logoUrl,variants: category.variants);
-    await firestoreSource.updateCategory(model);
-  }
-  
-  @override
-  Future<void> addVariant(String categoryId, String newVariant) async {
-  await firestoreSource.addVariantToCategory(categoryId, newVariant);
- }
 
   @override
-Future<void> deleteVariant(String categoryId, String variant) async {
-  await firestoreSource.deleteVariantFromCategory(categoryId, variant);
-}
+  Future<Either<Failure, void>> updateCategory(CategoryModel category) async {
+    final model = CategoryFirestoreModel(id: category.id, name: category.name, logoUrl: category.logoUrl, variants: category.variants);
+    return ErrorHandler.execute(() => firestoreSource.updateCategory(model));
+  }
 
   @override
-  Future<void>deleteCategory(String id)async{
-    await firestoreSource.deleteCategory(id);
+  Future<Either<Failure, void>> addVariant(String categoryId, String newVariant) async {
+    return ErrorHandler.execute(() => firestoreSource.addVariantToCategory(categoryId, newVariant));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteVariant(String categoryId, String variant) async {
+    return ErrorHandler.execute(() => firestoreSource.deleteVariantFromCategory(categoryId, variant));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteCategory(String id) async {
+    return ErrorHandler.execute(() => firestoreSource.deleteCategory(id));
   }
 }
