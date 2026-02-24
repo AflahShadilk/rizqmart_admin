@@ -137,20 +137,21 @@ class OfferCard extends StatelessWidget {
                 IconButton(
                   onPressed: () {
                     // Delete Logic
+                    final couponBloc = context.read<CouponBloc>();
                     showDialog(
                       context: context,
-                      builder: (context) => AlertDialog(
+                      builder: (dialogContext) => AlertDialog(
                         title: const Text('Delete Offer'),
                         content: Text('Are you sure you want to delete ${offer.name}?'),
                         actions: [
                           TextButton(
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () => Navigator.pop(dialogContext),
                             child: const Text('Cancel'),
                           ),
                           TextButton(
                             onPressed: () {
-                              context.read<CouponBloc>().add(DeletingCouponEvent(offer.id));
-                              Navigator.pop(context);
+                              couponBloc.add(DeletingCouponEvent(offer.id));
+                              Navigator.pop(dialogContext);
                             },
                             child: const Text('Delete', style: TextStyle(color: Colors.red)),
                           ),
