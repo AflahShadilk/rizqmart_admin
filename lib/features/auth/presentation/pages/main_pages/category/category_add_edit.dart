@@ -6,12 +6,13 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
-import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/empty_image_placeholder.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/category_model.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/category/dialog/category_dialog_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/category/dialog/category_dialog_cubit_state.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/shimmer_image.dart';
 import 'package:uuid/uuid.dart';
 
 class CategoryDialog extends StatefulWidget {
@@ -256,31 +257,30 @@ class CategoryDialogState extends State<CategoryDialog> {
                           children: [
                             InkWell(
                               onTap: pickImage,
-                              child: Container(
-                                width: 100,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: state.isUploading
-                                    ? const Center(child: CircularProgressIndicator())
-                                    : state.imageUrl != null
-                                        ? ShimmerImage(
-                                            imageUrl: state.imageUrl!,
-                                            width: 100,
-                                            height: 100,
-                                            borderRadius: 8,
-                                          )
-                                        : const Icon(
-                                            Icons.add_a_photo,
-                                            color: Colors.grey,
-                                            size: 40,
-                                          ),
-                              ),
+                              child: state.isUploading
+                                  ? Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade100,
+                                        border: Border.all(color: Colors.grey.shade300),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Center(child: CircularProgressIndicator()),
+                                    )
+                                  : state.imageUrl != null
+                                      ? ShimmerImage(
+                                          imageUrl: state.imageUrl!,
+                                          width: 100,
+                                          height: 100,
+                                          borderRadius: 8,
+                                        )
+                                      : const EmptyImagePlaceholder(
+                                          width: 100,
+                                          height: 100,
+                                          iconSize: 32,
+                                          text: '',
+                                        ),
                             ),
                             8.h,
                             Text(

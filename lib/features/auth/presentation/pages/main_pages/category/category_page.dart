@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
-import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/category_model.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_state.dart';
@@ -13,6 +12,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/c
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/category/adding/category_cubit_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/category/category_add_edit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/category/delete_handle.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/shimmer_image.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});

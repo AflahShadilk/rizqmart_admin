@@ -6,11 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
-import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/empty_image_placeholder.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/brand/add/add_brand_form_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/shimmer_image.dart';
 import 'package:uuid/uuid.dart';
 
 class AddBrandFormWeb extends StatefulWidget {
@@ -145,41 +146,32 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                             children: [
                               InkWell(
                                 onTap: () => _pickImage(context),
-                                child: Container(
-                                  width: 100,
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
-                                    border: Border.all(
-                                      color: Colors.grey.shade300,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: cubitState.isUploading
-                                      ? const Center(
+                                child: cubitState.isUploading
+                                    ? Container(
+                                        width: 100,
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade100,
+                                          border: Border.all(color: Colors.grey.shade300),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: const Center(
                                           child: CircularProgressIndicator(),
-                                        )
-                                      : cubitState.imageUrl != null
-                                          ? ShimmerImage(
-                                              imageUrl: cubitState.imageUrl!,
-                                              width: 100,
-                                              height: 100,
-                                              borderRadius: 8,
-                                            )
-                                          : const Icon(
-                                              Icons.add_a_photo,
-                                              color: Colors.grey,
-                                              size: 40,
-                                            ),
-                                ),
-                              ),
-                              8.h,
-                              Text(
-                                "Upload Logo",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
-                                ),
+                                        ),
+                                      )
+                                    : cubitState.imageUrl != null
+                                        ? ShimmerImage(
+                                            imageUrl: cubitState.imageUrl!,
+                                            width: 100,
+                                            height: 100,
+                                            borderRadius: 8,
+                                          )
+                                        : const EmptyImagePlaceholder(
+                                            width: 100,
+                                            height: 100,
+                                            text: 'Upload Logo',
+                                            iconSize: 32,
+                                          ),
                               ),
                             ],
                           ),

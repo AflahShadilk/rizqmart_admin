@@ -6,10 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
-import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/empty_image_placeholder.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/coupon_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/coupon_bloc.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/respnsive_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/product_selection_dialog.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
@@ -365,36 +366,37 @@ class _AddCouponPageViewState extends State<_AddCouponPageView> {
   Widget _buildImagePicker(AddCouponState couponState, double height) {
     return GestureDetector(
       onTap: _pickImage,
-      child: Container(
-        height: height,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: couponState.pickedImage != null
-            ? ClipRRect(
+      child: couponState.pickedImage != null
+          ? Container(
+              height: height,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.memory(couponState.pickedImage!.bytes!, fit: BoxFit.cover),
-              )
-            : couponState.existingImageUrl != null &&
-                    couponState.existingImageUrl!.isNotEmpty
-                ? ClipRRect(
+              ),
+            )
+          : couponState.existingImageUrl != null &&
+                  couponState.existingImageUrl!.isNotEmpty
+              ? Container(
+                  height: height,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: ShimmerImage(
                       imageUrl: couponState.existingImageUrl!,
                       fit: BoxFit.cover,
                     ),
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey.shade400),
-                      Text('Upload Image', style: GoogleFonts.poppins(color: Colors.grey)),
-                    ],
                   ),
-      ),
+                )
+              : EmptyImagePlaceholder(height: height, width: double.infinity),
     );
   }
 

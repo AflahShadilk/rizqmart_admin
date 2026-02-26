@@ -2,7 +2,9 @@
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/empty_image_placeholder.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/shimmer_image.dart';
+
 
 Widget imageAddingSection({
   required List<bool> isUploading,
@@ -37,30 +39,12 @@ Widget imageAddingSection({
               }
               onPickImage(index);
             },
-            child: Container(
+            child: const EmptyImagePlaceholder(
               width: 120,
               height: 120,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                border: Border.all(
-                  color: Colors.grey.shade300,
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.add_a_photo, size: 32, color: Colors.grey),
-                    4.h,
-                    Text(
-                      'Add Image',
-                      style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-                    ),
-                  ],
-                ),
-              ),
+              iconSize: 32,
+              icon: Icons.add_a_photo,
+              text: 'Add Image',
             ),
           ),
 

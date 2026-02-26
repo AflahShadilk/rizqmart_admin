@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
-import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/empty_image_placeholder.dart';
 import 'package:rizqmartadmin/features/auth/data/model/add_product_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/units_entity.dart';
@@ -27,6 +27,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/produc
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/widgets.dart';
 import 'package:rizqmartadmin/features/auth/presentation/validators/text_field_validator.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/buttons/buttons.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/shimmer_image.dart';
 import 'package:uuid/uuid.dart';
 
 class FormProducts extends StatefulWidget {
@@ -676,12 +677,9 @@ class _FormProductsState extends State<FormProducts> {
                               ),
                             ],
                           )
-                        : Center(
-                            child: Icon(
-                              Icons.add_photo_alternate,
-                              size: 30,
-                              color: AppColors.gray.withValues(alpha: .4),
-                            ),
+                        : const EmptyImagePlaceholder(
+                            text: '',
+                            iconSize: 24,
                           ),
                   ),
                 ),

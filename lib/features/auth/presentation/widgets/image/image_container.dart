@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:rizqmartadmin/core/widgets/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/widgets.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/empty_image_placeholder.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/image/shimmer_image.dart';
 
 Column imageContainer({
   required void Function()? onTap,
@@ -23,31 +24,33 @@ Column imageContainer({
           children: [
             InkWell(
               onTap: onTap,
-              child: Container(
-                width: width,
-                height: height,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: circular!
-                    ? const Center(
+              child: circular!
+                  ? Container(
+                      width: width,
+                      height: height,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Center(
                         child: CircularProgressIndicator(),
-                      )
-                    : imageUrl != null && imageUrl.isNotEmpty
-                        ? ShimmerImage(
-                            imageUrl: imageUrl,
-                            width: width,
-                            height: height,
-                            borderRadius: 8,
-                          )
-                        : const Icon(
-                            Icons.add_a_photo,
-                            color: Colors.grey,
-                            size: 40,
-                          ),
-              ),
+                      ),
+                    )
+                  : imageUrl != null && imageUrl.isNotEmpty
+                      ? ShimmerImage(
+                          imageUrl: imageUrl,
+                          width: width,
+                          height: height,
+                          borderRadius: 8,
+                        )
+                      : EmptyImagePlaceholder(
+                          width: width,
+                          height: height,
+                          iconSize: 32,
+                          icon: Icons.add_a_photo,
+                          text: '',
+                        ),
             ),
             // Remove button overlay
             if (imageUrl != null && imageUrl.isNotEmpty && onRemove != null)
