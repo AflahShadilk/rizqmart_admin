@@ -24,7 +24,6 @@ jobs:
       - name: Build Flutter web
         run: flutter build web --release
 
-      
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
