@@ -1,5 +1,7 @@
 ﻿
 
+// ignore_for_file: unnecessary_cast
+
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +14,9 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/s
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/sales_report/sales_report_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/salesreport/sales_report_page_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/salesreport/sales_report_page_cubit_state.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/sales_report/top_selling_products/top_selling_products_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/sales_report/top_selling_products/top_selling_products_event.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/sales_report/top_selling_products/top_selling_products_state.dart';
 
 class SalesReportPage extends StatelessWidget {
   const SalesReportPage({super.key});
@@ -43,6 +48,9 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
     final cubitState = context.read<SalesReportPageCubit>().state;
     context.read<SalesReportBloc>().add(
       LoadSalesReportEvent(startDate: cubitState.startDate, endDate: cubitState.endDate),
+    );
+    context.read<TopSellingProductsBloc>().add(
+      LoadTopSellingProducts(startDate: cubitState.startDate, endDate: cubitState.endDate),
     );
   }
 
@@ -270,6 +278,10 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                                     _buildOrderStatusChart(report),
                                   ],
                                 ),
+                              32.h,
+
+                              // Top Selling Products Section
+                              const _TopSellingProductsSection(),
                             ],
                           );
                         }
@@ -555,5 +567,253 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
         Text(text, style: const TextStyle(fontWeight: FontWeight.w500)),
       ],
     );
+  }
+}
+
+/// Presentational widget for the Top Selling Products section.
+class _TopSellingProductsSection extends StatelessWidget {
+  const _TopSellingProductsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<TopSellingProductsBloc, TopSellingProductsState>(
+      builder: (context, state) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardTheme.color,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
+                blurRadius: 16,
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Section Header
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.deepPurple.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.trending_up_rounded, color: Colors.deepPurple, size: 20),
+                  ),
+                  12.w,
+                  Expanded(
+                    child: Text(
+                      'Most Sold Products',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              20.h,
+
+              // Content based on state
+              if (state is TopSellingProductsLoading)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              else if (state is TopSellingProductsError)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 32),
+                    child: Column(
+                      children: [
+                        Icon(Icons.error_outline_rounded, color: Colors.red.shade300, size: 40),
+                        12.h,
+                        Text(
+                          (state as TopSellingProductsError).message,
+                          style: TextStyle(color: Colors.red.shade400, fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else if (state is TopSellingProductsLoaded && (state as TopSellingProductsLoaded).products.isEmpty)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 32),
+                    child: Column(
+                      children: [
+                        Icon(Icons.inventory_2_outlined, color: Colors.grey.shade400, size: 40),
+                        12.h,
+                        Text(
+                          'No product sales data for this period',
+                          style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else if (state is TopSellingProductsLoaded)
+                ..._buildProductRows(context, (state as TopSellingProductsLoaded).products)
+              else
+                const SizedBox.shrink(),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildProductRows(BuildContext context, List products) {
+    final widgets = <Widget>[];
+
+    // Table header
+    widgets.add(
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            const SizedBox(width: 36),
+            Expanded(
+              flex: 3,
+              child: Text(
+                'Product',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text(
+                'Qty Sold',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text(
+                'Revenue',
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    widgets.add(8.h);
+
+    // Product rows
+    for (int i = 0; i < products.length; i++) {
+      final product = products[i];
+      final rankColor = i == 0
+          ? const Color(0xFFFFD700)
+          : i == 1
+              ? const Color(0xFFC0C0C0)
+              : i == 2
+                  ? const Color(0xFFCD7F32)
+                  : Colors.grey.shade400;
+
+      widgets.add(
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              // Rank badge
+              Container(
+                width: 28,
+                height: 28,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: rankColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  '${i + 1}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: rankColor,
+                  ),
+                ),
+              ),
+              8.w,
+              // Product name
+              Expanded(
+                flex: 3,
+                child: Text(
+                  product.name,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              // Quantity sold
+              Expanded(
+                flex: 1,
+                child: Text(
+                  '${product.totalSold}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.deepPurple.shade400,
+                  ),
+                ),
+              ),
+              // Revenue
+              Expanded(
+                flex: 1,
+                child: Text(
+                  '₹${product.totalRevenue.toStringAsFixed(0)}',
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.green.shade600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return widgets;
   }
 }

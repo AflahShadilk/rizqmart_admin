@@ -1,10 +1,12 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rizqmartadmin/features/auth/data/model/sales_report_model.dart';
 import 'package:rizqmartadmin/features/auth/data/model/order_received_model.dart';
+import 'package:rizqmartadmin/features/auth/data/model/top_selling_product_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/sales_data_point.dart';
 
 abstract class SalesReportDataSource {
   Future<SalesReportModel> getSalesReport(DateTime startDate, DateTime endDate);
+  Future<List<TopSellingProductModel>> getTopSellingProducts(DateTime startDate, DateTime endDate, {int limit = 10});
 }
 
 class SalesReportDataSourceImpl implements SalesReportDataSource {
@@ -104,4 +106,93 @@ class SalesReportDataSourceImpl implements SalesReportDataSource {
       throw Exception('Failed to generate sales report: \$e');
     }
   }
+
+  @override
+  Future<List<TopSellingProductModel>> getTopSellingProducts(
+    DateTime startDate,
+    DateTime endDate, {
+    int limit = 10,
+  }) async {
+    try {
+      final endOfDay = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
+
+      // Query only completed/paid orders in the date range
+      final querySnapshot = await firestore
+          .collection('orders')
+          .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
+          .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      // Aggregate product sales from order items
+      final Map<String, _ProductAggregate> aggregateMap = {};
+
+      for (final doc in querySnapshot.docs) {
+        final data = doc.data();
+        final status = data['status'] ?? data['orderStatus'] ?? 'pending';
+        final paymentStatus = data['paymentStatus'] ?? 'pending';
+
+        // Only count revenue-contributing orders
+        if (paymentStatus != 'succeeded' || status == 'refunded') continue;
+
+        final items = data['items'] as List<dynamic>? ?? [];
+        for (final item in items) {
+          final productId = item['id'] ?? item['productId'] ?? '';
+          final productName = item['name'] ?? item['productName'] ?? 'Unknown';
+          final quantity = _parseAmount(item['count'] ?? item['quantity'] ?? 0).toInt();
+          final price = _parseAmount(item['price'] ?? 0);
+
+          if (productId.isEmpty) continue;
+
+          if (aggregateMap.containsKey(productId)) {
+            aggregateMap[productId]!.totalSold += quantity;
+            aggregateMap[productId]!.totalRevenue += price * quantity;
+          } else {
+            aggregateMap[productId] = _ProductAggregate(
+              name: productName,
+              totalSold: quantity,
+              totalRevenue: price * quantity,
+            );
+          }
+        }
+      }
+
+      // Sort by totalSold descending and take top N
+      final sortedEntries = aggregateMap.entries.toList()
+        ..sort((a, b) => b.value.totalSold.compareTo(a.value.totalSold));
+
+      return sortedEntries
+          .take(limit)
+          .map((e) => TopSellingProductModel(
+                productId: e.key,
+                name: e.value.name,
+                totalSold: e.value.totalSold,
+                totalRevenue: e.value.totalRevenue,
+              ))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch top selling products: \$e');
+    }
+  }
+
+  static double _parseAmount(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
 }
+
+/// Helper class for in-memory aggregation (not exposed outside data source).
+class _ProductAggregate {
+  final String name;
+  int totalSold;
+  double totalRevenue;
+
+  _ProductAggregate({
+    required this.name,
+    required this.totalSold,
+    required this.totalRevenue,
+  });
+}
+

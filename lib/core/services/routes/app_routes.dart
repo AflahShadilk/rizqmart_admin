@@ -73,6 +73,8 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/splash
 import 'package:rizqmartadmin/features/auth/presentation/pages/onboarding/welcome_screen.dart';
 import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/sales_report/get_sales_report_usecase.dart';
+import 'package:rizqmartadmin/features/auth/domain/usecases/main/sales_report/get_top_selling_products_usecase.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/sales_report/top_selling_products/top_selling_products_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/coupons/coupons_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/coupon_bloc.dart';
 import 'package:rizqmartadmin/features/auth/data/repository/main/coupon_repository_impl.dart';
@@ -459,10 +461,19 @@ class AppRoutes {
           GoRoute(
             path: '/salesReport',
             builder: (context, state) {
-              return BlocProvider(
-                create: (_) => SalesReportBloc(
-                  getSalesReportUseCase: GetSalesReportUseCase(sl()),
-                ),
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (_) => SalesReportBloc(
+                      getSalesReportUseCase: GetSalesReportUseCase(sl()),
+                    ),
+                  ),
+                  BlocProvider(
+                    create: (_) => TopSellingProductsBloc(
+                      getTopSellingProductsUseCase: GetTopSellingProductsUseCase(sl()),
+                    ),
+                  ),
+                ],
                 child: const SalesReportPage(),
               );
             },
