@@ -6,9 +6,24 @@ class CouponFirestoreSource {
       FirebaseFirestore.instance.collection('coupons');
 
   Stream<List<CouponModel>> getCoupons() {
-    return collection.orderBy('createdAt', descending: false).snapshots().map(
-        (snap) =>
-            snap.docs.map((doc) => CouponModel.fromFirestore(doc)).toList());
+    return collection.orderBy('createdAt', descending: false).snapshots().asyncMap(
+        (snap) async {
+      final now = DateTime.now();
+      final allCoupons = snap.docs.map((doc) => CouponModel.fromFirestore(doc)).toList();
+
+      // Identify expired coupons and delete them from Firestore
+      final expiredCoupons = allCoupons.where((c) => c.expiryDate.isBefore(now)).toList();
+      if (expiredCoupons.isNotEmpty) {
+        final batch = FirebaseFirestore.instance.batch();
+        for (final expired in expiredCoupons) {
+          batch.delete(collection.doc(expired.id));
+        }
+        await batch.commit();
+      }
+
+      // Return only active (non-expired) coupons to the UI
+      return allCoupons.where((c) => !c.expiryDate.isBefore(now)).toList();
+    });
   }
   Future<void>addCoupons(CouponModel model)async{
     final docRef = collection.doc();
