@@ -27,10 +27,8 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      - name: Create Service Account File
-        run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > service-account.json
-
-      - name: Deploy to Firebase
+      - name: Deploy to Firebase Hosting
         run: |
+          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > service-account.json
           export GOOGLE_APPLICATION_CREDENTIALS=service-account.json
-          firebase deploy --only hosting --project rizqmart-486b8
+          firebase deploy --only hosting --project rizqmart-486b8 --non-interactive
