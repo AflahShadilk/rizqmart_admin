@@ -21,4 +21,28 @@ class OrderPageCubit extends Cubit<OrderPageState> {
       emit(state.copyWith(currentPage: state.currentPage - 1));
     }
   }
+
+  /// Calculates total pages
+  int getTotalPages(int dataLength, int itemsPerPage) {
+    return (dataLength / itemsPerPage).ceil();
+  }
+
+  /// Calculates the safely bounded sublist for the current page
+  List<T> getPaginatedList<T>(List<T> data, int itemsPerPage) {
+    final totalPages = getTotalPages(data.length, itemsPerPage);
+    
+    // Auto-correct page bounds logically
+    int validCurrentPage = state.currentPage;
+    if (validCurrentPage > totalPages && totalPages > 0) {
+      validCurrentPage = totalPages;
+      // We don't emit here to avoid build collisions; we just use the forced valid page.
+    }
+
+    int startIndex = (validCurrentPage - 1) * itemsPerPage;
+    if (startIndex >= data.length) startIndex = 0;
+    
+    int endIndex = (startIndex + itemsPerPage).clamp(0, data.length);
+    return data.sublist(startIndex, endIndex);
+  }
 }
+

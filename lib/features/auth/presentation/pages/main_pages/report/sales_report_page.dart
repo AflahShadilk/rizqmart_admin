@@ -94,33 +94,40 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
               ),
             ),
             12.w,
-             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Sales Report',
-                  style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+            Expanded(
+               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Sales Report',
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                Text(
-                  'Visualize your sales performance',
-                  style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w400,
+                  Text(
+                    'Visualize your sales performance',
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
         iconTheme: IconThemeData(color: Theme.of(context).iconTheme.color),
-        actions: [
+        actions: MediaQuery.of(context).size.width >= 800 ? [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: 16),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -155,9 +162,49 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
               ],
             ),
           ),
-        ],
+        ] : null,
       ),
-      body: BlocBuilder<SalesReportBloc, SalesReportState>(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (MediaQuery.of(context).size.width < 800)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  _buildFilterChip('Today', SalesFilter.today, dateState),
+                  _buildFilterChip('Week', SalesFilter.thisWeek, dateState),
+                  _buildFilterChip('Month', SalesFilter.thisMonth, dateState),
+                  TextButton.icon(
+                    onPressed: _selectDateRange,
+                    icon: const Icon(Icons.calendar_today, size: 16),
+                    label: Text(
+                      '${DateFormat('dd MMM').format(dateState.startDate)} – ${DateFormat('dd MMM').format(dateState.endDate)}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: dateState.selectedFilter == SalesFilter.custom
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.primary,
+                      backgroundColor: dateState.selectedFilter == SalesFilter.custom
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Expanded(
+            child: BlocBuilder<SalesReportBloc, SalesReportState>(
         builder: (context, state) {
           if (state is SalesReportLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -235,6 +282,9 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
           }
           return const Center(child: Text('Select a date range to view report'));
         },
+      ),
+          ),
+        ],
       ),
     );
   }

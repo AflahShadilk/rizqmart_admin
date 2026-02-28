@@ -1,4 +1,6 @@
-﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿// ignore_for_file: use_build_context_synchronously
+
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -15,7 +17,9 @@ import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration
 import 'package:rizqmartadmin/features/auth/presentation/widgets/sized_boxes/sized_box.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/form_fields/textformfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/login%20ui%20cubit/login_ui_state_cubit.dart';
 
+/// The primary authenticating point of RizqMart Admin Panel
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -27,23 +31,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _loginPageFormKey = GlobalKey<FormState>();
   final _emailKey = TextEditingController();
   final _passwordKey = TextEditingController();
-  bool _isPasswordVisible = false;
-  bool _rememberMe = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadSavedEmail();
-  }
-
-  Future<void> _loadSavedEmail() async {
+  Future<void> _loadSavedEmail(LoginUIStateCubit cubit) async {
     final pref = await SharedPreferences.getInstance();
     final savedEmail = pref.getString('saved_email');
     if (savedEmail != null && savedEmail.isNotEmpty) {
-      setState(() {
-        _emailKey.text = savedEmail;
-        _rememberMe = true;
-      });
+      _emailKey.text = savedEmail;
+      cubit.setRememberMe(true);
     }
   }
 
@@ -71,11 +65,18 @@ class _LoginScreenState extends State<LoginScreen> {
       padding = const EdgeInsets.all(16);
     }
 
-    return BlocConsumer<LoginBloc, LoginState>(
-      listener: (context, state) async {
+    return BlocProvider(
+      create: (context) {
+        final cubit = LoginUIStateCubit();
+        _loadSavedEmail(cubit);
+        return cubit;
+      },
+      child: BlocConsumer<LoginBloc, LoginState>(
+        listener: (context, state) async {
         if (state is AuthAuthenticated) {
           final pref = await SharedPreferences.getInstance();
-          if (_rememberMe) {
+          final rememberMe = context.read<LoginUIStateCubit>().state.rememberMe;
+          if (rememberMe) {
             await pref.setString('saved_email', _emailKey.text.trim());
           } else {
             await pref.remove('saved_email');
@@ -99,7 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       builder: (context, state) {
-        return Scaffold(
+        return BlocBuilder<LoginUIStateCubit, LoginUIState>(
+          builder: (context, uiState) {
+            return Scaffold(
           body: Container(
             decoration: BoxDecoration(
               color: theme.scaffoldBackgroundColor,
@@ -215,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   20.h,
                                   TextFormFLogin(
                                     controller: _passwordKey,
-                                    obscureText: !_isPasswordVisible,
+                                    obscureText: !uiState.isPasswordVisible,
                                     hint: 'Enter your password',
                                     iconn: AntDesign.lock_fill,
                                     iconnColor: colorScheme.onSurface
@@ -223,16 +226,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                     validator: passwordValidator,
                                     suffixIcon: IconButton(
                                       icon: Icon(
-                                        _isPasswordVisible
+                                        uiState.isPasswordVisible
                                             ? Icons.visibility_outlined
                                             : Icons.visibility_off_outlined,
                                         color: theme.textTheme.bodySmall?.color,
                                       ),
                                       onPressed: () {
-                                        setState(() {
-                                          _isPasswordVisible =
-                                              !_isPasswordVisible;
-                                        });
+                                        context
+                                            .read<LoginUIStateCubit>()
+                                            .togglePasswordVisibility();
                                       },
                                     ),
                                   ),
@@ -244,12 +246,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Row(
                                         children: [
                                           Checkbox(
-                                            value: _rememberMe,
+                                            value: uiState.rememberMe,
                                             activeColor: colorScheme.primary,
                                             onChanged: (value) {
-                                              setState(() {
-                                                _rememberMe = value ?? false;
-                                              });
+                                              context
+                                                  .read<LoginUIStateCubit>()
+                                                  .setRememberMe(value ?? false);
                                             },
                                           ),
                                           Text(
@@ -350,9 +352,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-          ),
-        );
+              ));
+            },
+          );
       },
+    ),
     );
   }
 
@@ -364,17 +368,19 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Image.asset(assetIm, height: 28),
         commonSizedboxWidth10(),
-        Text(
-          textF,
-          maxLines: 2,
-          softWrap: true,
-          overflow: TextOverflow.visible,
-          style: GoogleFonts.inter(
-            color: theme.textTheme.bodyMedium?.color,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+        Expanded(
+          child: Text(
+            textF,
+            maxLines: 2,
+            softWrap: true,
+            overflow: TextOverflow.visible,
+            style: GoogleFonts.inter(
+              color: theme.textTheme.bodyMedium?.color,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        )
+        ),
       ],
     );
   }

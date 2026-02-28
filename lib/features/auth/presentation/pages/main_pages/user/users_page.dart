@@ -105,17 +105,37 @@ class SearchAndStatsBar extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: Responsive.isMobile(context) ? 1 : 2,
-            child: const SearchBar(),
-          ),
-          if (!Responsive.isMobile(context)) ...[
-            16.w,
-            const Expanded(child: UserStatsCards()),
-          ],
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (Responsive.isMobile(context)) {
+            return const SearchBar();
+          }
+
+          if (constraints.maxWidth < 800) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SearchBar(),
+                16.h,
+                const UserStatsCards(),
+              ],
+            );
+          }
+
+          return Row(
+            children: [
+              const Expanded(
+                flex: 1,
+                child: SearchBar(),
+              ),
+              16.w,
+              const Expanded(
+                flex: 2,
+                child: UserStatsCards(),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -290,22 +310,30 @@ class StatsCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                    height: 1,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                      height: 1,
+                    ),
                   ),
                 ),
                 4.h,
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).textTheme.bodySmall?.color,
-                    fontWeight: FontWeight.w500,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).textTheme.bodySmall?.color,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],

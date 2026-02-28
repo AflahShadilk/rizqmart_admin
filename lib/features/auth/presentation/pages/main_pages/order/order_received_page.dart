@@ -1,4 +1,4 @@
-﻿// ignore_for_file: curly_braces_in_flow_control_structures
+﻿// ignore_for_file: curly_braces_in_flow_control_structures, unused_local_variable
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -378,23 +378,11 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                     );
                   }
 
-                  // Pagination Logic
+                  // Pagination Logic Handled by Cubit
+                  final cubit = context.read<OrderPageCubit>();
                   final currentPage = context.watch<OrderPageCubit>().state.currentPage;
-                  int totalPages = (orders.length / itemsPerPage).ceil();
-
-                   if (currentPage > totalPages && totalPages > 0) {
-                       
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                           if (context.mounted) context.read<OrderPageCubit>().setPage(totalPages);
-                        });
-                  } else if (totalPages == 0) {
-                  }
-
-                  int startIndex = (currentPage - 1) * itemsPerPage;
-                  if (startIndex >= orders.length) startIndex = 0;
                   
-                  int endIndex = (startIndex + itemsPerPage).clamp(0, orders.length);
-                  List<OrderReceivedEntity> paginatedOrders = orders.sublist(startIndex, endIndex);
+                  List<OrderReceivedEntity> paginatedOrders = cubit.getPaginatedList(orders, itemsPerPage);
 
                   final isMobile = MediaQuery.of(context).size.width < 768;
 
@@ -441,7 +429,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                   
                   if (orders.isEmpty) return const SliverToBoxAdapter(child: SizedBox());
 
-                  int totalPages = (orders.length / itemsPerPage).ceil();
+                  final totalPages = context.read<OrderPageCubit>().getTotalPages(orders.length, itemsPerPage);
                   
                   if (totalPages <= 1) return const SliverToBoxAdapter(child: SizedBox(height: 32));
 
@@ -1284,7 +1272,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
     ),
   );
 }
-
+ 
   Widget detailSection(String title, List<Widget> items) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,

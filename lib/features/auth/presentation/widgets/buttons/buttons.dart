@@ -1,6 +1,9 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/widgets/buttons/bloc/button_animation_cubit.dart';
 
+/// Standard gradient Sign Up button
 ElevatedButton signupButton(void Function()? onPress) {
   return ElevatedButton(
     onPressed: onPress,
@@ -37,7 +40,8 @@ ElevatedButton signupButton(void Function()? onPress) {
   );
 }
 
-class ReusableTextButton extends StatefulWidget {
+/// Animated reusable text button that uses ButtonAnimationCubit instead of setState
+class ReusableTextButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final String text;
   final Color? backgroundColor;
@@ -54,67 +58,49 @@ class ReusableTextButton extends StatefulWidget {
   });
 
   @override
-  State<ReusableTextButton> createState() => _ReusableTextButtonState();
-}
-
-class _ReusableTextButtonState extends State<ReusableTextButton> {
-  bool _isPressed = false;
-
-  void _onTapDown(TapDownDetails details) {
-    setState(() {
-      _isPressed = true;
-    });
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    setState(() {
-      _isPressed = false;
-    });
-  }
-
-  void _onTapCancel() {
-    setState(() {
-      _isPressed = false;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final Color bgColor = widget.backgroundColor ?? Colors.transparent;
+    final Color bgColor = backgroundColor ?? Colors.transparent;
     final Color overlay =
         (bgColor != Colors.transparent ? bgColor : theme.colorScheme.primary)
             .withValues(alpha: 0.1);
 
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      onTap: widget.onPressed,
-      child: AnimatedScale(
-        scale: _isPressed ? 0.95 : 1.0,
-        duration: const Duration(milliseconds: 100),
-        curve: Curves.easeOut,
-        child: TextButton(
-          onPressed: widget.onPressed,
-          style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.all(bgColor),
-            padding: WidgetStateProperty.all(widget.padding ??
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12)),
-            shape: WidgetStateProperty.all(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    return BlocProvider(
+      create: (_) => ButtonAnimationCubit(),
+      child: BlocBuilder<ButtonAnimationCubit, bool>(
+        builder: (context, isPressed) {
+          return GestureDetector(
+            onTapDown: (_) => context.read<ButtonAnimationCubit>().setPressed(true),
+            onTapUp: (_) => context.read<ButtonAnimationCubit>().setPressed(false),
+            onTapCancel: () => context.read<ButtonAnimationCubit>().setPressed(false),
+            onTap: onPressed,
+            child: AnimatedScale(
+              scale: isPressed ? 0.95 : 1.0,
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.easeOut,
+              child: TextButton(
+                onPressed: onPressed,
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(bgColor),
+                  padding: WidgetStateProperty.all(padding ??
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12)),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  overlayColor: WidgetStateProperty.all(overlay),
+                ),
+                child: Text(
+                  text,
+                  style: GoogleFonts.inter(
+                    color: textColor ?? theme.colorScheme.primary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ),
-            overlayColor: WidgetStateProperty.all(overlay),
-          ),
-          child: Text(
-            widget.text,
-            style: GoogleFonts.inter(
-              color: widget.textColor ?? theme.colorScheme.primary,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

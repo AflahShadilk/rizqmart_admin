@@ -18,30 +18,33 @@ class RizqMartName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'RIZQ',
-          style: GoogleFonts.poppins(
-            color: Colors.black,
-            fontSize: 28,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.2,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'RIZQ',
+            style: GoogleFonts.poppins(
+              color: Colors.black,
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+            ),
           ),
-        ),
-        
-        
-        Text(
-          ' MART',
-          style: GoogleFonts.poppins(
-            color: Colors.orange,
-            fontSize: 28,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.2,
+          
+          
+          Text(
+            ' MART',
+            style: GoogleFonts.poppins(
+              color: Colors.orange,
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
