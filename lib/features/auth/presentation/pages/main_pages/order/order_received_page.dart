@@ -416,7 +416,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                       sliver: SliverGrid(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: MediaQuery.of(context).size.width > 1400 ? 4 : 3,
-                          childAspectRatio: 0.75,
+                          childAspectRatio: 0.95, // Standard card ratio (between 0.75 and 1.5)
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
                         ),
@@ -520,7 +520,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 16)),
+        borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 14)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -531,7 +531,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
         border: Border.all(color: Colors.grey.shade100, width: 1.5),
       ),
       child: Padding(
-        padding: EdgeInsets.all(Responsive.scaleSpacing(context, 20)),
+        padding: EdgeInsets.all(Responsive.scaleSpacing(context, 16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -546,15 +546,15 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         'Order #${order.orderNumber}',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
-                          fontSize: Responsive.scaleFont(context, 15),
+                          fontSize: Responsive.scaleFont(context, 14),
                           color: Colors.black87,
                         ),
                       ),
-                      SizedBox(height: Responsive.scaleSpacing(context, 6)),
+                      SizedBox(height: Responsive.scaleSpacing(context, 4)),
                       Text(
                         order.userName,
                         style: TextStyle(
-                          fontSize: Responsive.scaleFont(context, 13),
+                          fontSize: Responsive.scaleFont(context, 12),
                           color: Colors.grey.shade600,
                           fontWeight: FontWeight.w500,
                         ),
@@ -564,12 +564,12 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                 ),
                 Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal: Responsive.scaleSpacing(context, 12),
-                    vertical: Responsive.scaleSpacing(context, 6),
+                    horizontal: Responsive.scaleSpacing(context, 10),
+                    vertical: Responsive.scaleSpacing(context, 4),
                   ),
                   decoration: BoxDecoration(
                     color: getStatusColor(order.orderStatus).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 8)),
+                    borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 6)),
                     border: Border.all(
                       color: getStatusColor(order.orderStatus).withValues(alpha: 0.3),
                     ),
@@ -577,7 +577,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                   child: Text(
                     order.orderStatus.toUpperCase(),
                     style: TextStyle(
-                      fontSize: Responsive.scaleFont(context, 10),
+                      fontSize: Responsive.scaleFont(context, 9),
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.5,
                       color: getStatusColor(order.orderStatus),
@@ -586,9 +586,9 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                 ),
               ],
             ),
-            SizedBox(height: Responsive.scaleSpacing(context, 16)),
+            SizedBox(height: Responsive.scaleSpacing(context, 12)),
             Container(height: 1, color: Colors.grey.shade100),
-            SizedBox(height: Responsive.scaleSpacing(context, 16)),
+            SizedBox(height: Responsive.scaleSpacing(context, 12)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -599,7 +599,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                       '₹${order.totalAmount.toStringAsFixed(2)}',
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
-                        fontSize: Responsive.scaleFont(context, 18),
+                        fontSize: Responsive.scaleFont(context, 16),
                         color: Colors.green.shade700,
                       ),
                     ),
@@ -607,7 +607,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                     Text(
                       '${order.itemCount} items • ${DateFormat('dd MMM').format(order.createdAt)}',
                       style: TextStyle(
-                        fontSize: Responsive.scaleFont(context, 12),
+                        fontSize: Responsive.scaleFont(context, 11),
                         color: Colors.grey.shade500,
                       ),
                     ),
@@ -615,15 +615,15 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                 ),
                 IconButton(
                   onPressed: () => showDetailsModal(context, order),
-                  icon: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.blue),
+                  icon: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.blue),
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.blue.withValues(alpha: 0.05),
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(10),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: Responsive.scaleSpacing(context, 16)),
+            SizedBox(height: Responsive.scaleSpacing(context, 12)),
             Row(
               children: [
                 Expanded(
@@ -641,29 +641,29 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         );
                       }
                     },
-                    icon: Icon(Icons.chat_bubble_rounded, size: Responsive.scaleFont(context, 16), color: Colors.blue.shade700),
-                    label: Text('Chat', style: TextStyle(fontSize: Responsive.scaleFont(context, 12), color: Colors.blue.shade700, fontWeight: FontWeight.bold)),
+                    icon: Icon(Icons.chat_bubble_rounded, size: Responsive.scaleFont(context, 14), color: Colors.blue.shade700),
+                    label: Text('Chat', style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: Colors.blue.shade700, fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade50,
                       elevation: 0,
-                      padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 12)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                   ),
                 ),
-                SizedBox(width: Responsive.scaleSpacing(context, 12)),
+                SizedBox(width: Responsive.scaleSpacing(context, 10)),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => showStatusDialog(context, order.orderId),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade600,
                       elevation: 0,
-                      padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 12)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                     child: Text(
                       'Update',
-                      style: TextStyle(fontSize: Responsive.scaleFont(context, 12), color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -680,11 +680,11 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 16)),
+        borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 14)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 12,
+            blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
@@ -694,13 +694,12 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => showDetailsModal(context, order),
-          borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 16)),
+          borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 14)),
           hoverColor: Colors.blue.withValues(alpha: 0.02),
-          child: Padding(
-            padding: EdgeInsets.all(Responsive.scaleSpacing(context, 20)),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(Responsive.scaleSpacing(context, 16)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -717,17 +716,17 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                 'Order #${order.orderNumber}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w800,
-                                  fontSize: Responsive.scaleFont(context, 14),
+                                  fontSize: Responsive.scaleFont(context, 13),
                                   color: Colors.black87,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              SizedBox(height: Responsive.scaleSpacing(context, 6)),
+                              SizedBox(height: Responsive.scaleSpacing(context, 4)),
                               Text(
                                 order.userName,
                                 style: TextStyle(
-                                  fontSize: Responsive.scaleFont(context, 12),
+                                  fontSize: Responsive.scaleFont(context, 11),
                                   color: Colors.grey.shade600,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -739,12 +738,12 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         ),
                         Container(
                           padding: EdgeInsets.symmetric(
-                            horizontal: Responsive.scaleSpacing(context, 10),
+                            horizontal: Responsive.scaleSpacing(context, 8),
                             vertical: Responsive.scaleSpacing(context, 4),
                           ),
                           decoration: BoxDecoration(
                             color: getStatusColor(order.orderStatus).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 8)),
+                            borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 6)),
                             border: Border.all(
                               color: getStatusColor(order.orderStatus).withValues(alpha: 0.3),
                             ),
@@ -752,7 +751,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           child: Text(
                             order.orderStatus.toUpperCase(),
                             style: TextStyle(
-                              fontSize: Responsive.scaleFont(context, 9),
+                              fontSize: Responsive.scaleFont(context, 8),
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.5,
                               color: getStatusColor(order.orderStatus),
@@ -761,9 +760,9 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         ),
                       ],
                     ),
-                    SizedBox(height: Responsive.scaleSpacing(context, 16)),
+                    SizedBox(height: Responsive.scaleSpacing(context, 8)),
                     Container(height: 1, color: Colors.grey.shade100),
-                    SizedBox(height: Responsive.scaleSpacing(context, 16)),
+                    SizedBox(height: Responsive.scaleSpacing(context, 8)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -775,15 +774,15 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                               '₹${order.totalAmount.toStringAsFixed(2)}',
                               style: TextStyle(
                                 fontWeight: FontWeight.w800,
-                                fontSize: Responsive.scaleFont(context, 18),
+                                fontSize: Responsive.scaleFont(context, 16),
                                 color: Colors.green.shade700,
                               ),
                             ),
-                            SizedBox(height: Responsive.scaleSpacing(context, 6)),
+                            SizedBox(height: Responsive.scaleSpacing(context, 4)),
                             Text(
                               '${order.itemCount} items',
                               style: TextStyle(
-                                fontSize: Responsive.scaleFont(context, 11),
+                                fontSize: Responsive.scaleFont(context, 10),
                                 color: Colors.grey.shade600,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -793,7 +792,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         Text(
                           DateFormat('dd MMM, HH:mm').format(order.createdAt),
                           style: TextStyle(
-                            fontSize: Responsive.scaleFont(context, 10),
+                            fontSize: Responsive.scaleFont(context, 9),
                             color: Colors.grey.shade500,
                             fontWeight: FontWeight.w500,
                           ),
@@ -802,7 +801,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                     ),
                   ],
                 ),
-                SizedBox(height: Responsive.scaleSpacing(context, 16)),
+                SizedBox(height: Responsive.scaleSpacing(context, 8)),
                 Column(
                   children: [
                     if (order.userId.isNotEmpty)
@@ -818,13 +817,13 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                 'productName': 'Order ${order.orderNumber}',
                               });
                             },
-                            icon: Icon(Icons.chat_bubble_rounded, size: Responsive.scaleFont(context, 14), color: Colors.blue.shade700),
-                            label: Text('Message Customer', style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: Colors.blue.shade700, fontWeight: FontWeight.bold)),
+                            icon: Icon(Icons.chat_bubble_rounded, size: Responsive.scaleFont(context, 12), color: Colors.blue.shade700),
+                            label: Text('Message', style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: Colors.blue.shade700, fontWeight: FontWeight.bold)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue.shade50,
                               elevation: 0,
-                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 12)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             ),
                           ),
                         ),
@@ -837,12 +836,12 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.grey.shade100,
                               elevation: 0,
-                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 12)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             ),
                             child: Text(
                               'Details',
-                              style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: Colors.grey.shade800, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: Colors.grey.shade800, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -853,12 +852,12 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue.shade600,
                               elevation: 0,
-                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 12)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             ),
                             child: Text(
                               'Update',
-                              style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: Colors.white, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: Colors.white, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -878,12 +877,12 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green.shade600,
                               elevation: 0,
-                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 12)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             ),
                             child: Text(
                               'Mark Received',
-                              style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: Colors.white, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: Colors.white, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
