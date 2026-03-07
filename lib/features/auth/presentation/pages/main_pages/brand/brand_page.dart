@@ -11,6 +11,8 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/c
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/add_brand_form_web.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/brand_card_web.dart';
 
+import '../../../../../../core/constants/appcolor.dart';
+
 class BrandPage extends StatefulWidget {
   const BrandPage({super.key});
 
@@ -92,7 +94,7 @@ class BrandPageState extends State<BrandPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.green,
+                backgroundColor: AppColors.matGreen,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -100,7 +102,7 @@ class BrandPageState extends State<BrandPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.error),
-                backgroundColor: Colors.red,
+                backgroundColor: AppColors.matRed,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -316,13 +318,13 @@ class BrandPageState extends State<BrandPage> {
                         Icon(
                           Icons.error_outline,
                           size: 64,
-                          color: Colors.red.shade300,
+                          color: AppColors.matRed.shade300,
                         ),
                         16.h,
                         Text(
                           state.error,
                           style: GoogleFonts.poppins(
-                            color: Colors.red.shade700,
+                            color: AppColors.matRed.shade700,
                             fontSize: 16,
                           ),
                         ),

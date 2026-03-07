@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/notification/notification_bell_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/notification/notification_bell_cubit_state.dart';
 
@@ -48,7 +49,7 @@ class NotificationsPage extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey[600],
+                      color: AppColors.grey[600],
                     ),
                   ),
                 ],
@@ -101,7 +102,7 @@ class NotificationsPage extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(color: AppColors.grey[200]!),
       ),
       child: InkWell(
         onTap: () {
@@ -119,10 +120,10 @@ class NotificationsPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
+                  color: AppColors.matBlue.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.person_outline, color: Colors.blue),
+                child: const Icon(Icons.person_outline, color: AppColors.matBlue),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -136,19 +137,19 @@ class NotificationsPage extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       chat.lastMessage,
-                      style: GoogleFonts.inter(color: Colors.grey[600], fontSize: 14),
+                      style: GoogleFonts.inter(color: AppColors.grey[600], fontSize: 14),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       _formatTime(chat.timestamp),
-                      style: GoogleFonts.inter(color: Colors.grey[400], fontSize: 12),
+                      style: GoogleFonts.inter(color: AppColors.grey[400], fontSize: 12),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Colors.grey),
+              const Icon(Icons.chevron_right, color: AppColors.grey),
             ],
           ),
         ),
@@ -163,7 +164,7 @@ class NotificationsPage extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(color: AppColors.grey[200]!),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -172,12 +173,12 @@ class NotificationsPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: (isOrder ? Colors.green : Colors.orange).withValues(alpha: 0.1),
+                color: (isOrder ? AppColors.matGreen : AppColors.amber).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isOrder ? Icons.shopping_cart_outlined : Icons.info_outline,
-                color: isOrder ? Colors.green : Colors.orange,
+                color: isOrder ? AppColors.matGreen : AppColors.amber,
               ),
             ),
             const SizedBox(width: 16),
@@ -192,14 +193,14 @@ class NotificationsPage extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     notif['body'],
-                    style: GoogleFonts.inter(color: Colors.grey[600], fontSize: 14),
+                    style: GoogleFonts.inter(color: AppColors.grey[600], fontSize: 14),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     _formatTime(notif['timestamp']),
-                    style: GoogleFonts.inter(color: Colors.grey[400], fontSize: 12),
+                    style: GoogleFonts.inter(color: AppColors.grey[400], fontSize: 12),
                   ),
                 ],
               ),

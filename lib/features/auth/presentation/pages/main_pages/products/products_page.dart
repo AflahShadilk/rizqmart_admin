@@ -155,7 +155,7 @@ class _ProductsPageState extends State<ProductsPage> {
             },
             child: const Text(
               'Delete',
-              style: TextStyle(color: AppColors.red),
+              style: TextStyle(color: AppColors.matRed),
             ),
           ),
         ],
@@ -176,7 +176,7 @@ class _ProductsPageState extends State<ProductsPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
-                  backgroundColor: AppColors.green,
+                  backgroundColor: AppColors.matGreen,
                   duration: const Duration(seconds: 2),
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -185,7 +185,7 @@ class _ProductsPageState extends State<ProductsPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
-                  backgroundColor: AppColors.red,
+                  backgroundColor: AppColors.matRed,
                   duration: const Duration(seconds: 2),
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -257,7 +257,7 @@ class _ProductsPageState extends State<ProductsPage> {
                               onPressed: () {
                                 context.go('/Addproducts');
                               },
-                              icon: const Icon(Icons.add_circle_outline, size: 20,color: Colors.black,),
+                              icon: const Icon(Icons.add_circle_outline, size: 20,color: AppColors.black,),
                               label: Text(
                                 'Add Product',
                                 style: GoogleFonts.poppins(
@@ -336,13 +336,13 @@ class _ProductsPageState extends State<ProductsPage> {
                                         Icon(
                                           Icons.error_outline,
                                           size: 64,
-                                          color: Colors.red.shade300,
+                                          color: AppColors.matRed.shade300,
                                         ),
                                         16.h,
                                         Text(
                                           'Error: ${state.message}',
                                           style: GoogleFonts.poppins(
-                                            color: Colors.red.shade700,
+                                            color: AppColors.matRed.shade700,
                                             fontSize: 16,
                                           ),
                                         ),
@@ -368,14 +368,14 @@ class _ProductsPageState extends State<ProductsPage> {
                                                 Icon(
                                                   Icons.shopping_bag_outlined,
                                                   size: 64,
-                                                  color: Colors.grey.shade300,
+                                                  color: AppColors.grey.shade300,
                                                 ),
                                                 16.h,
                                                 Text(
                                                   'No products found',
                                                   style: GoogleFonts.poppins(
                                                     fontSize: 18,
-                                                    color: Colors.grey.shade600,
+                                                    color: AppColors.grey.shade600,
                                                     fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
@@ -584,7 +584,7 @@ class ProductCard extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: Responsive.scaleFont(context, 14),
                           fontWeight: FontWeight.w600,
-                          color: AppColors.green,
+                          color: AppColors.matGreen,
                         ),
                       ),
                       SizedBox(width: Responsive.scaleSpacing(context, 12)),
@@ -605,15 +605,15 @@ class ProductCard extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: product.status == true
-                          ? Colors.green.withValues(alpha: 0.1)
-                          : Colors.red.withValues(alpha: 0.1),
+                          ? AppColors.matGreen.withValues(alpha: 0.1)
+                          : AppColors.matRed.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 6)),
                     ),
                     child: Text(
                       product.status == true ? 'Active' : 'Inactive',
                       style: TextStyle(
                         fontSize: Responsive.scaleFont(context, 12),
-                        color: product.status == true ? Colors.green : Colors.red,
+                        color: product.status == true ? AppColors.matGreen : AppColors.matRed,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -625,13 +625,13 @@ class ProductCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.edit_outlined, color: Colors.blue, size: Responsive.scaleFont(context, 24)),
+                  icon: Icon(Icons.edit_outlined, color: AppColors.matBlue, size: Responsive.scaleFont(context, 24)),
                   onPressed: onEdit,
                   tooltip: 'Edit Product',
                 ),
                 SizedBox(width: Responsive.scaleSpacing(context, 4)),
                 IconButton(
-                  icon: Icon(Icons.delete_outline, color: Colors.red, size: Responsive.scaleFont(context, 24)),
+                  icon: Icon(Icons.delete_outline, color: AppColors.matRed, size: Responsive.scaleFont(context, 24)),
                   onPressed: onDelete,
                   tooltip: 'Delete Product',
                 ),

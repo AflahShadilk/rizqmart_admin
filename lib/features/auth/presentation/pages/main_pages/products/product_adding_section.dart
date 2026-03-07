@@ -550,7 +550,7 @@ class _FormProductsState extends State<FormProducts> {
       child: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(color: AppColors.grey.shade300),
           borderRadius: BorderRadius.circular(8),
           color: AppColors.white,
         ),
@@ -663,7 +663,7 @@ class _FormProductsState extends State<FormProducts> {
                                   },
                                   child: Container(
                                     decoration: const BoxDecoration(
-                                      color: AppColors.red,
+                                      color: AppColors.matRed,
                                       shape: BoxShape.circle,
                                     ),
                                     padding: const EdgeInsets.all(4),
@@ -680,6 +680,7 @@ class _FormProductsState extends State<FormProducts> {
                         : const EmptyImagePlaceholder(
                             text: '',
                             iconSize: 24,
+                            type: PlaceholderType.product,
                           ),
                   ),
                 ),

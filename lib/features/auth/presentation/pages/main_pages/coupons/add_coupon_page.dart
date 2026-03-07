@@ -342,7 +342,7 @@ class _AddCouponPageViewState extends State<_AddCouponPageView> {
                   ? 'Select Date'
                   : '${couponState.expiryDate!.day}/${couponState.expiryDate!.month}/${couponState.expiryDate!.year}',
               style: TextStyle(
-                color: couponState.expiryDate == null ? Colors.grey : Colors.black,
+                color: couponState.expiryDate == null ? AppColors.grey : AppColors.black,
               ),
             ),
           ),
@@ -371,7 +371,7 @@ class _AddCouponPageViewState extends State<_AddCouponPageView> {
               height: height,
               width: double.infinity,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: AppColors.grey.shade300),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: ClipRRect(
@@ -385,7 +385,7 @@ class _AddCouponPageViewState extends State<_AddCouponPageView> {
                   height: height,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
+                    border: Border.all(color: AppColors.grey.shade300),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: ClipRRect(
@@ -396,7 +396,7 @@ class _AddCouponPageViewState extends State<_AddCouponPageView> {
                     ),
                   ),
                 )
-              : EmptyImagePlaceholder(height: height, width: double.infinity),
+              : EmptyImagePlaceholder(height: height, width: double.infinity, type: PlaceholderType.coupon),
     );
   }
 
@@ -442,11 +442,11 @@ class _AddCouponPageViewState extends State<_AddCouponPageView> {
                 ? const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                    child: CircularProgressIndicator(color: AppColors.white, strokeWidth: 2),
                   )
                 : Text(
                     widget.couponToEdit != null ? 'Update' : 'Save',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
                   ),
           ),
         ),

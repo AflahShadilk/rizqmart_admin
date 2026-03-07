@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/user_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_event.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 
 class UserCard extends StatelessWidget {
   final UserEntity user;
@@ -82,13 +83,13 @@ class UserCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: user.isActive ? Colors.green : Colors.red,
+        color: user.isActive ? AppColors.green : AppColors.red,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         user.isActive ? 'Active' : 'Inactive',
         style: const TextStyle(
-          color: Colors.white,
+          color: AppColors.white,
           fontSize: 12,
           fontWeight: FontWeight.bold,
         ),
@@ -145,13 +146,13 @@ class UserCard extends StatelessWidget {
         IconButton(
           icon: Icon(
             user.isActive ? Icons.block : Icons.check_circle,
-            color: user.isActive ? Colors.red : Colors.green,
+            color: user.isActive ? AppColors.red : AppColors.green,
           ),
           onPressed: () => _showStatusDialog(context),
           tooltip: user.isActive ? 'Deactivate' : 'Activate',
         ),
         IconButton(
-          icon: const Icon(Icons.delete, color: Colors.red),
+          icon: const Icon(Icons.delete, color: AppColors.red),
           onPressed: () => _showDeleteDialog(context),
           tooltip: 'Delete',
         ),
@@ -185,7 +186,7 @@ class UserCard extends StatelessWidget {
               Navigator.pop(dialogContext);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: user.isActive ? Colors.red : Colors.green,
+              backgroundColor: user.isActive ? AppColors.red : AppColors.green,
             ),
             child: Text(user.isActive ? 'Deactivate' : 'Activate'),
           ),
@@ -212,7 +213,7 @@ class UserCard extends StatelessWidget {
               context.read<UsersBloc>().add(DeleteUser(user.id));
               Navigator.pop(dialogContext);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
             child: const Text('Delete'),
           ),
         ],

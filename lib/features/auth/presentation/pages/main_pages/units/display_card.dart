@@ -1,4 +1,5 @@
-﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/units_entity.dart';
@@ -68,13 +69,13 @@ class UnitCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+              icon: const Icon(Icons.edit_outlined, color: AppColors.matBlue),
               onPressed: onEdit,
               tooltip: 'Edit Unit',
             ),
             4.w,
             IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              icon: const Icon(Icons.delete_outline, color: AppColors.matRed),
               onPressed: onDelete,
               tooltip: 'Delete Unit',
             ),

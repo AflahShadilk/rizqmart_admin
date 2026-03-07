@@ -1,6 +1,7 @@
 ﻿
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 
 class IconRizq extends StatelessWidget {
   const IconRizq({
@@ -26,7 +27,7 @@ class RizqMartName extends StatelessWidget {
           Text(
             'RIZQ',
             style: GoogleFonts.poppins(
-              color: Colors.black,
+              color: AppColors.black,
               fontSize: 28,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
@@ -37,7 +38,7 @@ class RizqMartName extends StatelessWidget {
           Text(
             ' MART',
             style: GoogleFonts.poppins(
-              color: Colors.orange,
+              color: AppColors.orange,
               fontSize: 28,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,

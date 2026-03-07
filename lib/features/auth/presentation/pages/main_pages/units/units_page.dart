@@ -56,7 +56,7 @@ class _UnitsPageState extends State<UnitsPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.green,
+                backgroundColor: AppColors.matGreen,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -64,7 +64,7 @@ class _UnitsPageState extends State<UnitsPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.red,
+                backgroundColor: AppColors.matRed,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -112,7 +112,7 @@ class _UnitsPageState extends State<UnitsPage> {
                         Icon(
                           Icons.category_outlined,
                           size: 64,
-                          color: Colors.grey.shade300,
+                          color: AppColors.grey.shade300,
                         ),
                         16.h,
                         Text(
@@ -240,7 +240,7 @@ class _UnitsPageState extends State<UnitsPage> {
                                       Icon(
                                         Icons.search_off,
                                         size: 64,
-                                        color: Colors.grey.shade300,
+                                        color: AppColors.grey.shade300,
                                       ),
                                       16.h,
                                       Text(
@@ -419,14 +419,14 @@ class BuildAddButtonUnits extends StatelessWidget {
         ),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.green,
+        backgroundColor: AppColors.matGreen,
         foregroundColor: AppColors.white,
         padding: const EdgeInsets.symmetric(
           horizontal: 24,
           vertical: 14,
         ),
         elevation: 2,
-        shadowColor: AppColors.green.withValues(alpha: 0.3),
+        shadowColor: AppColors.matGreen.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),

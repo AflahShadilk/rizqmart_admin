@@ -1,5 +1,6 @@
 ﻿
 
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/image/empty_image_placeholder.dart';
@@ -21,7 +22,7 @@ Widget imageAddingSection({
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             'Images: ${imageUrls.where((e) => e.isNotEmpty).length}/${imageUrls.length}',
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
+            style: const TextStyle(fontSize: 12, color: AppColors.grey),
           ),
         ),
 
@@ -45,6 +46,7 @@ Widget imageAddingSection({
               iconSize: 32,
               icon: Icons.add_a_photo,
               text: 'Add Image',
+              type: PlaceholderType.product,
             ),
           ),
 
@@ -73,7 +75,7 @@ Widget imageAddingSection({
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: Colors.blue.shade300,
+                              color: AppColors.matBlue.shade300,
                               width: 2,
                             ),
                           ),
@@ -95,17 +97,17 @@ Widget imageAddingSection({
                             onTap: () => onRemoveImage(index),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.red,
+                                color: AppColors.matRed,
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.3),
+                                    color: AppColors.black.withValues(alpha: 0.3),
                                     blurRadius: 4,
                                   ),
                                 ],
                               ),
                               padding: const EdgeInsets.all(4),
-                              child: const Icon(Icons.close, color: Colors.white, size: 16),
+                              child: const Icon(Icons.close, color: AppColors.white, size: 16),
                             ),
                           ),
                         ),

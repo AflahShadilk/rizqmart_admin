@@ -2,6 +2,7 @@
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -86,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text('Welcome back, ${state.email}!'),
-              backgroundColor: const Color(0xFF10B981),
+              backgroundColor: AppColors.emerald,
               duration: const Duration(seconds: 2),
             ));
             context.go('/dashBoard');
@@ -94,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (state is LoginError) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(state.error),
-            backgroundColor: const Color(0xFFEF4444),
+            backgroundColor: AppColors.chartRed,
             duration: const Duration(seconds: 3),
           ));
         }

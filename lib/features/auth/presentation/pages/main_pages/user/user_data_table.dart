@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/user_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_event.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 
 class UsersDataTable extends StatelessWidget {
   final List<UserEntity> users;
@@ -82,13 +83,13 @@ class UsersDataTable extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.1),
+        color: AppColors.blue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         role.toUpperCase(),
         style: const TextStyle(
-          color: Colors.blue,
+          color: AppColors.blue,
           fontWeight: FontWeight.bold,
           fontSize: 12,
         ),
@@ -101,14 +102,14 @@ class UsersDataTable extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: isActive
-            ? Colors.green.withValues(alpha: 0.1)
-            : Colors.red.withValues(alpha: 0.1),
+            ? AppColors.green.withValues(alpha: 0.1)
+            : AppColors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         isActive ? '● Active' : '● Inactive',
         style: TextStyle(
-          color: isActive ? Colors.green : Colors.red,
+          color: isActive ? AppColors.green : AppColors.red,
           fontWeight: FontWeight.bold,
           fontSize: 12,
         ),
@@ -123,14 +124,14 @@ class UsersDataTable extends StatelessWidget {
         IconButton(
           icon: Icon(
             user.isActive ? Icons.block : Icons.check_circle,
-            color: user.isActive ? Colors.orange : Colors.green,
+            color: user.isActive ? AppColors.orange : AppColors.green,
             size: 20,
           ),
           onPressed: () => _showStatusDialog(context, user),
           tooltip: user.isActive ? 'Deactivate' : 'Activate',
         ),
         IconButton(
-          icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+          icon: const Icon(Icons.delete, color: AppColors.red, size: 20),
           onPressed: () => _showDeleteDialog(context, user),
           tooltip: 'Delete',
         ),
@@ -159,7 +160,7 @@ class UsersDataTable extends StatelessWidget {
               Navigator.pop(dialogContext);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: user.isActive ? Colors.orange : Colors.green,
+              backgroundColor: user.isActive ? AppColors.orange : AppColors.green,
             ),
             child: Text(user.isActive ? 'Deactivate' : 'Activate'),
           ),
@@ -186,7 +187,7 @@ class UsersDataTable extends StatelessWidget {
               context.read<UsersBloc>().add(DeleteUser(user.id));
               Navigator.pop(dialogContext);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
             child: const Text('Delete'),
           ),
         ],

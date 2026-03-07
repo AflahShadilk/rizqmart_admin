@@ -1,5 +1,6 @@
 ﻿// ignore_for_file: use_build_context_synchronously
 
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -73,7 +74,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
               content: const Text(
                 'Reset email sent! Check your inbox (and spam folder).',
               ),
-              backgroundColor: Colors.green[600],
+              backgroundColor: AppColors.matGreen[600],
               duration: const Duration(seconds: 4),
             ),
           );
@@ -86,7 +87,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.error),
-              backgroundColor: Colors.red[600],
+              backgroundColor: AppColors.matRed[600],
               duration: const Duration(seconds: 4),
             ),
           );

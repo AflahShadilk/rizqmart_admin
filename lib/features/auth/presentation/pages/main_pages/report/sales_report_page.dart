@@ -4,6 +4,7 @@
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -252,10 +253,10 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 childAspectRatio: childAspectRatio,
                                 children: [
-                                  _buildSummaryCard('Total Revenue', report.totalRevenue.toStringAsFixed(2), Icons.currency_rupee, Colors.green),
-                                  _buildSummaryCard('Total Orders', report.totalOrders.toString(), Icons.shopping_bag, Colors.blue),
-                                  _buildSummaryCard('Items Sold', report.totalItemsSold.toString(), Icons.inventory_2, Colors.orange),
-                                  _buildSummaryCard('Avg Order Value', report.averageOrderValue.toStringAsFixed(2), Icons.analytics, Colors.teal),
+                                  _buildSummaryCard('Total Revenue', report.totalRevenue.toStringAsFixed(2), Icons.currency_rupee, AppColors.green),
+                                  _buildSummaryCard('Total Orders', report.totalOrders.toString(), Icons.shopping_bag, AppColors.blue),
+                                  _buildSummaryCard('Items Sold', report.totalItemsSold.toString(), Icons.inventory_2, AppColors.orange),
+                                  _buildSummaryCard('Avg Order Value', report.averageOrderValue.toStringAsFixed(2), Icons.analytics, AppColors.teal),
                                 ],
                               ),
                               32.h,
@@ -424,7 +425,7 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                               return LineTooltipItem(
                                 '${DateFormat('MMM dd').format(dataPoint.date)}\n₹${dataPoint.amount.toStringAsFixed(2)}\n${dataPoint.orderCount} orders',
                                 TextStyle(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -480,38 +481,38 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
                 sections: [
                   if (report.completedOrders > 0)
                     PieChartSectionData(
-                      color: const Color(0xFF10B981),
+                      color: AppColors.emerald,
                       value: report.completedOrders.toDouble(),
                       title: '${report.completedOrders}',
                       radius: 50,
-                      titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                      titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.white),
                     ),
                   if (report.pendingOrders > 0)
                     PieChartSectionData(
-                      color: const Color(0xFFF59E0B),
+                      color: AppColors.amber,
                       value: report.pendingOrders.toDouble(),
                       title: '${report.pendingOrders}',
                       radius: 50,
-                      titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                      titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.white),
                     ),
                   if (report.cancelledOrders > 0)
                     PieChartSectionData(
-                      color: const Color(0xFFEF4444),
+                      color: AppColors.chartRed,
                       value: report.cancelledOrders.toDouble(),
                       title: '${report.cancelledOrders}',
                       radius: 50,
-                      titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                      titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.white),
                     ),
                 ],
               ),
             ),
           ),
           16.h,
-          _buildLegendItem(const Color(0xFF10B981), 'Completed: ${report.completedOrders}'),
+          _buildLegendItem(AppColors.emerald, 'Completed: ${report.completedOrders}'),
           8.h,
-          _buildLegendItem(const Color(0xFFF59E0B), 'Pending: ${report.pendingOrders}'),
+          _buildLegendItem(AppColors.amber, 'Pending: ${report.pendingOrders}'),
           8.h,
-          _buildLegendItem(const Color(0xFFEF4444), 'Cancelled: ${report.cancelledOrders}'),
+          _buildLegendItem(AppColors.chartRed, 'Cancelled: ${report.cancelledOrders}'),
         ],
       ),
     );
@@ -599,10 +600,10 @@ class _TopSellingProductsSection extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.deepPurple.withValues(alpha: 0.1),
+                      color: AppColors.deepPurple.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.trending_up_rounded, color: Colors.deepPurple, size: 20),
+                    child: const Icon(Icons.trending_up_rounded, color: AppColors.deepPurple, size: 20),
                   ),
                   12.w,
                   Expanded(
@@ -633,11 +634,11 @@ class _TopSellingProductsSection extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 32),
                     child: Column(
                       children: [
-                        Icon(Icons.error_outline_rounded, color: Colors.red.shade300, size: 40),
+                        Icon(Icons.error_outline_rounded, color: AppColors.red300, size: 40),
                         12.h,
                         Text(
                           (state as TopSellingProductsError).message,
-                          style: TextStyle(color: Colors.red.shade400, fontSize: 14),
+                          style: TextStyle(color: AppColors.red400, fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -650,11 +651,11 @@ class _TopSellingProductsSection extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 32),
                     child: Column(
                       children: [
-                        Icon(Icons.inventory_2_outlined, color: Colors.grey.shade400, size: 40),
+                        Icon(Icons.inventory_2_outlined, color: AppColors.grey400, size: 40),
                         12.h,
                         Text(
                           'No product sales data for this period',
-                          style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+                          style: TextStyle(color: AppColors.grey500, fontSize: 14),
                         ),
                       ],
                     ),
@@ -730,12 +731,12 @@ class _TopSellingProductsSection extends StatelessWidget {
     for (int i = 0; i < products.length; i++) {
       final product = products[i];
       final rankColor = i == 0
-          ? const Color(0xFFFFD700)
+          ? AppColors.gold
           : i == 1
-              ? const Color(0xFFC0C0C0)
+              ? AppColors.silver
               : i == 2
-                  ? const Color(0xFFCD7F32)
-                  : Colors.grey.shade400;
+                  ? AppColors.bronze
+                  : AppColors.grey400;
 
       widgets.add(
         Container(
@@ -791,7 +792,7 @@ class _TopSellingProductsSection extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.deepPurple.shade400,
+                    color: AppColors.deepPurple400,
                   ),
                 ),
               ),
@@ -804,7 +805,7 @@ class _TopSellingProductsSection extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.green.shade600,
+                    color: AppColors.green600,
                   ),
                 ),
               ),

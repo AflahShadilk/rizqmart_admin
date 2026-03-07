@@ -111,16 +111,26 @@ class CategoryDialogState extends State<CategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 800;
+    final horizontalPadding = isSmallScreen ? 24.0 : 250.0;
+    final verticalPadding = isSmallScreen ? 40.0 : 100.0;
+
     return BlocProvider.value(
       value: dialogCubit,
       child: Dialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 250, vertical: 100),
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: horizontalPadding,
+          vertical: verticalPadding,
+        ),
         backgroundColor: Colors.transparent,
-        child: Container(
-          padding: const EdgeInsets.all(32),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Container(
+          padding: EdgeInsets.all(isSmallScreen ? 20 : 32),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
+            color: AppColors.white,
             boxShadow: const [
               BoxShadow(
                 color: Color(0x1A000000),
@@ -129,7 +139,8 @@ class CategoryDialogState extends State<CategoryDialog> {
               ),
             ],
           ),
-          child: Form(
+          child: SingleChildScrollView(
+            child: Form(
             key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -170,7 +181,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                                 ? 'Update the category information'
                                 : 'Create a new category for your products',
                             style: GoogleFonts.poppins(
-                              color: Colors.grey.shade600,
+                              color: AppColors.grey.shade600,
                               fontSize: 13,
                               fontWeight: FontWeight.w400,
                             ),
@@ -192,110 +203,123 @@ class CategoryDialogState extends State<CategoryDialog> {
                 8.h,
                 BlocBuilder<CategoryDialogCubit, CategoryDialogCubitState>(
                   builder: (context, state) {
-                    return Row(
+                    final imageWidget = Column(
                       children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: nameController,
-                            autofocus: !isEditMode,
-                            decoration: InputDecoration(
-                              hintText: 'Enter category name',
-                              hintStyle: TextStyle(
-                                color: Colors.grey.shade400,
-                                fontSize: 15,
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade50,
-                              prefixIcon: Icon(
-                                Icons.category_outlined,
-                                color: Colors.grey.shade600,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey.shade200),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey.shade200),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: isEditMode ? AppColors.blueAccent : Colors.green,
-                                  width: 2,
-                                ),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Colors.red),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Colors.red, width: 2),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please enter a category name';
-                              }
-                              if (value.trim().length < 2) {
-                                return 'Category name must be at least 2 characters';
-                              }
-                              if (isDuplicate(value.trim())) {
-                                return 'Category name already exists';
-                              }
-                              return null;
-                            },
+                        InkWell(
+                          onTap: pickImage,
+                          child: state.isUploading
+                              ? Container(
+                                  width: isSmallScreen ? 80 : 100,
+                                  height: isSmallScreen ? 80 : 100,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.grey.shade100,
+                                    border: Border.all(color: AppColors.grey.shade300),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Center(child: CircularProgressIndicator()),
+                                )
+                              : state.imageUrl != null
+                                  ? ShimmerImage(
+                                      imageUrl: state.imageUrl!,
+                                      width: isSmallScreen ? 80 : 100,
+                                      height: isSmallScreen ? 80 : 100,
+                                      borderRadius: 8,
+                                    )
+                                  : EmptyImagePlaceholder(
+                                      width: isSmallScreen ? 80 : 100,
+                                      height: isSmallScreen ? 80 : 100,
+                                      iconSize: isSmallScreen ? 24 : 32,
+                                      text: '',
+                                      type: PlaceholderType.category,
+                                    ),
+                        ),
+                        8.h,
+                        Text(
+                          "Upload Logo *",
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: state.imageUrl == null
+                                ? AppColors.black54
+                                : AppColors.grey.shade600,
+                            fontWeight:
+                                state.imageUrl == null ? FontWeight.w600 : FontWeight.w400,
                           ),
                         ),
-                        20.w,
-                        Column(
-                          children: [
-                            InkWell(
-                              onTap: pickImage,
-                              child: state.isUploading
-                                  ? Container(
-                                      width: 100,
-                                      height: 100,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade100,
-                                        border: Border.all(color: Colors.grey.shade300),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: const Center(child: CircularProgressIndicator()),
-                                    )
-                                  : state.imageUrl != null
-                                      ? ShimmerImage(
-                                          imageUrl: state.imageUrl!,
-                                          width: 100,
-                                          height: 100,
-                                          borderRadius: 8,
-                                        )
-                                      : const EmptyImagePlaceholder(
-                                          width: 100,
-                                          height: 100,
-                                          iconSize: 32,
-                                          text: '',
-                                        ),
-                            ),
-                            8.h,
-                            Text(
-                              "Upload Logo *",
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: state.imageUrl == null
-                                    ? Colors.red.shade600
-                                    : Colors.grey.shade600,
-                                fontWeight:
-                                    state.imageUrl == null ? FontWeight.w600 : FontWeight.w400,
-                              ),
-                            ),
-                          ],
+                      ],
+                    );
+
+                    final textFieldWidget = TextFormField(
+                      controller: nameController,
+                      autofocus: !isEditMode,
+                      decoration: InputDecoration(
+                        hintText: 'Enter category name',
+                        hintStyle: TextStyle(
+                          color: AppColors.grey.shade400,
+                          fontSize: 15,
                         ),
+                        filled: true,
+                        fillColor: AppColors.grey.shade50,
+                        prefixIcon: Icon(
+                          Icons.category_outlined,
+                          color: AppColors.grey.shade600,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.grey.shade200),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.grey.shade200),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: isEditMode ? AppColors.blueAccent : Colors.green,
+                            width: 2,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: AppColors.matRed),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: AppColors.matRed, width: 2),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter a category name';
+                        }
+                        if (value.trim().length < 2) {
+                          return 'Category name must be at least 2 characters';
+                        }
+                        if (isDuplicate(value.trim())) {
+                          return 'Category name already exists';
+                        }
+                        return null;
+                      },
+                    );
+
+                    if (isSmallScreen) {
+                      return Column(
+                        children: [
+                          imageWidget,
+                          16.h,
+                          textFieldWidget,
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      children: [
+                        Expanded(child: textFieldWidget),
+                        20.w,
+                        imageWidget,
                       ],
                     );
                   },
@@ -322,7 +346,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                             style: GoogleFonts.poppins(
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade700,
+                              color: AppColors.grey.shade700,
                             ),
                           ),
                         ),
@@ -343,7 +367,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
                                 isEditMode ? AppColors.blueAccent : Colors.green,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.white,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,
                               vertical: 14,
@@ -361,6 +385,8 @@ class CategoryDialogState extends State<CategoryDialog> {
               ],
             ),
           ),
+          ),
+        ),
         ),
       ),
     );

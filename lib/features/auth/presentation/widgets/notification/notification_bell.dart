@@ -7,6 +7,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/c
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/notification/notification_bell_cubit_state.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:go_router/go_router.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 
 class NotificationBell extends StatelessWidget {
   const NotificationBell({super.key});
@@ -49,7 +50,7 @@ class _NotificationBellView extends StatelessWidget {
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
                         'No notifications',
-                        style: TextStyle(color: Colors.grey[600]),
+                        style: TextStyle(color: AppColors.grey[600]),
                       ),
                     ),
                   ),
@@ -72,10 +73,10 @@ class _NotificationBellView extends StatelessWidget {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         border: Border(
-                          bottom: BorderSide(color: Colors.grey[300]!),
-                          left: const BorderSide(color: Colors.blue, width: 4),
+                          bottom: BorderSide(color: AppColors.grey[300]!),
+                          left: const BorderSide(color: AppColors.blue, width: 4),
                         ),
-                        color: Colors.blue.withValues(alpha: 0.05),
+                        color: AppColors.blue.withValues(alpha: 0.05),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +92,7 @@ class _NotificationBellView extends StatelessWidget {
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
-                                    color: Colors.blue,
+                                    color: AppColors.blue,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -103,7 +104,7 @@ class _NotificationBellView extends StatelessWidget {
                           Text(
                             chat.lastMessage,
                             style: TextStyle(
-                              color: Colors.grey[700],
+                              color: AppColors.grey[700],
                               fontSize: 12,
                             ),
                             maxLines: 1,
@@ -112,12 +113,12 @@ class _NotificationBellView extends StatelessWidget {
                           4.h,
                           Text(
                             'User: ${chat.userId}',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                            style: TextStyle(color: AppColors.grey[500], fontSize: 11),
                           ),
                           Text(
                             _formatTime(chat.timestamp),
                             style: TextStyle(
-                              color: Colors.grey[400],
+                              color: AppColors.grey[400],
                               fontSize: 10,
                             ),
                           ),
@@ -136,7 +137,7 @@ class _NotificationBellView extends StatelessWidget {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         border: Border(
-                          bottom: BorderSide(color: Colors.grey[300]!),
+                          bottom: BorderSide(color: AppColors.grey[300]!),
                         ),
                       ),
                       child: Column(
@@ -155,7 +156,7 @@ class _NotificationBellView extends StatelessWidget {
                           Text(
                             notif['body'],
                             style: TextStyle(
-                              color: Colors.grey[700],
+                              color: AppColors.grey[700],
                               fontSize: 12,
                             ),
                             maxLines: 2,
@@ -165,7 +166,7 @@ class _NotificationBellView extends StatelessWidget {
                           Text(
                             _formatTime(notif['timestamp']),
                             style: TextStyle(
-                              color: Colors.grey[500],
+                              color: AppColors.grey[500],
                               fontSize: 11,
                             ),
                           ),
@@ -202,10 +203,10 @@ class _NotificationBellView extends StatelessWidget {
             child: badges.Badge(
               badgeContent: Text(
                 state.notificationCount.toString(),
-                style: const TextStyle(color: Colors.white, fontSize: 12),
+                style: const TextStyle(color: AppColors.white, fontSize: 12),
               ),
               showBadge: state.notificationCount > 0,
-              child: const Icon(Icons.notifications, color: Colors.white),
+              child: const Icon(Icons.notifications, color: AppColors.white),
             ),
           );
         },
@@ -223,7 +224,7 @@ class _NotificationBellView extends StatelessWidget {
             right: 16),
         content: Row(
           children: [
-            const Icon(Icons.chat, color: Colors.white),
+            const Icon(Icons.chat, color: AppColors.white),
             12.w,
             Expanded(
               child: Column(
@@ -242,7 +243,7 @@ class _NotificationBellView extends StatelessWidget {
         ),
         action: SnackBarAction(
           label: 'View',
-          textColor: Colors.yellow,
+          textColor: AppColors.yellow,
           onPressed: () {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             context.push('/chat_details', extra: {
@@ -252,7 +253,7 @@ class _NotificationBellView extends StatelessWidget {
             });
           },
         ),
-        backgroundColor: const Color(0xFF1E88E5),
+        backgroundColor: AppColors.blue600,
         duration: const Duration(seconds: 2),
       ),
     );
@@ -272,7 +273,7 @@ class _NotificationBellView extends StatelessWidget {
                 notif['title'].toString().toLowerCase().contains('order') == true
                     ? Icons.shopping_cart
                     : Icons.notifications_active,
-                color: Colors.white),
+                color: AppColors.white),
             12.w,
             Expanded(
               child: Column(
@@ -288,7 +289,7 @@ class _NotificationBellView extends StatelessWidget {
             ),
           ],
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.green,
         duration: const Duration(seconds: 2),
       ),
     );

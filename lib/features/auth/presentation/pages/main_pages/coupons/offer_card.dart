@@ -1,5 +1,6 @@
 ﻿
 
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,7 +53,7 @@ class OfferCard extends StatelessWidget {
                         height: 80,
                         borderRadius: 12,
                       )
-                    : const Icon(Icons.local_offer, color: Colors.blueAccent, size: 30),
+                    : const Icon(Icons.local_offer, color: AppColors.blueAccent, size: 30),
               ),
             ),
             20.w,
@@ -87,14 +88,14 @@ class OfferCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: offer.isActive ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                          color: offer.isActive ? AppColors.matGreen.withValues(alpha: 0.1) : AppColors.matRed.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           offer.isActive ? "Active" : "Inactive",
                           style: GoogleFonts.poppins(
                             fontSize: 12,
-                            color: offer.isActive ? Colors.green : Colors.red,
+                            color: offer.isActive ? AppColors.matGreen : AppColors.matRed,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -131,7 +132,7 @@ class OfferCard extends StatelessWidget {
                         ),
                       );
                   },
-                  icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+                  icon: const Icon(Icons.edit_outlined, color: AppColors.matBlue),
                   tooltip: 'Edit Offer',
                 ),
                 IconButton(
@@ -153,13 +154,13 @@ class OfferCard extends StatelessWidget {
                               couponBloc.add(DeletingCouponEvent(offer.id));
                               Navigator.pop(dialogContext);
                             },
-                            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                            child: const Text('Delete', style: TextStyle(color: AppColors.matRed)),
                           ),
                         ],
                       ),
                     );
                   },
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  icon: const Icon(Icons.delete_outline, color: AppColors.matRed),
                   tooltip: 'Delete Offer',
                 ),
               ],

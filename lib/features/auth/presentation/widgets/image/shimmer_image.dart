@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 
 /// A reusable widget that displays a network image with a shimmer loading
 /// placeholder and an error fallback.
@@ -37,11 +38,11 @@ class ShimmerImage extends StatelessWidget {
           return Container(
             width: width,
             height: height,
-            color: Colors.grey.shade200,
+            color: AppColors.grey200,
             child: Icon(
               Icons.broken_image_outlined,
               size: _iconSize,
-              color: Colors.grey.shade400,
+              color: AppColors.grey400,
             ),
           );
         },
@@ -60,12 +61,12 @@ class ShimmerImage extends StatelessWidget {
   Widget _buildShimmer(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
-      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+      baseColor: isDark ? AppColors.grey800 : AppColors.grey300,
+      highlightColor: isDark ? AppColors.grey700 : AppColors.grey100,
       child: Container(
         width: width,
         height: height,
-        color: Colors.white,
+        color: AppColors.white,
       ),
     );
   }

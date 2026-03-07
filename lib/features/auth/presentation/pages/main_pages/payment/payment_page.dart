@@ -1,4 +1,5 @@
 ﻿
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,9 +56,9 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
       body: BlocListener<PaymentBloc, PaymentState>(
         listener: (context, state) {
           if (state is PaymentRefunded) {
-            buildShowSnackBar(context, state.message, Colors.green);
+            buildShowSnackBar(context, state.message, AppColors.matGreen);
           } else if (state is PaymentError) {
-            buildShowSnackBar(context, 'Error: ${state.message}', Colors.red);
+            buildShowSnackBar(context, 'Error: ${state.message}', AppColors.matRed);
           }
         },
         child: Container(
@@ -94,12 +95,12 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.green.shade100,
+              color: AppColors.matGreen.shade100,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               Icons.payment,
-              color: Colors.green.shade700,
+              color: AppColors.matGreen.shade700,
               size: 24,
             ),
           ),
@@ -133,7 +134,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
           child: Row(
             children: [
               IconButton(
-                icon: Icon(Icons.refresh, color: Colors.green.shade700),
+                icon: Icon(Icons.refresh, color: AppColors.matGreen.shade700),
                 tooltip: 'Refresh',
                 onPressed: () {
                   _paymentBloc.add(const FetchAllPaymentsEvent());
@@ -142,7 +143,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
               ),
               8.w,
               PopupMenuButton(
-                icon: Icon(Icons.more_vert, color: Colors.grey.shade600),
+                icon: Icon(Icons.more_vert, color: AppColors.grey.shade600),
                 itemBuilder: (context) => [
                   PopupMenuItem(
                     child: Row(
@@ -169,7 +170,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                       } else if (state is PaymentsByStatusLoaded) {
                         _printPaymentList(state.payments);
                       } else {
-                        buildShowSnackBar(context, 'No payments to print', Colors.orange);
+                        buildShowSnackBar(context, 'No payments to print', AppColors.amber);
                       }
                     },
                   ),
@@ -198,7 +199,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                       child: buildPaymentMetricCard(
                         'Total Revenue',
                         analytics.totalRevenue.toStringAsFixed(2),
-                        Colors.green,
+                        AppColors.matGreen,
                         Icons.trending_up,
                       ),
                     ),
@@ -207,7 +208,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                       child: buildPaymentMetricCard(
                         'Success Rate',
                         '${analytics.successRate.toStringAsFixed(1)}%',
-                        Colors.blue,
+                        AppColors.matBlue,
                         Icons.check_circle,
                       ),
                     ),
@@ -216,7 +217,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                       child: buildPaymentMetricCard(
                         'Completed',
                         '${analytics.completedCount}',
-                        Colors.green,
+                        AppColors.matGreen,
                         Icons.done,
                       ),
                     ),
@@ -225,7 +226,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                       child: buildPaymentMetricCard(
                         'Pending',
                         '${analytics.pendingCount}',
-                        Colors.orange,
+                        AppColors.amber,
                         Icons.schedule,
                       ),
                     ),
@@ -238,7 +239,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                       child: buildPaymentAmountCard(
                         'Completed Amount',
                         analytics.completedAmount.toStringAsFixed(2),
-                        Colors.green,
+                        AppColors.matGreen,
                       ),
                     ),
                     16.w,
@@ -246,7 +247,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                       child: buildPaymentAmountCard(
                         'Pending Amount',
                         analytics.pendingAmount.toStringAsFixed(2),
-                        Colors.orange,
+                        AppColors.amber,
                       ),
                     ),
                     16.w,
@@ -254,7 +255,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                       child: buildPaymentAmountCard(
                         'Refunded Amount',
                         analytics.refundedAmount.toStringAsFixed(2),
-                        Colors.purple,
+                        AppColors.purple,
                       ),
                     ),
                   ],
@@ -342,11 +343,11 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
 
   Widget buildPaymentFilterSection() {
     final filters = [
-      ('all', 'All', Icons.list, Colors.blue),
-      ('completed', 'Completed', Icons.check_circle, Colors.green),
-      ('pending', 'Pending', Icons.schedule, Colors.orange),
-      ('failed', 'Failed', Icons.error, Colors.red),
-      ('refunded', 'Refunded', Icons.undo, Colors.purple),
+      ('all', 'All', Icons.list, AppColors.matBlue),
+      ('completed', 'Completed', Icons.check_circle, AppColors.matGreen),
+      ('pending', 'Pending', Icons.schedule, AppColors.amber),
+      ('failed', 'Failed', Icons.error, AppColors.matRed),
+      ('refunded', 'Refunded', Icons.undo, AppColors.purple),
     ];
 
     return Container(
@@ -369,18 +370,18 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                     avatar: Icon(filter.$3, size: 16),
                     label: Text(filter.$2),
                     selected: context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1,
-                    backgroundColor: Colors.grey[100],
+                    backgroundColor: AppColors.grey[100],
                     selectedColor: filter.$4.withValues(alpha: 0.2),
                     side: BorderSide(
                       color: context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1
                           ? filter.$4
-                          : Colors.transparent,
+                          : AppColors.transparent,
                       width: 1.5,
                     ),
                     labelStyle: TextStyle(
                       color: context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1
                           ? filter.$4
-                          : Colors.grey[600],
+                          : AppColors.grey[600],
                       fontWeight: FontWeight.w500,
                       fontSize: 12,
                     ),
@@ -526,13 +527,13 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             Icon(
               Icons.error_outline,
               size: 48,
-              color: Colors.red[300],
+              color: AppColors.matRed[300],
             ),
             16.h,
             Text(
               'Error: $message',
               style: const TextStyle(
-                color: Colors.red,
+                color: AppColors.matRed,
                 fontSize: 14,
               ),
               textAlign: TextAlign.center,
@@ -552,7 +553,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             Icon(
               Icons.inbox,
               size: 64,
-              color: Colors.grey[300],
+              color: AppColors.grey[300],
             ),
             16.h,
             Text(
@@ -567,7 +568,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             Text(
               'Check back later for new payments',
               style: TextStyle(
-                color: Colors.grey[500],
+                color: AppColors.grey[500],
                 fontSize: 12,
               ),
             ),
@@ -662,7 +663,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                         payment.userName,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: AppColors.grey[600],
                         ),
                       ),
                     ],
@@ -690,7 +691,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
               ],
             ),
             12.h,
-            Divider(color: Colors.grey[200]),
+            Divider(color: AppColors.grey[200]),
             12.h,
             Text(
               '?${payment.amount.toStringAsFixed(2)}',
@@ -704,7 +705,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
               '${payment.method} � ${DateFormat('dd MMM').format(payment.createdAt)}',
               style: TextStyle(
                 fontSize: 11,
-                color: Colors.grey[600],
+                color: AppColors.grey[600],
               ),
             ),
             12.h,
@@ -732,7 +733,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                         buildShowRefundDialog(context, payment);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: AppColors.matRed,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                       child: const Text(
@@ -790,7 +791,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                     payment.userName,
                     style: TextStyle(
                       fontSize: 11,
-                      color: Colors.grey[600],
+                      color: AppColors.grey[600],
                     ),
                   ),
                 ],
@@ -812,7 +813,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                     payment.method,
                     style: TextStyle(
                       fontSize: 10,
-                      color: Colors.grey[600],
+                      color: AppColors.grey[600],
                     ),
                   ),
                 ],
@@ -826,7 +827,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                     DateFormat('dd MMM yyyy').format(payment.createdAt),
                     style: const TextStyle(
                       fontSize: 11,
-                      color: Colors.grey,
+                      color: AppColors.grey,
                     ),
                   ),
                   4.h,
@@ -834,7 +835,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                     DateFormat('HH:mm').format(payment.createdAt),
                     style: TextStyle(
                       fontSize: 10,
-                      color: Colors.grey[500],
+                      color: AppColors.grey[500],
                     ),
                   ),
                 ],
@@ -888,7 +889,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                       buildShowRefundDialog(context, payment);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor: AppColors.matRed,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
                     child: const Text(
@@ -1019,7 +1020,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                               buildShowRefundDialog(context, payment);
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
+                              backgroundColor: AppColors.matRed,
                             ),
                             child: const Text('Refund Payment'),
                           ),
@@ -1039,9 +1040,9 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: AppColors.grey[50],
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.grey[200]!),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1075,7 +1076,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 11,
-            color: Colors.grey[700],
+            color: AppColors.grey[700],
           ),
         ),
         Expanded(
@@ -1084,7 +1085,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             textAlign: TextAlign.end,
             style: const TextStyle(
               fontSize: 11,
-              color: Colors.grey,
+              color: AppColors.grey,
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -1113,7 +1114,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
               Icon(
                 Icons.undo,
                 size: 48,
-                color: Colors.red[400],
+                color: AppColors.matRed[400],
               ),
               16.h,
               const Text(
@@ -1129,7 +1130,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[700],
+                  color: AppColors.grey[700],
                 ),
               ),
               20.h,
@@ -1171,7 +1172,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: AppColors.matRed,
                       ),
                       child: const Text('Refund'),
                     ),
@@ -1200,15 +1201,15 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
   Color buildPaymentStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'completed':
-        return Colors.green;
+        return AppColors.matGreen;
       case 'pending':
-        return Colors.orange;
+        return AppColors.amber;
       case 'failed':
-        return Colors.red;
+        return AppColors.matRed;
       case 'refunded':
-        return Colors.purple;
+        return AppColors.purple;
       default:
-        return Colors.grey;
+        return AppColors.grey;
     }
   }
 

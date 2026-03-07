@@ -1,4 +1,5 @@
-﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,11 +50,11 @@ PreferredSizeWidget appBarRizq(BuildContext context) {
       Container(
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
-          color: Colors.red.withValues(alpha: 0.1),
+          color: AppColors.matRed.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: IconButton(
-          icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 20),
+          icon: const Icon(Icons.logout_rounded, color: AppColors.red, size: 20),
           onPressed: () => _showLogoutDialog(context),
           tooltip: 'Logout',
         ),
@@ -94,8 +95,8 @@ void _showLogoutDialog(BuildContext context) {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.matRed,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),

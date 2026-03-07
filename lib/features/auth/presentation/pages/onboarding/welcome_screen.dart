@@ -4,6 +4,7 @@ import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:rizqmartadmin/features/auth/presentation/utils/page_navigation.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/welcome/text_features.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -60,8 +61,8 @@ class _WelcomePageState extends State<WelcomePage>
         CurvedAnimation(parent: _fadeController, curve: Curves.easeIn);
 
     _colorAnimation = ColorTween(
-      begin: Colors.deepPurple,
-      end: Colors.orange,
+      begin: AppColors.deepPurple,
+      end: AppColors.orange,
     ).animate(_fadeController);
 
     _fadeController.forward();
@@ -117,18 +118,18 @@ class _WelcomePageState extends State<WelcomePage>
                             gradient: LinearGradient(
                               colors: [
                                 Color.lerp(
-                                  const Color(0xFF1A237E),
-                                  const Color(0xFF0D47A1),
+                                  AppColors.welcomeGradient1Start,
+                                  AppColors.welcomeGradient1End,
                                   _backgroundAnimation.value,
                                 )!,
                                 Color.lerp(
-                                  const Color(0xFF283593),
-                                  const Color(0xFF1565C0),
+                                  AppColors.welcomeGradient2Start,
+                                  AppColors.welcomeGradient2End,
                                   _backgroundAnimation.value,
                                 )!,
                                 Color.lerp(
-                                  const Color(0xFF00695C),
-                                  const Color(0xFF00897B),
+                                  AppColors.welcomeGradient3Start,
+                                  AppColors.welcomeGradient3End,
                                   _backgroundAnimation.value,
                                 )!,
                               ],
@@ -148,7 +149,7 @@ class _WelcomePageState extends State<WelcomePage>
                         height: 200,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: AppColors.white.withValues(alpha: 0.1),
                         ),
                       ),
                     ),
@@ -160,7 +161,7 @@ class _WelcomePageState extends State<WelcomePage>
                         height: 250,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withValues(alpha: 0.05),
+                          color: AppColors.white.withValues(alpha: 0.05),
                         ),
                       ),
                     ),
@@ -172,7 +173,7 @@ class _WelcomePageState extends State<WelcomePage>
                         height: 150,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.green.withValues(alpha: 0.15),
+                          color: AppColors.green.withValues(alpha: 0.15),
                         ),
                       ),
                     ),
@@ -202,8 +203,8 @@ class _WelcomePageState extends State<WelcomePage>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.white.withValues(alpha: 0.15),
-                            Colors.white.withValues(alpha: 0.05),
+                            AppColors.white.withValues(alpha: 0.15),
+                            AppColors.white.withValues(alpha: 0.05),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -226,7 +227,7 @@ class _WelcomePageState extends State<WelcomePage>
                                 padding: EdgeInsets.fromLTRB(8, paddingTop, 0, 5),
                                 fontSize: fontMedium,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white.withValues(alpha: 0.9),
+                                color: AppColors.white.withValues(alpha: 0.9),
                                 align: TextAlign.left,
                               );
                             },
@@ -239,7 +240,7 @@ class _WelcomePageState extends State<WelcomePage>
                                 padding: const EdgeInsets.fromLTRB(8, 0, 0, 5),
                                 fontSize: fontLarge,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.greenAccent,
+                                color: AppColors.greenAccent,
                                 align: TextAlign.left,
                               );
                             },
@@ -252,7 +253,7 @@ class _WelcomePageState extends State<WelcomePage>
                                 padding: const EdgeInsets.fromLTRB(8, 0, 0, 5),
                                 fontSize: fontMedium,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white.withValues(alpha: 0.9),
+                                color: AppColors.white.withValues(alpha: 0.9),
                                 align: TextAlign.left,
                               );
                             },
@@ -271,7 +272,7 @@ class _WelcomePageState extends State<WelcomePage>
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: fontSmall,
-                                      color: Colors.white.withValues(alpha: 0.85),
+                                      color: AppColors.white.withValues(alpha: 0.85),
                                       height: 1.5,
                                     ),
                                   ),
@@ -287,7 +288,7 @@ class _WelcomePageState extends State<WelcomePage>
                                 borderRadius: BorderRadius.circular(30),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.greenAccent.withValues(alpha: 0.3),
+                                    color: AppColors.greenAccent.withValues(alpha: 0.3),
                                     blurRadius: 20,
                                     spreadRadius: 2,
                                   ),
@@ -304,8 +305,8 @@ class _WelcomePageState extends State<WelcomePage>
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.greenAccent,
-                                  foregroundColor: Colors.black87,
+                                  backgroundColor: AppColors.greenAccent,
+                                  foregroundColor: AppColors.black87,
                                   padding: EdgeInsets.symmetric(
                                     horizontal: screenWidth < 600 ? 32 : 40,
                                     vertical: 16,
@@ -359,16 +360,16 @@ class _WelcomePageState extends State<WelcomePage>
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.15),
+                color: AppColors.white.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: AppColors.white.withValues(alpha: 0.2),
                   width: 2,
                 ),
               ),
               child: Icon(
                 icon,
-                color: Colors.white.withValues(alpha: 0.7),
+                color: AppColors.white.withValues(alpha: 0.7),
                 size: 24,
               ),
             ),

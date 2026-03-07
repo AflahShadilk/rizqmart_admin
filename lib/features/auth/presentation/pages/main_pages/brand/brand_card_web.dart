@@ -22,7 +22,7 @@ class BrandCardWeb extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
@@ -49,9 +49,9 @@ class BrandCardWeb extends StatelessWidget {
                   : Container(
                       width: 100,
                       height: 70,
-                      color: Colors.grey.shade200,
+                      color: AppColors.grey.shade200,
                       child:
-                          const Icon(Icons.image, size: 40, color: Colors.grey),
+                          const Icon(Icons.image, size: 40, color: AppColors.grey),
                     ),
             ),
             20.w,
@@ -64,7 +64,7 @@ class BrandCardWeb extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: AppColors.black87,
                     ),
                   ),
                   6.h,
@@ -73,8 +73,8 @@ class BrandCardWeb extends StatelessWidget {
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: brand!.status
-                          ? Colors.green.withValues(alpha: 0.1)
-                          : Colors.red.withValues(alpha: 0.1),
+                          ? AppColors.matGreen.withValues(alpha: 0.1)
+                          : AppColors.matRed.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
@@ -82,7 +82,7 @@ class BrandCardWeb extends StatelessWidget {
                       children: [
                         Icon(
                           brand!.status ? Icons.check_circle : Icons.cancel,
-                          color: brand!.status ? Colors.green : Colors.red,
+                          color: brand!.status ? AppColors.matGreen : AppColors.matRed,
                           size: 18,
                         ),
                         6.w,
@@ -90,7 +90,7 @@ class BrandCardWeb extends StatelessWidget {
                           brand!.status ? "Active" : "Inactive",
                           style: TextStyle(
                             fontSize: 14,
-                            color: brand!.status ? Colors.green : Colors.red,
+                            color: brand!.status ? AppColors.matGreen : AppColors.matRed,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -122,13 +122,13 @@ class BrandCardWeb extends StatelessWidget {
                         ),
                       );
                     },
-                    icon: const Icon(Icons.edit, color: Colors.white, size: 18),
+                    icon: const Icon(Icons.edit, color: AppColors.white, size: 18),
                     label: const Text(
                       "Edit",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                      style: TextStyle(color: AppColors.white, fontSize: 14),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.blueAccent,
+                      backgroundColor: AppColors.matBlueAccent,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 10,
@@ -148,13 +148,13 @@ class BrandCardWeb extends StatelessWidget {
                       handleDelete(context, brand!);
                     },
                     icon:
-                        const Icon(Icons.delete, color: Colors.white, size: 18),
+                        const Icon(Icons.delete, color: AppColors.white, size: 18),
                     label: const Text(
                       "Delete",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                      style: TextStyle(color: AppColors.white, fontSize: 14),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
+                      backgroundColor: AppColors.matRedAccent,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 10,

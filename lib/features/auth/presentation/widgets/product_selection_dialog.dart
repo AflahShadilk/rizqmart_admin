@@ -89,7 +89,7 @@ class _ProductSelectionDialogView extends StatelessWidget {
                           return Center(
                             child: Text(
                               'No products found',
-                              style: GoogleFonts.poppins(color: Colors.grey),
+                              style: GoogleFonts.poppins(color: AppColors.grey),
                             ),
                           );
                         }
@@ -140,7 +140,7 @@ class _ProductSelectionDialogView extends StatelessWidget {
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         'Cancel',
-                        style: GoogleFonts.poppins(color: Colors.grey),
+                        style: GoogleFonts.poppins(color: AppColors.grey),
                       ),
                     ),
                     16.w,
@@ -158,7 +158,7 @@ class _ProductSelectionDialogView extends StatelessWidget {
                       child: Text(
                         'Confirm Selection',
                         style: GoogleFonts.poppins(
-                          color: Colors.white,
+                          color: AppColors.white,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

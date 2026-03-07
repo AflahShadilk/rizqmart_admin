@@ -97,7 +97,7 @@ class _CategoryPageState extends State<CategoryPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.green,
+                backgroundColor: AppColors.matGreen,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -105,7 +105,7 @@ class _CategoryPageState extends State<CategoryPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.error),
-                backgroundColor: AppColors.red,
+                backgroundColor: AppColors.matRed,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -336,13 +336,13 @@ class _CategoryPageState extends State<CategoryPage> {
                         Icon(
                           Icons.error_outline,
                           size: 64,
-                          color: Colors.red.shade300,
+                          color: AppColors.matRed.shade300,
                         ),
                         16.h,
                         Text(
                           state.error,
                           style: GoogleFonts.poppins(
-                            color: Colors.red.shade700,
+                            color: AppColors.matRed.shade700,
                             fontSize: 16,
                           ),
                         ),
@@ -425,13 +425,13 @@ class CategoryCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+              icon: const Icon(Icons.edit_outlined, color: AppColors.matBlue),
               onPressed: onEdit,
               tooltip: 'Edit Category',
             ),
             4.w,
             IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              icon: const Icon(Icons.delete_outline, color: AppColors.matRed),
               onPressed: onDelete,
               tooltip: 'Delete Category',
             ),

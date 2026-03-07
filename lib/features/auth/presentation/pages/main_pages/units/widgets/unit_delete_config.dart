@@ -1,4 +1,5 @@
-﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
   import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,7 +50,7 @@ void handleDeleteUnit(BuildContext context, UnitsEntity unit) {
           SnackBar(
             content:
                 const Text('Cannot delete! This unit is used in products.'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.matRed,
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 3),
           ),
@@ -74,7 +75,7 @@ void handleDeleteUnit(BuildContext context, UnitsEntity unit) {
           ),
           title: Row(
             children: [
-              Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
+              Icon(Icons.warning_amber_rounded, color: AppColors.matAmber.shade700),
               12.w,
               Text(
                 'Delete Unit',
@@ -102,14 +103,14 @@ void handleDeleteUnit(BuildContext context, UnitsEntity unit) {
                 'Cancel',
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade700,
+                  color: AppColors.grey.shade700,
                 ),
               ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.red,
+                foregroundColor: AppColors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 12,
@@ -125,7 +126,7 @@ void handleDeleteUnit(BuildContext context, UnitsEntity unit) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Unit deleted successfully'),
-                    backgroundColor: Colors.green,
+                    backgroundColor: AppColors.matGreen,
                     behavior: SnackBarBehavior.floating,
                     duration: Duration(seconds: 2),
                   ),

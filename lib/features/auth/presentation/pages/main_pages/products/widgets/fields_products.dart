@@ -106,7 +106,7 @@ class _WebTextFieldState extends State<WebTextField> {
                           widget.prefixIcon,
                           color: isFocused
                               ? theme.colorScheme.primary
-                              : theme.iconTheme.color?.withValues(alpha: 0.5) ?? Colors.grey,
+                              : theme.iconTheme.color?.withValues(alpha: 0.5) ?? AppColors.grey,
                           size: 20,
                         )
                       : null,
@@ -362,7 +362,7 @@ class _WebTextFieldsState extends State<WebTextFields> {
       prefixIcon: widget.prefixIcon != null
           ? Icon(
               widget.prefixIcon,
-              color: isFocused ? theme.colorScheme.primary : theme.iconTheme.color?.withValues(alpha: 0.5) ?? Colors.grey,
+              color: isFocused ? theme.colorScheme.primary : theme.iconTheme.color?.withValues(alpha: 0.5) ?? AppColors.grey,
               size: 20,
             )
           : null,

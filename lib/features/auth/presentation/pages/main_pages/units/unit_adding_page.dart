@@ -118,7 +118,7 @@ class _UnitDialogState extends State<UnitDialog> {
           borderRadius: BorderRadius.circular(24),
         ),
         elevation: 8,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         child: Container(
           constraints: const BoxConstraints(
             maxWidth: 500,
@@ -129,7 +129,7 @@ class _UnitDialogState extends State<UnitDialog> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
+                color: AppColors.black.withValues(alpha: 0.15),
                 blurRadius: 20,
                 spreadRadius: 5,
               ),
@@ -176,7 +176,7 @@ class _UnitDialogState extends State<UnitDialog> {
                                     : 'Create a new unit variant',
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
-                                  color: Colors.grey.shade600,
+                                  color: AppColors.grey.shade600,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
@@ -188,12 +188,12 @@ class _UnitDialogState extends State<UnitDialog> {
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
+                              color: AppColors.grey.shade100,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
                               Icons.close,
-                              color: Colors.grey.shade600,
+                              color: AppColors.grey.shade600,
                               size: 20,
                             ),
                           ),
@@ -262,8 +262,8 @@ class _UnitDialogState extends State<UnitDialog> {
                               child: ElevatedButton(
                                 onPressed: () => Navigator.pop(context),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.grey.shade100,
-                                  foregroundColor: Colors.grey.shade700,
+                                  backgroundColor: AppColors.grey.shade100,
+                                  foregroundColor: AppColors.grey.shade700,
                                   padding: const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -284,15 +284,15 @@ class _UnitDialogState extends State<UnitDialog> {
                               child: ElevatedButton.icon(
                                 onPressed: isLoading ? null : _submitForm,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.green,
-                                  foregroundColor: Colors.white,
+                                  backgroundColor: AppColors.matGreen,
+                                  foregroundColor: AppColors.white,
                                   padding: const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   elevation: 2,
-                                  shadowColor: AppColors.green.withValues(alpha: 0.4),
-                                  disabledBackgroundColor: AppColors.green.withValues(alpha: 0.6),
+                                  shadowColor: AppColors.matGreen.withValues(alpha: 0.4),
+                                  disabledBackgroundColor: AppColors.matGreen.withValues(alpha: 0.6),
                                 ),
                                 icon: isLoading
                                     ? SizedBox(
@@ -301,7 +301,7 @@ class _UnitDialogState extends State<UnitDialog> {
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
                                           valueColor: AlwaysStoppedAnimation<Color>(
-                                            Colors.white.withValues(alpha: 0.8),
+                                            AppColors.white.withValues(alpha: 0.8),
                                           ),
                                         ),
                                       )
@@ -378,7 +378,7 @@ class BuildCategoryDropdown extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: 'Select a category',
                 hintStyle: GoogleFonts.poppins(
-                  color: Colors.grey.shade400,
+                  color: AppColors.grey.shade400,
                   fontSize: 13,
                 ),
                 prefixIcon: Icon(
@@ -389,14 +389,14 @@ class BuildCategoryDropdown extends StatelessWidget {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: Colors.grey.shade200,
+                    color: AppColors.grey.shade200,
                     width: 1.5,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: Colors.grey.shade200,
+                    color: AppColors.grey.shade200,
                     width: 1.5,
                   ),
                 ),
@@ -410,19 +410,19 @@ class BuildCategoryDropdown extends StatelessWidget {
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: Colors.red.shade400,
+                    color: AppColors.matRed.shade400,
                     width: 1.5,
                   ),
                 ),
                 focusedErrorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: Colors.red.shade600,
+                    color: AppColors.matRed.shade600,
                     width: 2,
                   ),
                 ),
                 filled: true,
-                fillColor: Colors.grey.shade50,
+                fillColor: AppColors.grey.shade50,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 14,
@@ -475,7 +475,7 @@ class BuildInputField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: GoogleFonts.poppins(
-              color: Colors.grey.shade400,
+              color: AppColors.grey.shade400,
               fontSize: 13,
             ),
             prefixIcon: Icon(
@@ -486,14 +486,14 @@ class BuildInputField extends StatelessWidget {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Colors.grey.shade200,
+                color: AppColors.grey.shade200,
                 width: 1.5,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Colors.grey.shade200,
+                color: AppColors.grey.shade200,
                 width: 1.5,
               ),
             ),
@@ -507,19 +507,19 @@ class BuildInputField extends StatelessWidget {
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Colors.red.shade400,
+                color: AppColors.matRed.shade400,
                 width: 1.5,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Colors.red.shade600,
+                color: AppColors.matRed.shade600,
                 width: 2,
               ),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.grey.shade50,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,

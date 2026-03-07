@@ -1,5 +1,6 @@
 ﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -96,28 +97,28 @@ class _DashboardPageState extends State<DashboardPage> {
                                 'Daily Revenue',
                                 state.stats.dailyRevenue.toStringAsFixed(2),
                                 Icons.currency_rupee,
-                                const Color(0xFF10B981),
+                                AppColors.emerald,
                               ),
                               _buildStatCard(
                                 theme,
                                 'Total Orders',
                                 state.stats.totalOrders.toString(),
                                 Icons.shopping_bag_outlined,
-                                const Color(0xFF3B82F6),
+                                AppColors.chartBlue,
                               ),
                               _buildStatCard(
                                 theme,
                                 'Pending Orders',
                                 state.stats.pendingOrders.toString(),
                                 Icons.hourglass_top_rounded,
-                                const Color(0xFFF59E0B),
+                                AppColors.amber,
                               ),
                               _buildStatCard(
                                 theme,
                                 'Total Users',
                                 state.stats.totalUsers.toString(),
                                 Icons.people_outline,
-                                const Color(0xFF8B5CF6),
+                                AppColors.purple,
                               ),
                             ],
                           );
@@ -165,28 +166,28 @@ class _DashboardPageState extends State<DashboardPage> {
                           theme,
                           'Add Product',
                           Icons.add_box_outlined,
-                          const Color(0xFF3B82F6),
+                          AppColors.chartBlue,
                           () => context.go('/Addproducts'),
                         ),
                         _buildQuickAccessCard(
                           theme,
                           'Manage Orders',
                           Icons.shopping_cart_outlined,
-                          const Color(0xFFF59E0B),
+                          AppColors.amber,
                           () => context.go('/order'),
                         ),
                         _buildQuickAccessCard(
                           theme,
                           'Sales Report',
                           Icons.analytics_outlined,
-                          const Color(0xFF10B981),
+                          AppColors.emerald,
                           () => context.go('/salesReport'),
                         ),
                         _buildQuickAccessCard(
                           theme,
                           'Manage Users',
                           Icons.group_outlined,
-                          const Color(0xFF8B5CF6),
+                          AppColors.purple,
                           () => context.go('/users'),
                         ),
                       ],
@@ -209,8 +210,8 @@ class _DashboardPageState extends State<DashboardPage> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
-              ? [const Color(0xFF1E293B), const Color(0xFF0F172A)]
-              : [const Color(0xFF0F172A), const Color(0xFF1E3A5F)],
+              ? [AppColors.cardDark, AppColors.dashboardDark1]
+              : [AppColors.dashboardDark1, AppColors.dashboardDark2],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -227,7 +228,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   style: GoogleFonts.inter(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: AppColors.white,
                   ),
                 ),
                 8.h,
@@ -235,7 +236,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   'Here is what is happening with your store today.',
                   style: GoogleFonts.inter(
                     fontSize: 14,
-                    color: Colors.white70,
+                    color: AppColors.white70,
                   ),
                 ),
               ],
@@ -482,17 +483,17 @@ class _DashboardPageState extends State<DashboardPage> {
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'pending':
-        return const Color(0xFFF59E0B);
+        return AppColors.amber;
       case 'processing':
-        return const Color(0xFF3B82F6);
+        return AppColors.chartBlue;
       case 'shipped':
-        return const Color(0xFF8B5CF6);
+        return AppColors.purple;
       case 'received':
-        return const Color(0xFF10B981);
+        return AppColors.emerald;
       case 'cancelled':
-        return const Color(0xFFEF4444);
+        return AppColors.chartRed;
       default:
-        return const Color(0xFF64748B);
+        return AppColors.slate;
     }
   }
 }

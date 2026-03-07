@@ -11,6 +11,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/u
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/user/user_card.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/user/user_data_table.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/respnsive_page.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 
 class UsersPage extends StatelessWidget {
   const UsersPage({super.key});
@@ -46,10 +47,10 @@ class UsersView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.blue.shade50,
+                color: AppColors.blue50,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(Icons.people_rounded, color: Colors.blue.shade700, size: 24),
+              child: Icon(Icons.people_rounded, color: AppColors.blue700, size: 24),
             ),
             12.w,
              Text(
@@ -66,12 +67,12 @@ class UsersView extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(right: 16),
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: AppColors.blue50,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.blue.shade100),
+              border: Border.all(color: AppColors.blue100),
             ),
             child: IconButton(
-              icon: Icon(Icons.refresh_rounded, color: Colors.blue.shade700, size: 22),
+              icon: Icon(Icons.refresh_rounded, color: AppColors.blue700, size: 22),
               onPressed: () => context.read<UsersBloc>().add(const LoadUsersByRole('user')),
               tooltip: 'Refresh Users',
             ),
@@ -99,7 +100,7 @@ class SearchAndStatsBar extends StatelessWidget {
         color: Theme.of(context).cardTheme.color,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: AppColors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -181,7 +182,7 @@ class SearchBar extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 child: Icon(
                   Icons.search_rounded,
-                  color: Colors.grey.shade600,
+                  color: AppColors.grey600,
                   size: 20,
                 ),
               ),
@@ -192,12 +193,12 @@ class SearchBar extends StatelessWidget {
                         icon: Container(
                           padding: const EdgeInsets.all(3),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
+                            color: AppColors.grey300,
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.close_rounded,
-                            color: Colors.grey.shade700,
+                            color: AppColors.grey700,
                             size: 14,
                           ),
                         ),
@@ -241,7 +242,7 @@ class UserStatsCards extends StatelessWidget {
                   icon: Icons.people_rounded,
                   label: 'Total Users',
                   value: totalUsers.toString(),
-                  color: Colors.blue,
+                  color: AppColors.blue,
                 ),
               ),
               12.w,
@@ -250,7 +251,7 @@ class UserStatsCards extends StatelessWidget {
                   icon: Icons.check_circle_rounded,
                   label: 'Active Users',
                   value: activeUsers.toString(),
-                  color: Colors.green,
+                  color: AppColors.green,
                 ),
               ),
               12.w,
@@ -259,7 +260,7 @@ class UserStatsCards extends StatelessWidget {
                   icon: Icons.filter_list_rounded,
                   label: 'Filtered',
                   value: filteredUsers.toString(),
-                  color: Colors.orange,
+                  color: AppColors.orange,
                 ),
               ),
             ],
@@ -364,14 +365,14 @@ class UsersBody extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withValues(alpha: 0.1),
+                        color: AppColors.blue.withValues(alpha: 0.1),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
                     ],
                   ),
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade600),
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.blue600),
                     strokeWidth: 3,
                   ),
                 ),
@@ -379,7 +380,7 @@ class UsersBody extends StatelessWidget {
                 Text(
                   'Loading users...',
                   style: TextStyle(
-                    color: Colors.grey.shade700,
+                    color: AppColors.grey700,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.3,
@@ -405,7 +406,7 @@ class UsersBody extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
+                      color: AppColors.black.withValues(alpha: 0.05),
                       blurRadius: 20,
                       offset: const Offset(0, 4),
                     ),
@@ -417,13 +418,13 @@ class UsersBody extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
+                        color: AppColors.blue50,
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.people_outline_rounded,
                         size: 64,
-                        color: Colors.blue.shade300,
+                        color: AppColors.blue300,
                       ),
                     ),
                     24.h,
@@ -441,7 +442,7 @@ class UsersBody extends StatelessWidget {
                       'Try adjusting your search filters',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey.shade500,
+                        color: AppColors.grey500,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -479,7 +480,7 @@ class ErrorView extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: AppColors.black.withValues(alpha: 0.08),
               blurRadius: 30,
               offset: const Offset(0, 8),
             ),
@@ -491,13 +492,13 @@ class ErrorView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.red.shade50,
+                color: AppColors.red50,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.error_outline_rounded,
                 size: 56,
-                color: Colors.red.shade400,
+                color: AppColors.red400,
               ),
             ),
             24.h,
@@ -517,7 +518,7 @@ class ErrorView extends StatelessWidget {
               child: Text(
                 message,
                 style: TextStyle(
-                  color: Colors.grey.shade600,
+                  color: AppColors.grey600,
                   fontSize: 15,
                   height: 1.6,
                   fontWeight: FontWeight.w400,
@@ -531,14 +532,14 @@ class ErrorView extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => context.read<UsersBloc>().add(const LoadUsersByRole('user')),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade600,
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.blue600,
+                  foregroundColor: AppColors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 0,
-                  shadowColor: Colors.blue.withValues(alpha: 0.3),
+                  shadowColor: AppColors.blue.withValues(alpha: 0.3),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -612,7 +613,7 @@ class MobileStatsCards extends StatelessWidget {
                   icon: Icons.people_rounded,
                   label: 'Total',
                   value: totalUsers.toString(),
-                  color: Colors.blue,
+                  color: AppColors.blue,
                 ),
               ),
               8.w,
@@ -621,7 +622,7 @@ class MobileStatsCards extends StatelessWidget {
                   icon: Icons.check_circle_rounded,
                   label: 'Active',
                   value: activeUsers.toString(),
-                  color: Colors.green,
+                  color: AppColors.green,
                 ),
               ),
               8.w,
@@ -630,7 +631,7 @@ class MobileStatsCards extends StatelessWidget {
                   icon: Icons.filter_list_rounded,
                   label: 'Filtered',
                   value: filteredUsers.toString(),
-                  color: Colors.orange,
+                  color: AppColors.orange,
                 ),
               ),
             ],
@@ -657,7 +658,7 @@ class DesktopView extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: AppColors.black.withValues(alpha: 0.04),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),

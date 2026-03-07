@@ -1,38 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 
 class AppTheme {
-  static const Color _primaryLight = Color(0xFF0D9488);
-  static const Color _primaryDark = Color(0xFF2DD4BF);
+  static const Color _primaryLight = AppColors.teal;
+  static const Color _primaryDark = AppColors.tealLight;
 
-  static const Color _surfaceLight = Color(0xFFF8FAFC);
-  static const Color _surfaceDark = Color(0xFF0F172A);
+  static const Color _surfaceLight = AppColors.surfaceLight;
+  static const Color _surfaceDark = AppColors.dashboardDark1;
 
-  static const Color _cardLight = Color(0xFFFFFFFF);
-  static const Color _cardDark = Color(0xFF1E293B);
+  static const Color _cardLight = AppColors.white;
+  static const Color _cardDark = AppColors.cardDark;
 
-  static const Color _scaffoldLight = Color(0xFFF1F5F9);
-  static const Color _scaffoldDark = Color(0xFF0B1120);
+  static final Color _scaffoldLight = AppColors.backgroundColor;
+  static const Color _scaffoldDark = AppColors.backgroundColorDark;
 
-  static const Color _textPrimaryLight = Color(0xFF0F172A);
-  static const Color _textPrimaryDark = Color(0xFFF1F5F9);
+  static const Color _textPrimaryLight = AppColors.dashboardDark1;
+  static final Color _textPrimaryDark = AppColors.backgroundColor;
 
-  static const Color _textSecondaryLight = Color(0xFF64748B);
-  static const Color _textSecondaryDark = Color(0xFF94A3B8);
+  static const Color _textSecondaryLight = AppColors.slate;
+  static const Color _textSecondaryDark = AppColors.slateLight;
 
-  static const Color _borderLight = Color(0xFFE2E8F0);
-  static const Color _borderDark = Color(0xFF334155);
+  static final Color _borderLight = AppColors.grey200;
+  static const Color _borderDark = AppColors.borderDark;
 
-  static const Color _drawerLight = Color(0xFF1E293B);
-  static const Color _drawerDark = Color(0xFF0F172A);
+  static const Color _drawerLight = AppColors.cardDark;
+  static const Color _drawerDark = AppColors.dashboardDark1;
 
-  static const Color _appBarLight = Color(0xFF0F172A);
-  static const Color _appBarDark = Color(0xFF1E293B);
+  static const Color _appBarLight = AppColors.dashboardDark1;
+  static const Color _appBarDark = AppColors.cardDark;
 
-  static const Color success = Color(0xFF10B981);
-  static const Color error = Color(0xFFEF4444);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color info = Color(0xFF3B82F6);
+  static const Color success = AppColors.emerald;
+  static const Color error = AppColors.chartRed;
+  static const Color warning = AppColors.amber;
+  static const Color info = AppColors.chartBlue;
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -42,11 +43,11 @@ class AppTheme {
       scaffoldBackgroundColor: _scaffoldLight,
       colorScheme: ColorScheme.light(
         primary: _primaryLight,
-        secondary: const Color(0xFF6366F1),
+        secondary: AppColors.indigo,
         surface: _surfaceLight,
         error: error,
-        onPrimary: Colors.white,
-        onSecondary: Colors.white,
+        onPrimary: AppColors.white,
+        onSecondary: AppColors.white,
         onSurface: _textPrimaryLight,
         outline: _borderLight,
       ),
@@ -78,19 +79,19 @@ class AppTheme {
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: _appBarLight,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.white,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: GoogleFonts.inter(
           fontSize: 20,
           fontWeight: FontWeight.w700,
-          color: Colors.white,
+          color: AppColors.white,
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: AppColors.white),
       ),
       drawerTheme: const DrawerThemeData(
         backgroundColor: _drawerLight,
-        scrimColor: Colors.black54,
+        scrimColor: AppColors.black54,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -117,7 +118,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: _primaryLight,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
@@ -171,7 +172,7 @@ class AppTheme {
         contentTextStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: Colors.white,
+          color: AppColors.white,
         ),
       ),
       chipTheme: ChipThemeData(
@@ -194,13 +195,13 @@ class AppTheme {
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) return _primaryLight;
-          return Colors.transparent;
+          return AppColors.transparent;
         }),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: _primaryLight,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.white,
         elevation: 4,
       ),
       popupMenuTheme: PopupMenuThemeData(
@@ -228,21 +229,21 @@ class AppTheme {
       scaffoldBackgroundColor: _scaffoldDark,
       textSelectionTheme: const TextSelectionThemeData(
         cursorColor: _primaryDark,
-        selectionColor: Color(0x402DD4BF),
+        selectionColor: AppColors.tealLight25,
         selectionHandleColor: _primaryDark,
       ),
       colorScheme: ColorScheme.dark(
         primary: _primaryDark,
-        secondary: const Color(0xFF818CF8),
+        secondary: AppColors.indigoLight,
         surface: _surfaceDark,
-        error: const Color(0xFFFCA5A5),
+        error: AppColors.redLight,
         onPrimary: _scaffoldDark,
         onSecondary: _scaffoldDark,
         onSurface: _textPrimaryDark,
         outline: _borderDark,
       ),
       textTheme: GoogleFonts.interTextTheme(
-        const TextTheme(
+        TextTheme(
           displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w700, color: _textPrimaryDark),
           displayMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: _textPrimaryDark),
           headlineLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: _textPrimaryDark),
@@ -250,13 +251,13 @@ class AppTheme {
           headlineSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: _textPrimaryDark),
           titleLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: _textPrimaryDark),
           titleMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textPrimaryDark),
-          titleSmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: _textSecondaryDark),
+          titleSmall: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: _textSecondaryDark),
           bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: _textPrimaryDark),
-          bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: _textPrimaryDark),
-          bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: _textSecondaryDark),
-          labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textPrimaryDark),
-          labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: _textSecondaryDark),
-          labelSmall: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: _textSecondaryDark),
+          bodyMedium:  TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: _textPrimaryDark),
+          bodySmall: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: _textSecondaryDark),
+          labelLarge:  TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textPrimaryDark),
+          labelMedium: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: _textSecondaryDark),
+          labelSmall: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: _textSecondaryDark),
         ),
       ),
       cardTheme: CardThemeData(
@@ -277,15 +278,15 @@ class AppTheme {
           fontWeight: FontWeight.w700,
           color: _textPrimaryDark,
         ),
-        iconTheme: const IconThemeData(color: _textPrimaryDark),
+        iconTheme: IconThemeData(color: _textPrimaryDark),
       ),
       drawerTheme: const DrawerThemeData(
         backgroundColor: _drawerDark,
-        scrimColor: Colors.black54,
+        scrimColor: AppColors.black54,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF1A2332),
+        fillColor: AppColors.inputDark,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: _borderDark.withValues(alpha: 0.7)),
@@ -310,7 +311,7 @@ class AppTheme {
         hintStyle: GoogleFonts.inter(color: _textSecondaryDark.withValues(alpha: 0.7), fontSize: 14),
         labelStyle: GoogleFonts.inter(color: _textSecondaryDark, fontSize: 14),
         floatingLabelStyle: GoogleFonts.inter(color: _primaryDark, fontSize: 14, fontWeight: FontWeight.w500),
-        errorStyle: GoogleFonts.inter(color: const Color(0xFFFCA5A5), fontSize: 12),
+        errorStyle: GoogleFonts.inter(color: AppColors.redLight, fontSize: 12),
         prefixIconColor: _textSecondaryDark,
         suffixIconColor: _textSecondaryDark,
         iconColor: _textSecondaryDark,
@@ -372,7 +373,7 @@ class AppTheme {
         contentTextStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: Colors.white,
+          color: AppColors.white,
         ),
       ),
       chipTheme: ChipThemeData(
@@ -395,7 +396,7 @@ class AppTheme {
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) return _primaryDark;
-          return Colors.transparent;
+          return AppColors.transparent;
         }),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),

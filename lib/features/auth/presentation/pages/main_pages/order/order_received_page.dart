@@ -69,12 +69,12 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.blue.shade100,
+                color: AppColors.matBlue.shade100,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 Icons.shopping_cart,
-                color: Colors.blue.shade700,
+                color: AppColors.matBlue.shade700,
                 size: 24,
               ),
             ),
@@ -106,7 +106,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: IconButton(
-              icon: Icon(Icons.refresh, color: Colors.blue.shade700),
+              icon: Icon(Icons.refresh, color: AppColors.matBlue.shade700),
               tooltip: 'Refresh',
               onPressed: () {
                 _orderBloc.add(const FetchNewOrdersEvent());
@@ -118,11 +118,11 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
       body: BlocListener<OrderReceivedBloc, OrderReceivedState>(
         listener: (context, state) {
           if (state is OrderStatusUpdated) {
-            showSnackBar(context, state.message, AppColors.blueAccent);
+            showSnackBar(context, state.message, AppColors.matBlueAccent);
           } else if (state is OrderMarkedAsReceived) {
-            showSnackBar(context, state.message, AppColors.green);
+            showSnackBar(context, state.message, AppColors.matGreen);
           } else if (state is OrderReceivedError) {
-            showSnackBar(context, 'Error: ${state.message}', AppColors.red);
+            showSnackBar(context, 'Error: ${state.message}', AppColors.matRed);
           }
         },
         child: Container(
@@ -149,14 +149,14 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.blue.shade900, Colors.blue.shade500],
+                            colors: [AppColors.matBlue.shade900, AppColors.matBlue.shade500],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blue.withValues(alpha: 0.4),
+                              color: AppColors.matBlue.withValues(alpha: 0.4),
                               blurRadius: 16,
                               offset: const Offset(0, 8),
                             ),
@@ -171,13 +171,13 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.15),
+                                    color: AppColors.white.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: const Text(
                                     'Processing Dashboard',
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: AppColors.white,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                       letterSpacing: 0.5,
@@ -191,7 +191,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                     Text(
                                       totalOrders.toString(),
                                       style: const TextStyle(
-                                        color: Colors.white,
+                                        color: AppColors.white,
                                         fontSize: 48,
                                         height: 1,
                                         fontWeight: FontWeight.w800,
@@ -203,7 +203,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                       child: Text(
                                         'Orders to process',
                                         style: TextStyle(
-                                          color: Colors.white70,
+                                          color: AppColors.white70,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -215,7 +215,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                 Text(
                                   'Payments verified & ready for fulfillment',
                                   style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.6),
+                                    color: AppColors.white.withValues(alpha: 0.6),
                                     fontSize: 12,
                                   ),
                                 ),
@@ -224,13 +224,13 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.1),
+                                color: AppColors.white.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
                                 Icons.analytics_outlined,
                                 size: 48,
-                                color: Colors.white,
+                                color: AppColors.white,
                               ),
                             ),
                           ],
@@ -251,28 +251,28 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        ('all', 'All Orders', Icons.list, Colors.blue),
-                        ('pending', 'Pending', Icons.hourglass_bottom, Colors.orange),
-                        ('processing', 'Processing', Icons.build, Colors.blue),
-                        ('shipped', 'Shipped', Icons.local_shipping, Colors.indigo),
-                        ('out for delivery', 'Out for Delivery', Icons.directions_bike, Colors.teal),
-                        ('delivered', 'Delivered', Icons.done_all, Colors.green[800]),
-                        ('received', 'Received', Icons.check_circle, Colors.green),
-                        ('cancelled', 'Cancelled', Icons.cancel, Colors.red),
+                        ('all', 'All Orders', Icons.list, AppColors.matBlue),
+                        ('pending', 'Pending', Icons.hourglass_bottom, AppColors.amber),
+                        ('processing', 'Processing', Icons.build, AppColors.matBlue),
+                        ('shipped', 'Shipped', Icons.local_shipping, AppColors.matIndigo),
+                        ('out for delivery', 'Out for Delivery', Icons.directions_bike, AppColors.matTeal),
+                        ('delivered', 'Delivered', Icons.done_all, AppColors.matGreen[800]),
+                        ('received', 'Received', Icons.check_circle, AppColors.matGreen),
+                        ('cancelled', 'Cancelled', Icons.cancel, AppColors.matRed),
                       ]
                           .asMap()
                           .entries
                           .map((entry) {
                         final index = entry.key;
                         final filters = [
-                          ('all', 'All Orders', Icons.list, Colors.blue),
-                          ('pending', 'Pending', Icons.hourglass_bottom, Colors.orange),
-                          ('processing', 'Processing', Icons.build, Colors.blue),
-                          ('shipped', 'Shipped', Icons.local_shipping, Colors.indigo),
-                          ('out for delivery', 'Out for Delivery', Icons.directions_bike, Colors.teal),
-                          ('delivered', 'Delivered', Icons.done_all, Colors.green[800]),
-                          ('received', 'Received', Icons.check_circle, Colors.green),
-                          ('cancelled', 'Cancelled', Icons.cancel, Colors.red),
+                          ('all', 'All Orders', Icons.list, AppColors.matBlue),
+                          ('pending', 'Pending', Icons.hourglass_bottom, AppColors.amber),
+                          ('processing', 'Processing', Icons.build, AppColors.matBlue),
+                          ('shipped', 'Shipped', Icons.local_shipping, AppColors.matIndigo),
+                          ('out for delivery', 'Out for Delivery', Icons.directions_bike, AppColors.matTeal),
+                          ('delivered', 'Delivered', Icons.done_all, AppColors.matGreen[800]),
+                          ('received', 'Received', Icons.check_circle, AppColors.matGreen),
+                          ('cancelled', 'Cancelled', Icons.cancel, AppColors.matRed),
                         ];
                         final filter = entry.value;
                         final isSelected = context.watch<OrderPageCubit>().state.selectedFilter == filter.$1;
@@ -283,25 +283,25 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
                             child: FilterChip(
-                              avatar: Icon(filter.$3, size: 16, color: isSelected ? filter.$4 : Colors.grey[500]),
+                              avatar: Icon(filter.$3, size: 16, color: isSelected ? filter.$4 : AppColors.grey[500]),
                               label: Text(filter.$2),
                               selected: isSelected,
-                              backgroundColor: Colors.white,
+                              backgroundColor: AppColors.white,
                               selectedColor: filter.$4!.withValues(alpha: 0.08),
                               elevation: isSelected ? 0 : 2,
                               pressElevation: 0,
-                              shadowColor: Colors.black.withValues(alpha: 0.05),
+                              shadowColor: AppColors.black.withValues(alpha: 0.05),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
                                 side: BorderSide(
-                                  color: isSelected ? filter.$4! : Colors.grey[200]!,
+                                  color: isSelected ? filter.$4! : AppColors.grey[200]!,
                                   width: isSelected ? 1.5 : 1,
                                 ),
                               ),
                               showCheckmark: false,
                               labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               labelStyle: TextStyle(
-                                color: isSelected ? filter.$4 : Colors.grey[700],
+                                color: isSelected ? filter.$4 : AppColors.grey[700],
                                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                                 fontSize: 13,
                               ),
@@ -354,9 +354,9 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
+                            Icon(Icons.error_outline, size: 48, color: AppColors.matRed[300]),
                             const SizedBox(height: 16),
-                            Text('Error: ${state.message}', style: const TextStyle(color: Colors.red)),
+                            Text('Error: ${state.message}', style: const TextStyle(color: AppColors.matRed)),
                           ],
                         ),
                       ),
@@ -369,9 +369,9 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.inbox, size: 64, color: Colors.grey[300]),
+                            Icon(Icons.inbox, size: 64, color: AppColors.grey[300]),
                             const SizedBox(height: 16),
-                            Text('No orders found', style: TextStyle(color: Colors.grey[600], fontSize: 16)),
+                            Text('No orders found', style: TextStyle(color: AppColors.grey[600], fontSize: 16)),
                           ],
                         ),
                       ),
@@ -507,16 +507,16 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
   Widget orderCardMobile(OrderReceivedEntity order) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color:AppColors.white,
         borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 14)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade100, width: 1.5),
+        border: Border.all(color: AppColors.grey.shade100, width: 1.5),
       ),
       child: Padding(
         padding: EdgeInsets.all(Responsive.scaleSpacing(context, 16)),
@@ -535,7 +535,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: Responsive.scaleFont(context, 14),
-                          color: Colors.black87,
+                          color: AppColors.black87,
                         ),
                       ),
                       SizedBox(height: Responsive.scaleSpacing(context, 4)),
@@ -543,7 +543,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         order.userName,
                         style: TextStyle(
                           fontSize: Responsive.scaleFont(context, 12),
-                          color: Colors.grey.shade600,
+                          color: AppColors.grey.shade600,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -575,7 +575,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
               ],
             ),
             SizedBox(height: Responsive.scaleSpacing(context, 12)),
-            Container(height: 1, color: Colors.grey.shade100),
+            Container(height: 1, color: AppColors.grey.shade100),
             SizedBox(height: Responsive.scaleSpacing(context, 12)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -588,7 +588,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: Responsive.scaleFont(context, 16),
-                        color: Colors.green.shade700,
+                        color: AppColors.matGreen.shade700,
                       ),
                     ),
                     SizedBox(height: Responsive.scaleSpacing(context, 4)),
@@ -596,16 +596,16 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                       '${order.itemCount} items • ${DateFormat('dd MMM').format(order.createdAt)}',
                       style: TextStyle(
                         fontSize: Responsive.scaleFont(context, 11),
-                        color: Colors.grey.shade500,
+                        color: AppColors.grey.shade500,
                       ),
                     ),
                   ],
                 ),
                 IconButton(
                   onPressed: () => showDetailsModal(context, order),
-                  icon: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.blue),
+                  icon: const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.matBlue),
                   style: IconButton.styleFrom(
-                    backgroundColor: Colors.blue.withValues(alpha: 0.05),
+                    backgroundColor: AppColors.matBlue.withValues(alpha: 0.05),
                     padding: const EdgeInsets.all(10),
                   ),
                 ),
@@ -629,10 +629,10 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         );
                       }
                     },
-                    icon: Icon(Icons.chat_bubble_rounded, size: Responsive.scaleFont(context, 14), color: Colors.blue.shade700),
-                    label: Text('Chat', style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: Colors.blue.shade700, fontWeight: FontWeight.bold)),
+                    icon: Icon(Icons.chat_bubble_rounded, size: Responsive.scaleFont(context, 14), color: AppColors.matBlue.shade700),
+                    label: Text('Chat', style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: AppColors.matBlue.shade700, fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade50,
+                      backgroundColor: AppColors.matBlue.shade50,
                       elevation: 0,
                       padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -644,14 +644,14 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                   child: ElevatedButton(
                     onPressed: () => showStatusDialog(context, order.orderId),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade600,
+                      backgroundColor: AppColors.matBlue.shade600,
                       elevation: 0,
                       padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                     child: Text(
                       'Update',
-                      style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: AppColors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -667,7 +667,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
   Widget orderCardDesktop(OrderReceivedEntity order) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 14)),
         boxShadow: [
           BoxShadow(
@@ -676,14 +676,14 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade100, width: 1.5),
+        border: Border.all(color: AppColors.grey.shade100, width: 1.5),
       ),
       child: Material(
-        color: Colors.transparent,
+        color: AppColors.transparent,
         child: InkWell(
           onTap: () => showDetailsModal(context, order),
           borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 14)),
-          hoverColor: Colors.blue.withValues(alpha: 0.02),
+          hoverColor: AppColors.matBlue.withValues(alpha: 0.02),
           child: SingleChildScrollView(
             padding: EdgeInsets.all(Responsive.scaleSpacing(context, 16)),
             child: Column(
@@ -705,7 +705,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: Responsive.scaleFont(context, 13),
-                                  color: Colors.black87,
+                                  color: AppColors.black87,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -715,7 +715,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                 order.userName,
                                 style: TextStyle(
                                   fontSize: Responsive.scaleFont(context, 11),
-                                  color: Colors.grey.shade600,
+                                  color: AppColors.grey.shade600,
                                   fontWeight: FontWeight.w500,
                                 ),
                                 maxLines: 1,
@@ -749,7 +749,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                       ],
                     ),
                     SizedBox(height: Responsive.scaleSpacing(context, 8)),
-                    Container(height: 1, color: Colors.grey.shade100),
+                    Container(height: 1, color: AppColors.grey.shade100),
                     SizedBox(height: Responsive.scaleSpacing(context, 8)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -763,7 +763,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: Responsive.scaleFont(context, 16),
-                                color: Colors.green.shade700,
+                                color: AppColors.matGreen.shade700,
                               ),
                             ),
                             SizedBox(height: Responsive.scaleSpacing(context, 4)),
@@ -771,7 +771,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                               '${order.itemCount} items',
                               style: TextStyle(
                                 fontSize: Responsive.scaleFont(context, 10),
-                                color: Colors.grey.shade600,
+                                color: AppColors.grey.shade600,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -781,7 +781,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           DateFormat('dd MMM, HH:mm').format(order.createdAt),
                           style: TextStyle(
                             fontSize: Responsive.scaleFont(context, 9),
-                            color: Colors.grey.shade500,
+                            color:AppColors.grey.shade500,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -805,10 +805,10 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                 'productName': 'Order ${order.orderNumber}',
                               });
                             },
-                            icon: Icon(Icons.chat_bubble_rounded, size: Responsive.scaleFont(context, 12), color: Colors.blue.shade700),
-                            label: Text('Message', style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: Colors.blue.shade700, fontWeight: FontWeight.bold)),
+                            icon: Icon(Icons.chat_bubble_rounded, size: Responsive.scaleFont(context, 12), color: AppColors.matBlue.shade700),
+                            label: Text('Message', style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: AppColors.matBlue.shade700, fontWeight: FontWeight.bold)),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue.shade50,
+                              backgroundColor: AppColors.matBlue.shade50,
                               elevation: 0,
                               padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -822,14 +822,14 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           child: ElevatedButton(
                             onPressed: () => showDetailsModal(context, order),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey.shade100,
+                              backgroundColor: AppColors.grey.shade100,
                               elevation: 0,
                               padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             ),
                             child: Text(
                               'Details',
-                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: Colors.grey.shade800, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: AppColors.grey.shade800, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -838,14 +838,14 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           child: ElevatedButton(
                             onPressed: () => showStatusDialog(context, order.orderId),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue.shade600,
+                              backgroundColor: AppColors.matBlue.shade600,
                               elevation: 0,
                               padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             ),
                             child: Text(
                               'Update',
-                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: Colors.white, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: AppColors.white, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -863,14 +863,14 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                               order.orderNumber,
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green.shade600,
+                              backgroundColor: AppColors.matGreen.shade600,
                               elevation: 0,
                               padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             ),
                             child: Text(
                               'Mark Received',
-                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: Colors.white, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: AppColors.white, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -894,7 +894,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
           borderRadius: BorderRadius.circular(20),
         ),
         elevation: 10,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         child: Container(
           constraints: const BoxConstraints(maxWidth: 600, maxHeight: 800),
           child: Column(
@@ -904,7 +904,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: AppColors.matBlue.shade50,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
@@ -921,7 +921,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
-                            color: Colors.black87,
+                            color: AppColors.black87,
                           ),
                         ),
                         SizedBox(height: Responsive.scaleSpacing(context, 4)),
@@ -929,7 +929,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           'Order #${order.orderNumber}',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.blue.shade800,
+                            color: AppColors.matBlue.shade800,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -943,8 +943,8 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             icon: const Icon(Icons.download, size: 20),
                             onPressed: () => saveOrderPdf(context, order),
                             style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.blue.shade700,
+                              backgroundColor: AppColors.white,
+                              foregroundColor: AppColors.matBlue.shade700,
                             ),
                           ),
                         ),
@@ -955,8 +955,8 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             icon: const Icon(Icons.print, size: 20),
                             onPressed: () => printOrderDetail(context, order),
                             style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.blue.shade700,
+                              backgroundColor: AppColors.white,
+                              foregroundColor: AppColors.matBlue.shade700,
                             ),
                           ),
                         ),
@@ -967,8 +967,8 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             icon: const Icon(Icons.close, size: 20),
                             onPressed: () => Navigator.pop(context),
                             style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.grey.shade600,
+                              backgroundColor: AppColors.white,
+                              foregroundColor: AppColors.grey.shade600,
                             ),
                           ),
                         ),
@@ -1018,7 +1018,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.location_on, size: 18, color: Colors.blue.shade600),
+                              Icon(Icons.location_on, size: 18, color: AppColors.matBlue.shade600),
                               SizedBox(width: Responsive.scaleSpacing(context, 8)),
                               Expanded(
                                 child: Text(
@@ -1034,21 +1034,21 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                               child: Container(
                                 padding: EdgeInsets.all(Responsive.scaleSpacing(context, 12)),
                                 decoration: BoxDecoration(
-                                  color: Colors.amber.shade50,
+                                  color: AppColors.matAmber.shade50,
                                   borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.amber.shade200),
+                                  border: Border.all(color: AppColors.matAmber.shade200),
                                 ),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Icon(Icons.note, size: 16, color: Colors.amber.shade700),
+                                    Icon(Icons.note, size: 16, color: AppColors.matAmber.shade700),
                                     SizedBox(width: Responsive.scaleSpacing(context, 8)),
                                     Expanded(
                                       child: Text(
                                         'Notes: ${order.deliveryNotes}',
                                         style: TextStyle(
                                           fontSize: 12,
-                                          color: Colors.amber.shade900,
+                                          color: AppColors.matAmber.shade900,
                                           fontStyle: FontStyle.italic,
                                         ),
                                       ),
@@ -1069,7 +1069,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey.shade200),
+                                border: Border.all(color: AppColors.grey.shade200),
                               ),
                               child: Column(
                                 children: order.items.asMap().entries.map((entry) {
@@ -1097,11 +1097,11 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                                   if (item.unit != null)
                                                     Text(
                                                       item.unit!,
-                                                      style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                                                      style: TextStyle(fontSize: 11, color: AppColors.grey.shade500),
                                                     ),
                                                   Text(
                                                     'Qty: ${item.quantity.toInt()} × ₹${item.mrp.toStringAsFixed(2)}',
-                                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                                    style: TextStyle(fontSize: 12, color: AppColors.grey.shade600),
                                                   ),
                                                 ],
                                               ),
@@ -1121,7 +1121,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                           ],
                                         ),
                                       ),
-                                      if (!isLast) Divider(color: Colors.grey.shade200, height: 1),
+                                      if (!isLast) Divider(color: AppColors.grey.shade200, height: 1),
                                     ],
                                   );
                                 }).toList(),
@@ -1135,7 +1135,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                       Container(
                         padding: EdgeInsets.all(Responsive.scaleSpacing(context, 20)),
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
+                          color: AppColors.matBlue.shade50,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -1143,7 +1143,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Subtotal', style: TextStyle(fontSize: 13, color: Colors.grey.shade700)),
+                                Text('Subtotal', style: TextStyle(fontSize: 13, color: AppColors.grey.shade700)),
                                 Text('₹${order.subtotal.toStringAsFixed(2)}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                               ],
                             ),
@@ -1151,7 +1151,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Delivery Fee', style: TextStyle(fontSize: 13, color: Colors.grey.shade700)),
+                                Text('Delivery Fee', style: TextStyle(fontSize: 13, color: AppColors.grey.shade700)),
                                 Text('₹${order.deliveryFee.toStringAsFixed(2)}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                               ],
                             ),
@@ -1160,14 +1160,14 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Discount', style: TextStyle(fontSize: 13, color: Colors.green.shade700)),
-                                  Text('-₹${order.discount.toStringAsFixed(2)}', style: TextStyle(fontSize: 13, color: Colors.green.shade700, fontWeight: FontWeight.w600)),
+                                  Text('Discount', style: TextStyle(fontSize: 13, color: AppColors.matGreen.shade700)),
+                                  Text('-₹${order.discount.toStringAsFixed(2)}', style: TextStyle(fontSize: 13, color: AppColors.matGreen.shade700, fontWeight: FontWeight.w600)),
                                 ],
                               ),
                             ],
                             Padding(
                               padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 16)),
-                              child: Divider(color: Colors.blue.shade200, height: 1),
+                              child: Divider(color: AppColors.matBlue.shade200, height: 1),
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1184,7 +1184,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w900,
-                                    color: Colors.green.shade700,
+                                    color: AppColors.matGreen.shade700,
                                   ),
                                 ),
                               ],
@@ -1201,8 +1201,8 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(top: BorderSide(color: Colors.grey.shade200)),
+                  color: AppColors.white,
+                  border: Border(top: BorderSide(color: AppColors.grey.shade200)),
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20),
@@ -1217,9 +1217,9 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          side: BorderSide(color: Colors.grey.shade300),
+                          side: BorderSide(color: AppColors.grey.shade300),
                         ),
-                        child: Text('Close', style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w600)),
+                        child: Text('Close', style: TextStyle(color: AppColors.grey.shade700, fontWeight: FontWeight.w600)),
                       ),
                     ),
                     SizedBox(width: Responsive.scaleSpacing(context, 16)),
@@ -1231,12 +1231,12 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           showStatusDialog(context, order.orderId);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade600,
+                          backgroundColor: AppColors.matBlue.shade600,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           elevation: 0,
                         ),
-                        child: const Text('Update Status', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                        child: const Text('Update Status', style: TextStyle(color: AppColors.white, fontWeight: FontWeight.w600)),
                       ),
                     ),
                   if (order.orderStatus != 'received') ...[
@@ -1253,7 +1253,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          backgroundColor: AppColors.matGreen,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                            shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -1280,13 +1280,13 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.blue.withValues(alpha: 0.05),
+          color: AppColors.matBlue.withValues(alpha: 0.05),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
             topRight: Radius.circular(8),
           ),
           border: Border(
-            left: BorderSide(color: Colors.blue, width: 4),
+            left: BorderSide(color: AppColors.matBlue, width: 4),
           ),
         ),
         child: Text(
@@ -1294,22 +1294,22 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 13,
-            color: Colors.blue,
+            color: AppColors.matBlue,
           ),
         ),
       ),
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(8),
             bottomRight: Radius.circular(8),
           ),
           border: Border(
-            bottom: BorderSide(color: Colors.grey[200]!),
-            left: BorderSide(color: Colors.grey[200]!),
-            right: BorderSide(color: Colors.grey[200]!),
+            bottom: BorderSide(color: AppColors.grey[200]!),
+            left: BorderSide(color: AppColors.grey[200]!),
+            right: BorderSide(color: AppColors.grey[200]!),
           ),
         ),
         child: Column(
@@ -1336,7 +1336,7 @@ Widget detailItem(String label, String value) {
         style: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 12,
-          color: Colors.grey[700],
+          color: AppColors.grey[700],
         ),
       ),
       16.w,
@@ -1346,7 +1346,7 @@ Widget detailItem(String label, String value) {
           textAlign: TextAlign.end,
           style: TextStyle(
             fontSize: 12,
-            color: Colors.grey[900],
+            color: AppColors.grey[900],
             fontWeight: FontWeight.w500,
           ),
           overflow: TextOverflow.visible,
@@ -1389,7 +1389,7 @@ Widget detailItem(String label, String value) {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
+                        border: Border.all(color: AppColors.grey[300]!),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: DropdownButton<String>(
@@ -1439,7 +1439,7 @@ Widget detailItem(String label, String value) {
                               Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
+                              backgroundColor: AppColors.matBlue,
                             ),
                             child: const Text('Update'),
                           ),
@@ -1476,7 +1476,7 @@ Widget detailItem(String label, String value) {
               Icon(
                 Icons.check_circle_outline,
                 size: 48,
-                color: Colors.green[400],
+                color: AppColors.matGreen[400],
               ),
               16.h,
               const Text(
@@ -1492,7 +1492,7 @@ Widget detailItem(String label, String value) {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,
-                  color: Colors.grey[700],
+                  color: AppColors.grey[700],
                 ),
               ),
               24.h,
@@ -1514,7 +1514,7 @@ Widget detailItem(String label, String value) {
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: AppColors.matGreen,
                       ),
                       child: const Text('Confirm'),
                     ),
@@ -1544,21 +1544,21 @@ Widget detailItem(String label, String value) {
   Color getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'pending':
-        return Colors.orange;
+        return AppColors.amber;
       case 'processing':
-        return Colors.blue;
+        return AppColors.matBlue;
       case 'shipped':
-        return Colors.indigo;
+        return AppColors.indigo;
       case 'out for delivery':
-        return Colors.teal;
+        return AppColors.teal;
       case 'delivered':
-        return Colors.green[800]!;
+        return AppColors.matGreen[800]!;
       case 'received':
-        return Colors.green;
+        return AppColors.matGreen;
       case 'cancelled':
-        return Colors.red;
+        return AppColors.matRed;
       default:
-        return Colors.grey;
+        return AppColors.grey;
     }
   }
 }

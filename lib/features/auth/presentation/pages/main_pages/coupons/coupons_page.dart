@@ -1,5 +1,6 @@
 ﻿
 
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -68,7 +69,7 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.matGreen,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -77,7 +78,7 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.matRed,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -112,7 +113,7 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                           Icon(
                             Icons.local_offer_outlined,
                             size: 64,
-                            color: Colors.grey.shade300,
+                            color: AppColors.grey.shade300,
                           ),
                           16.h,
                           Text(
@@ -129,8 +130,8 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                             icon: const Icon(Icons.add_circle_outline),
                             label: const Text('Add Offer'),
                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white,
+                                backgroundColor: AppColors.matGreen,
+                                foregroundColor: AppColors.white,
                                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               ),
@@ -192,8 +193,8 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                                   style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  foregroundColor: Colors.white,
+                                  backgroundColor: AppColors.matGreen,
+                                  foregroundColor: AppColors.white,
                                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                   elevation: 2,
@@ -224,7 +225,7 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               suffixIcon: cubitState.searchQuery.isNotEmpty
                                 ? IconButton(
-                                    icon: const Icon(Icons.clear, color: Colors.grey),
+                                    icon: const Icon(Icons.clear, color: AppColors.grey),
                                     onPressed: () {
                                       _searchController.clear();
                                       context.read<CouponsPageCubit>().clearSearch();

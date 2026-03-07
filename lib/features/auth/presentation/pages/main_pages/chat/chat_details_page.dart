@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/message_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_event.dart';
@@ -74,7 +75,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
             ),
             Text(
               'User: ${widget.userId}',
-              style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey.shade600),
+              style: GoogleFonts.poppins(fontSize: 12, color: AppColors.grey.shade600),
             ),
           ],
         ),
@@ -90,12 +91,12 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                 if (state is ChatLoading && state is! MessagesLoaded) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is ChatError) {
-                  return Center(child: Text("Error: ${state.message}", style: const TextStyle(color: Colors.red)));
+                  return Center(child: Text("Error: ${state.message}", style: const TextStyle(color: AppColors.matRed)));
                 } else if (state is MessagesLoaded) {
                   final messages = state.messages;
 
                   if (messages.isEmpty) {
-                    return Center(child: Text("Start a conversation", style: GoogleFonts.poppins(color: Colors.grey)));
+                    return Center(child: Text("Start a conversation", style: GoogleFonts.poppins(color: AppColors.grey)));
                   }
 
                   return ListView.builder(
@@ -139,7 +140,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                               Text(
                                 isMe ? 'Admin' : 'User',
                                 style: GoogleFonts.poppins(
-                                  color: isMe ? Colors.white70 : Colors.grey.shade500,
+                                  color: isMe ? AppColors.white70 : AppColors.grey.shade500,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -156,7 +157,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                               Text(
                                 DateFormat('dd MMM, h:mm a').format(message.timestamp),
                                 style: TextStyle(
-                                  color: isMe ? Colors.white70 : Colors.grey.shade500,
+                                  color: isMe ? AppColors.white70 : AppColors.grey.shade500,
                                   fontSize: 10,
                                 ),
                               ),
@@ -183,7 +184,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                     controller: _messageController,
                     decoration: InputDecoration(
                       hintText: 'Type a message...',
-                      hintStyle: GoogleFonts.poppins(color: Colors.grey.shade400),
+                      hintStyle: GoogleFonts.poppins(color: AppColors.grey.shade400),
                       filled: true,
                       fillColor: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).scaffoldBackgroundColor,
                       border: OutlineInputBorder(

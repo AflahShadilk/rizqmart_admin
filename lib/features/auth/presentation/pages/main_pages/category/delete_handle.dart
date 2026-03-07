@@ -39,7 +39,7 @@ void handleDeleteCategory(BuildContext context, CategoryModel category) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Cannot delete! This category is used in products.'),
-          backgroundColor: AppColors.red,
+          backgroundColor: AppColors.matRed,
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 3),
         ),
@@ -92,13 +92,13 @@ void showDeleteConfirmDialog(BuildContext context, CategoryModel category) {
               'Cancel',
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
+                color: AppColors.grey.shade700,
               ),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
+              backgroundColor: AppColors.red,
               foregroundColor: AppColors.white,
               padding: const EdgeInsets.symmetric(
                 horizontal: 20,
@@ -115,7 +115,7 @@ void showDeleteConfirmDialog(BuildContext context, CategoryModel category) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Category deleted successfully'),
-                  backgroundColor: AppColors.green,
+                  backgroundColor: AppColors.matGreen,
                   behavior: SnackBarBehavior.floating,
                   duration: Duration(seconds: 2),
                 ),

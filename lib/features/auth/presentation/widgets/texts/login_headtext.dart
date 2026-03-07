@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 
 Text headingLogin(double fontSize, String textt) {
   return Text(
@@ -7,7 +8,7 @@ Text headingLogin(double fontSize, String textt) {
     style: GoogleFonts.poppins(
       fontSize: fontSize,
       fontWeight: FontWeight.w600,
-      color: Colors.black,
+      color: AppColors.black,
     ),
     textAlign: TextAlign.center,
   );

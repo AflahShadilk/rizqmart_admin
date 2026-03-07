@@ -2,6 +2,7 @@
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/buttons/bloc/button_animation_cubit.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 
 /// Standard gradient Sign Up button
 ElevatedButton signupButton(void Function()? onPress) {
@@ -13,12 +14,12 @@ ElevatedButton signupButton(void Function()? onPress) {
         borderRadius: BorderRadius.circular(12),
       ),
       elevation: 0,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
     ),
     child: Ink(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
+          colors: [AppColors.indigo, AppColors.indigoDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -32,7 +33,7 @@ ElevatedButton signupButton(void Function()? onPress) {
           style: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: AppColors.white,
           ),
         ),
       ),
@@ -60,9 +61,9 @@ class ReusableTextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final Color bgColor = backgroundColor ?? Colors.transparent;
+    final Color bgColor = backgroundColor ?? AppColors.transparent;
     final Color overlay =
-        (bgColor != Colors.transparent ? bgColor : theme.colorScheme.primary)
+        (bgColor != AppColors.transparent ? bgColor : theme.colorScheme.primary)
             .withValues(alpha: 0.1);
 
     return BlocProvider(
@@ -110,8 +111,8 @@ ElevatedButton elevatedButtonForSave(
     {required String text, required void Function()? onPressed}) {
   return ElevatedButton(
     style: ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFF0D9488),
-      foregroundColor: Colors.white,
+      backgroundColor: AppColors.teal,
+      foregroundColor: AppColors.white,
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
       elevation: 0,
       shape: RoundedRectangleBorder(

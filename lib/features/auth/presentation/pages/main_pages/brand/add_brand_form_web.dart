@@ -151,8 +151,8 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                                         width: 100,
                                         height: 100,
                                         decoration: BoxDecoration(
-                                          color: Colors.grey.shade100,
-                                          border: Border.all(color: Colors.grey.shade300),
+                                          color: AppColors.grey.shade100,
+                                          border: Border.all(color: AppColors.grey.shade300),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: const Center(
@@ -171,6 +171,7 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                                             height: 100,
                                             text: 'Upload Logo',
                                             iconSize: 32,
+                                            type: PlaceholderType.brand,
                                           ),
                               ),
                             ],
@@ -186,9 +187,9 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
+                          color: AppColors.grey.shade50,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey.shade200),
+                          border: Border.all(color: AppColors.grey.shade200),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -210,8 +211,8 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 color: cubitState.status
-                                    ? Colors.green
-                                    : Colors.red,
+                                    ? AppColors.matGreen
+                                    : AppColors.matRed,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -234,7 +235,7 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                             label: Text(
                               isEditMode ? 'Update Brand' : "Save Brand",
                               style: GoogleFonts.poppins(
-                                color: Colors.black,
+                                color: AppColors.black,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),

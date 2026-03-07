@@ -42,7 +42,7 @@ Text bodyText(String text, {Color? color}) {
   return Text(
     text,
     style: GoogleFonts.inter(
-      color: color ?? Colors.grey.shade700,
+      color: color ?? AppColors.grey.shade700,
       fontSize: 14,
       fontWeight: FontWeight.w400,
     ),
@@ -53,7 +53,7 @@ Text errorText(String text) {
   return Text(
     text,
     style: GoogleFonts.inter(
-      color: Colors.red.shade600,
+      color: AppColors.matRed.shade600,
       fontSize: 13,
       fontWeight: FontWeight.w500,
     ),
@@ -90,7 +90,7 @@ class PrimaryButton extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation(
-                    Colors.grey.shade700,
+                    AppColors.grey.shade700,
                   ),
                 ),
               )
@@ -98,8 +98,8 @@ class PrimaryButton extends StatelessWidget {
         label: Text(label),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.blueAccent,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: Colors.grey.shade300,
+          foregroundColor: AppColors.white,
+          disabledBackgroundColor: AppColors.grey.shade300,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -171,8 +171,8 @@ class DangerButton extends StatelessWidget {
         icon: Icon(icon ?? Icons.delete, size: 18),
         label: Text(label),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red.shade600,
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.matRed.shade600,
+          foregroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -200,15 +200,15 @@ class FormCard extends StatelessWidget {
       width: width,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.grey.shade200,
+          color: AppColors.grey.shade200,
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

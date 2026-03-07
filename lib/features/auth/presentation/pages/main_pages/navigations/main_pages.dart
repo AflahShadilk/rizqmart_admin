@@ -2,6 +2,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/navigation/drawyer_selected_index_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/navigations/widgets/appbar.dart';
 
@@ -55,7 +56,7 @@ class _MainPagesState extends State<MainPages> {
                     gradient: LinearGradient(
                       colors: [
                         colorScheme.primary.withValues(alpha: 0.15),
-                        Colors.transparent,
+                        AppColors.transparent,
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -82,7 +83,7 @@ class _MainPagesState extends State<MainPages> {
                         style: GoogleFonts.inter(
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          color: AppColors.white,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -90,7 +91,7 @@ class _MainPagesState extends State<MainPages> {
                         'Admin Panel',
                         style: GoogleFonts.inter(
                           fontSize: 13,
-                          color: Colors.white60,
+                          color: AppColors.white60,
                         ),
                       ),
                     ],
@@ -111,7 +112,7 @@ class _MainPagesState extends State<MainPages> {
                             item['icon'],
                             color: isSelected
                                 ? colorScheme.primary
-                                : Colors.white60,
+                                : AppColors.white60,
                             size: 22,
                           ),
                           title: Text(
@@ -119,7 +120,7 @@ class _MainPagesState extends State<MainPages> {
                             style: GoogleFonts.inter(
                               color: isSelected
                                   ? colorScheme.primary
-                                  : Colors.white70,
+                                  : AppColors.white70,
                               fontWeight: isSelected
                                   ? FontWeight.w600
                                   : FontWeight.w400,
