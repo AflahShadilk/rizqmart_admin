@@ -33,10 +33,14 @@ class _UnitDialogState extends State<UnitDialog> {
   late TextEditingController _unitTypeController;
   late TextEditingController _weightController;
   final _formKey = GlobalKey<FormState>();
+  late UnitDialogCategoryCubit _categoryCubit;
+  late UnitDialogLoadingCubit _loadingCubit;
 
   @override
   void initState() {
     super.initState();
+    _categoryCubit = UnitDialogCategoryCubit(widget.existingUnit?.category);
+    _loadingCubit = UnitDialogLoadingCubit();
     _unitNameController = TextEditingController(
       text: widget.existingUnit?.unitName ?? '',
     );
@@ -53,12 +57,14 @@ class _UnitDialogState extends State<UnitDialog> {
     _unitNameController.dispose();
     _unitTypeController.dispose();
     _weightController.dispose();
+    _categoryCubit.close();
+    _loadingCubit.close();
     super.dispose();
   }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      final selectedCategory = context.read<UnitDialogCategoryCubit>().state;
+      final selectedCategory = _categoryCubit.state;
       
       if (selectedCategory == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -69,7 +75,7 @@ class _UnitDialogState extends State<UnitDialog> {
 
       _formKey.currentState!.save();
 
-      context.read<UnitDialogLoadingCubit>().setLoading(true);
+      _loadingCubit.setLoading(true);
 
       final unitBloc = context.read<UnitBloc>();
       final unitsEntity = UnitsEntity(
@@ -100,11 +106,11 @@ class _UnitDialogState extends State<UnitDialog> {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => UnitDialogCategoryCubit(widget.existingUnit?.category),
+        BlocProvider.value(
+          value: _categoryCubit,
         ),
-        BlocProvider(
-          create: (context) => UnitDialogLoadingCubit(),
+        BlocProvider.value(
+          value: _loadingCubit,
         ),
       ],
       child: Dialog(
