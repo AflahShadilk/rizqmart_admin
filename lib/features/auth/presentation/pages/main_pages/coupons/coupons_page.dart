@@ -249,13 +249,21 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                                         );
                                       }
                                     )
-                                  : ListView.builder(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                      itemCount: displayCoupons.length,
-                                      itemBuilder: (context, index) {
-                                        return OfferCard(offer: displayCoupons[index]);
-                                      },
-                                    ),
+                                    : ListView.builder(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                        itemCount: displayCoupons.length,
+                                        itemBuilder: (context, index) {
+                                          return Center(
+                                            child: ConstrainedBox(
+                                              constraints: const BoxConstraints(maxWidth: 900),
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(bottom: 12),
+                                                child: OfferCard(offer: displayCoupons[index]),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
                         ),
                       ],
                     );

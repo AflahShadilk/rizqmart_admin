@@ -1,4 +1,6 @@
-﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿// ignore_for_file: deprecated_member_use
+
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +8,6 @@ import 'package:rizqmartadmin/features/auth/domain/entities/main/user_entity.dar
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_event.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
-import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
 
 class UserCard extends StatelessWidget {
   final UserEntity user;
@@ -17,10 +18,22 @@ class UserCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      child: AnimatedHoverCard(
+      child: Container(
         padding: const EdgeInsets.all(16),
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(16),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.08),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withOpacity(0.06),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -33,7 +46,8 @@ class UserCard extends StatelessWidget {
             _buildActions(context),
           ],
         ),
-    ));
+      ),
+    );
   }
 
   Widget _buildHeader(BuildContext context) {
@@ -47,7 +61,7 @@ class UserCard extends StatelessWidget {
           child: user.profileImageUrl == null
               ? Text(
                   _getInitials(),
-                  style: const TextStyle(fontSize: 24),
+                  style: const TextStyle(fontSize: 24, fontFamily: 'Inter'),
                 )
               : null,
         ),
@@ -62,6 +76,7 @@ class UserCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                   color: Theme.of(context).textTheme.bodyLarge?.color,
+                  fontFamily: 'Inter',
                 ),
               ),
               4.h,
@@ -70,6 +85,7 @@ class UserCard extends StatelessWidget {
                 style: TextStyle(
                   color: Theme.of(context).textTheme.bodySmall?.color,
                   fontSize: 14,
+                  fontFamily: 'Inter',
                 ),
               ),
             ],
@@ -84,15 +100,18 @@ class UserCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: user.isActive ? AppColors.green : AppColors.red,
-        borderRadius: BorderRadius.circular(12),
+        color: user.isActive
+            ? AppColors.emerald.withValues(alpha: 0.1)
+            : AppColors.chartRed.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         user.isActive ? 'Active' : 'Inactive',
-        style: const TextStyle(
-          color: AppColors.white,
+        style: TextStyle(
+          color: user.isActive ? AppColors.emerald : AppColors.chartRed,
           fontSize: 12,
           fontWeight: FontWeight.bold,
+          fontFamily: 'Inter',
         ),
       ),
     );
@@ -133,6 +152,7 @@ class UserCard extends StatelessWidget {
             style: TextStyle(
               color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 14,
+              fontFamily: 'Inter',
             ),
           ),
         ),
@@ -144,18 +164,40 @@ class UserCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        IconButton(
-          icon: Icon(
-            user.isActive ? Icons.block : Icons.check_circle,
-            color: user.isActive ? AppColors.red : AppColors.green,
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: (user.isActive ? AppColors.chartRed : AppColors.emerald).withValues(alpha: 0.1),
+            shape: BoxShape.circle,
           ),
-          onPressed: () => _showStatusDialog(context),
-          tooltip: user.isActive ? 'Deactivate' : 'Activate',
+          child: IconButton(
+            constraints: const BoxConstraints(),
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              user.isActive ? Icons.block : Icons.check_circle,
+              color: user.isActive ? AppColors.chartRed : AppColors.emerald,
+              size: 16,
+            ),
+            onPressed: () => _showStatusDialog(context),
+            tooltip: user.isActive ? 'Deactivate' : 'Activate',
+          ),
         ),
-        IconButton(
-          icon: const Icon(Icons.delete, color: AppColors.red),
-          onPressed: () => _showDeleteDialog(context),
-          tooltip: 'Delete',
+        8.w,
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: AppColors.chartRed.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            constraints: const BoxConstraints(),
+            padding: EdgeInsets.zero,
+            icon: const Icon(Icons.delete_outline_rounded, color: AppColors.chartRed, size: 16),
+            onPressed: () => _showDeleteDialog(context),
+            tooltip: 'Delete User',
+          ),
         ),
       ],
     );

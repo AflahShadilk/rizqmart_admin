@@ -14,6 +14,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/p
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/payment/payment_page_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/payment/payment_page_cubit_state.dart';
 import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
+import 'package:rizqmartadmin/widgets/grid_list_toggle.dart';
 
 class PaymentPage extends StatelessWidget {
   const PaymentPage({super.key});
@@ -37,6 +38,7 @@ class _PaymentPageView extends StatefulWidget {
 class _PaymentPageViewState extends State<_PaymentPageView> {
   late PaymentBloc _paymentBloc;
   int itemsPerPage = 12;
+  bool isGridView = true;
 
   @override
   void initState() {
@@ -64,22 +66,37 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
         },
         child: Container(
           color: theme.scaffoldBackgroundColor,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                buildPaymentHeaderSection(),
-                24.h,
-                buildPaymentFilterSection(),
-                24.h,
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isMobile ? 16 : 24,
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    buildPaymentHeaderSection(),
+                    24.h,
+                  ],
+                ),
+              ),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _FilterHeaderDelegate(
+                  child: buildPaymentFilterSection(),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: 24,
+                    left: isMobile ? 16 : 24,
+                    right: isMobile ? 16 : 24,
                   ),
                   child: buildPaymentContent(isMobile),
                 ),
-                32.h,
-              ],
-            ),
+              ),
+              SliverToBoxAdapter(
+                child: 32.h,
+              ),
+            ],
           ),
         ),
       ),
@@ -130,6 +147,16 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
         ],
       ),
       actions: [
+        Center(
+          child: GridListToggle(
+            isGridView: isGridView,
+            onToggle: (val) {
+              setState(() {
+                isGridView = val;
+              });
+            },
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
@@ -337,6 +364,7 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
   }
 
   Widget buildPaymentFilterSection() {
+    final theme = Theme.of(context);
     final filters = [
       ('all', 'All', Icons.list, AppColors.matBlue),
       ('completed', 'Completed', Icons.check_circle, AppColors.matGreen),
@@ -346,55 +374,72 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
     ];
 
     return Container(
-      color: Theme.of(context).cardTheme.color,
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        boxShadow: [
+          BoxShadow(
+            color: theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
+            blurRadius: 8,
+            spreadRadius: 4,
+          )
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
         child: Row(
-          children: filters
-              .asMap()
-              .entries
-              .map((entry) {
-                final index = entry.key;
-                final filter = entry.value;
-                return Padding(
-                  padding: EdgeInsets.only(
-                    right: index < filters.length - 1 ? 8 : 0,
-                  ),
-                  child: FilterChip(
-                    avatar: Icon(filter.$3, size: 16),
-                    label: Text(filter.$2),
-                    selected: context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1,
-                    backgroundColor: AppColors.grey[100],
-                    selectedColor: filter.$4.withValues(alpha: 0.2),
-                    side: BorderSide(
-                      color: context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1
-                          ? filter.$4
-                          : AppColors.transparent,
-                      width: 1.5,
+          children: filters.map((filter) {
+            final isSelected = context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1;
+            return Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: InkWell(
+                onTap: () {
+                  context.read<PaymentPageCubit>().updateFilter(filter.$1);
+                  if (filter.$1 == 'all') {
+                    _paymentBloc.add(const FetchAllPaymentsEvent());
+                  } else {
+                    _paymentBloc.add(FetchPaymentsByStatusEvent(status: filter.$1));
+                  }
+                },
+                borderRadius: BorderRadius.circular(30),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isSelected ? filter.$4.withValues(alpha: 0.1) : theme.cardTheme.color,
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: isSelected ? filter.$4 : AppColors.grey.shade200,
+                      width: isSelected ? 1.5 : 1.0,
                     ),
-                    labelStyle: TextStyle(
-                      color: context.watch<PaymentPageCubit>().state.selectedFilter == filter.$1
-                          ? filter.$4
-                          : AppColors.grey[600],
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
-                    ),
-                    onSelected: (selected) {
-                      context.read<PaymentPageCubit>().updateFilter(filter.$1);
-
-                      if (filter.$1 == 'all') {
-                        _paymentBloc.add(const FetchAllPaymentsEvent());
-                      } else {
-                        _paymentBloc.add(
-                          FetchPaymentsByStatusEvent(status: filter.$1),
-                        );
-                      }
-                    },
+                    boxShadow: isSelected 
+                      ? [] 
+                      : [BoxShadow(color: AppColors.black.withValues(alpha: 0.02), blurRadius: 4, offset: const Offset(0, 2))],
                   ),
-                );
-              })
-              .toList(),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        filter.$3, 
+                        size: 18, 
+                        color: isSelected ? filter.$4 : AppColors.grey.shade500,
+                      ),
+                      8.w,
+                      Text(
+                        filter.$2,
+                        style: TextStyle(
+                          color: isSelected ? filter.$4 : AppColors.grey.shade700,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
         ),
       ),
     );
@@ -445,23 +490,26 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
         List<PaymentEntity> paginatedPayments =
             payments.sublist(startIndex, endIndex);
 
-        if (isMobile) {
+        if (isGridView) {
           return Column(
             children: [
-              ListView.builder(
+              GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 380, // Responsive width threshold
+                  mainAxisExtent: 320, // Fixed height specifically for the modern tall card
+                  crossAxisSpacing: isMobile ? 12 : 16,
+                  mainAxisSpacing: isMobile ? 12 : 16,
+                ),
                 itemCount: paginatedPayments.length,
                 itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: buildPaymentCardMobile(paginatedPayments[index]),
-                  );
+                  return buildPaymentGridCard(paginatedPayments[index]);
                 },
               ),
               if (totalPages > 1)
                 Padding(
-                  padding: const EdgeInsets.only(top: 24),
+                  padding: const EdgeInsets.only(top: 32),
                   child: buildPaymentPaginationWidget(totalPages),
                 ),
             ],
@@ -475,8 +523,17 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                 itemCount: paginatedPayments.length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: buildPaymentCardDesktop(paginatedPayments[index]),
+                    padding: EdgeInsets.only(
+                      bottom: isMobile ? 12 : 16,
+                    ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 900),
+                        child: isMobile
+                            ? buildPaymentCardMobile(paginatedPayments[index])
+                            : buildPaymentCardDesktop(paginatedPayments[index]),
+                      ),
+                    ),
                   );
                 },
               ),
@@ -626,98 +683,563 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
     );
   }
 
-  Widget buildPaymentCardMobile(PaymentEntity payment) {
+  Widget buildPaymentGridCard(PaymentEntity payment) {
+    final theme = Theme.of(context);
+    final statusColor = buildPaymentStatusColor(payment.status);
+
     return AnimatedHoverCard(
-      color: Theme.of(context).cardTheme.color,
-      borderRadius: BorderRadius.circular(16),
-      padding: const EdgeInsets.all(16),
-      child: Column(
+      padding: EdgeInsets.zero,
+      child: Container(
+        height: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              theme.cardTheme.color ?? theme.scaffoldBackgroundColor,
+              statusColor.withValues(alpha: 0.02),
+            ],
+          ),
+        ),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
+            // Top Section (Status & Date)
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                 children: [
+                   Flexible(
+                     flex: 1,
+                     child: Container(
+                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                       decoration: BoxDecoration(
+                         color: statusColor.withValues(alpha: 0.1),
+                         borderRadius: BorderRadius.circular(8),
+                         border: Border.all(color: statusColor.withValues(alpha: 0.2)),
+                       ),
+                       child: Row(
+                         mainAxisSize: MainAxisSize.min,
+                         children: [
+                           Container(
+                             width: 6,
+                             height: 6,
+                             decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
+                           ),
+                           6.w,
+                           Flexible(
+                             child: Text(
+                               payment.status.toUpperCase(),
+                               style: TextStyle(
+                                 fontSize: 10,
+                                 color: statusColor,
+                                 fontWeight: FontWeight.w800,
+                                 letterSpacing: 0.5,
+                                 fontFamily: 'Inter',
+                               ),
+                               overflow: TextOverflow.ellipsis,
+                             ),
+                           ),
+                         ],
+                       ),
+                     ),
+                   ),
+                   8.w,
+                   Expanded(
+                     flex: 1,
+                     child: Text(
+                       DateFormat('dd MMM yyyy').format(payment.createdAt),
+                       style: TextStyle(
+                         fontSize: 12,
+                         color: AppColors.grey.shade500,
+                         fontWeight: FontWeight.w500,
+                         fontFamily: 'Inter',
+                       ),
+                       textAlign: TextAlign.right,
+                       overflow: TextOverflow.ellipsis,
+                     ),
+                   ),
+                 ],
+               ),
+            ),
+            
+            // Payment TXN
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Txn #${payment.paymentId.substring(0, 8).toUpperCase()}',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: theme.textTheme.bodyLarge?.color,
+                  height: 1.2,
+                  fontFamily: 'Inter',
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            
+            16.h,
+            
+            // Customer Info
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.matBlue.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(Icons.person, size: 20, color: AppColors.matBlue.shade700),
+                  ),
+                  12.w,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Customer',
+                          style: TextStyle(fontSize: 11, color: AppColors.grey.shade500, fontFamily: 'Inter'),
+                        ),
+                        2.h,
+                        Text(
+                          payment.userName,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: theme.textTheme.bodyMedium?.color,
+                            fontFamily: 'Inter',
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            const Spacer(),
+            
+            // Stats Row (Method & Total)
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+              decoration: BoxDecoration(
+                border: Border.symmetric(
+                  horizontal: BorderSide(color: theme.dividerColor.withValues(alpha: 0.05)),
+                ),
+                color: theme.scaffoldBackgroundColor.withValues(alpha: 0.3),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Txn #${payment.paymentId.substring(0, 8).toUpperCase()}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
+                        'Method',
+                        style: TextStyle(fontSize: 12, color: AppColors.grey.shade500, fontFamily: 'Inter'),
                       ),
                       4.h,
                       Text(
-                        payment.userName,
+                        payment.method,
                         style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.grey[600],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: theme.textTheme.bodyLarge?.color,
+                          fontFamily: 'Inter',
                         ),
                       ),
                     ],
                   ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Amount',
+                        style: TextStyle(fontSize: 12, color: AppColors.grey.shade500, fontFamily: 'Inter'),
+                      ),
+                      4.h,
+                      Text(
+                        '₹${payment.amount.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: statusColor,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            
+            // Bottom Action
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        buildShowPaymentDetailsModal(context, payment);
+                      },
+                      icon: const Icon(Icons.receipt_long, size: 16),
+                      label: const Text('View Details', style: TextStyle(fontFamily: 'Inter')),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.matBlue,
+                        side: BorderSide(color: AppColors.matBlue.withValues(alpha: 0.3)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    ),
+                  ),
+                  if (payment.status == 'completed') ...[
+                    8.w,
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          buildShowRefundDialog(context, payment);
+                        },
+                        icon: const Icon(Icons.undo, size: 16),
+                        label: const Text('Refund', style: TextStyle(fontFamily: 'Inter')),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.matRed,
+                          foregroundColor: AppColors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildPaymentCardMobile(PaymentEntity payment) {
+    final theme = Theme.of(context);
+    final statusColor = buildPaymentStatusColor(payment.status);
+
+    return AnimatedHoverCard(
+      padding: EdgeInsets.zero,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              theme.cardTheme.color ?? theme.scaffoldBackgroundColor,
+              statusColor.withValues(alpha: 0.03),
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Txn #${payment.paymentId.substring(0, 8).toUpperCase()}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                        4.h,
+                        Text(
+                          payment.userName,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.grey[600],
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: statusColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: statusColor.withValues(alpha: 0.2)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
+                        ),
+                        6.w,
+                        Text(
+                          payment.status.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: statusColor,
+                            fontFamily: 'Inter',
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              12.h,
+              Divider(color: AppColors.grey[200]),
+              12.h,
+              Text(
+                '₹${payment.amount.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontFamily: 'Inter',
                 ),
-                Container(
+              ),
+              8.h,
+              Text(
+                '${payment.method} • ${DateFormat('dd MMM').format(payment.createdAt)}',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: AppColors.grey[600],
+                  fontFamily: 'Inter',
+                ),
+              ),
+              12.h,
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        buildShowPaymentDetailsModal(context, payment);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                      child: const Text(
+                        'Details',
+                        style: TextStyle(fontSize: 12, fontFamily: 'Inter'),
+                      ),
+                    ),
+                  ),
+                  8.w,
+                  if (payment.status == 'completed')
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          buildShowRefundDialog(context, payment);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.matRed,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        ),
+                        child: const Text(
+                          'Refund',
+                          style: TextStyle(fontSize: 12, fontFamily: 'Inter'),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildPaymentCardDesktop(PaymentEntity payment) {
+    final theme = Theme.of(context);
+    final statusColor = buildPaymentStatusColor(payment.status);
+
+    return AnimatedHoverCard(
+      padding: EdgeInsets.zero,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              theme.cardTheme.color ?? theme.scaffoldBackgroundColor,
+              statusColor.withValues(alpha: 0.02),
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.payment,
+                  color: statusColor,
+                ),
+              ),
+              16.w,
+              Expanded(
+                flex: 2,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Txn #${payment.paymentId.substring(0, 8).toUpperCase()}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    4.h,
+                    Text(
+                      payment.userName,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppColors.grey[600],
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '₹${payment.amount.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    4.h,
+                    Text(
+                      payment.method,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.grey[600],
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      DateFormat('dd MMM yyyy').format(payment.createdAt),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColors.grey,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    4.h,
+                    Text(
+                      DateFormat('HH:mm').format(payment.createdAt),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.grey[500],
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
-                    vertical: 5,
+                    vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: buildPaymentStatusColor(payment.status)
-                        .withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(20),
+                    color: statusColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: statusColor.withValues(alpha: 0.2)),
                   ),
-                  child: Text(
-                    payment.status.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: buildPaymentStatusColor(payment.status),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            12.h,
-            Divider(color: AppColors.grey[200]),
-            12.h,
-            Text(
-              '?${payment.amount.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            8.h,
-            Text(
-              '${payment.method} � ${DateFormat('dd MMM').format(payment.createdAt)}',
-              style: TextStyle(
-                fontSize: 11,
-                color: AppColors.grey[600],
-              ),
-            ),
-            12.h,
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      buildShowPaymentDetailsModal(context, payment);
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                    ),
-                    child: const Text(
-                      'Details',
-                      style: TextStyle(fontSize: 12),
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
+                      ),
+                      4.w,
+                      Text(
+                        payment.status.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: statusColor,
+                          fontFamily: 'Inter',
+                          letterSpacing: 0.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
-                8.w,
-                if (payment.status == 'completed')
-                  Expanded(
+              ),
+              12.w,
+              SizedBox(
+                width: 100,
+                child: OutlinedButton(
+                  onPressed: () {
+                    buildShowPaymentDetailsModal(context, payment);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
+                  child: const Text(
+                    'Details',
+                    style: TextStyle(fontSize: 11, fontFamily: 'Inter'),
+                  ),
+                ),
+              ),
+              if (payment.status == 'completed')
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: SizedBox(
+                    width: 100,
                     child: ElevatedButton(
                       onPressed: () {
                         buildShowRefundDialog(context, payment);
@@ -728,163 +1250,15 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
                       ),
                       child: const Text(
                         'Refund',
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(fontSize: 11, fontFamily: 'Inter'),
                       ),
                     ),
                   ),
-              ],
-            ),
-          ],
+                ),
+            ],
+          ),
         ),
-    );
-  }
-
-  Widget buildPaymentCardDesktop(PaymentEntity payment) {
-    return AnimatedHoverCard(
-      color: Theme.of(context).cardTheme.color,
-      borderRadius: BorderRadius.circular(16),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: buildPaymentStatusColor(payment.status).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.payment,
-                color: buildPaymentStatusColor(payment.status),
-              ),
-            ),
-            16.w,
-            Expanded(
-              flex: 2,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Txn #${payment.paymentId.substring(0, 8).toUpperCase()}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
-                  4.h,
-                  Text(
-                    payment.userName,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: AppColors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '?${payment.amount.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
-                  4.h,
-                  Text(
-                    payment.method,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: AppColors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    DateFormat('dd MMM yyyy').format(payment.createdAt),
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                  4.h,
-                  Text(
-                    DateFormat('HH:mm').format(payment.createdAt),
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: AppColors.grey[500],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: buildPaymentStatusColor(payment.status)
-                      .withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  payment.status.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: buildPaymentStatusColor(payment.status),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            12.w,
-            SizedBox(
-              width: 100,
-              child: OutlinedButton(
-                onPressed: () {
-                  buildShowPaymentDetailsModal(context, payment);
-                },
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                ),
-                child: const Text(
-                  'Details',
-                  style: TextStyle(fontSize: 11),
-                ),
-              ),
-            ),
-            if (payment.status == 'completed')
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: SizedBox(
-                  width: 100,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      buildShowRefundDialog(context, payment);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.matRed,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                    ),
-                    child: const Text(
-                      'Refund',
-                      style: TextStyle(fontSize: 11),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
+      ),
     );
   }
 
@@ -1245,5 +1619,27 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
       onLayout: (PdfPageFormat format) async => doc.save(),
       name: 'Payment_Report',
     );
+  }
+}
+
+class _FilterHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _FilterHeaderDelegate({required this.child});
+
+  @override
+  double get minExtent => 72.0;
+
+  @override
+  double get maxExtent => 72.0;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_FilterHeaderDelegate oldDelegate) {
+    return oldDelegate.child != child;
   }
 }

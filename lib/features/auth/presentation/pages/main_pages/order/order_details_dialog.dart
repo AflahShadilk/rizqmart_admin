@@ -82,7 +82,10 @@ void showOrderDetailsModal(BuildContext context, OrderReceivedEntity order, {
                                     ),
                                   ),
                                   4.h,
-                                  Row(
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 4,
+                                    crossAxisAlignment: WrapCrossAlignment.center,
                                     children: [
                                       Text(
                                         '#${order.orderNumber}',
@@ -92,7 +95,6 @@ void showOrderDetailsModal(BuildContext context, OrderReceivedEntity order, {
                                           fontWeight: FontWeight.w700,
                                         ),
                                       ),
-                                      8.w,
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                         decoration: BoxDecoration(
@@ -118,12 +120,13 @@ void showOrderDetailsModal(BuildContext context, OrderReceivedEntity order, {
                       ],
                     ),
                   ),
-                  Row(
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       _buildHeaderAction(Icons.download_rounded, 'Save PDF', onSavePdf, AppColors.matBlue),
-                      8.w,
                       _buildHeaderAction(Icons.print_rounded, 'Print', onPrint, AppColors.matBlue),
-                      8.w,
                       _buildHeaderAction(Icons.close_rounded, 'Close', () => Navigator.pop(context), AppColors.grey.shade600),
                     ],
                   ),
@@ -411,8 +414,10 @@ void showOrderDetailsModal(BuildContext context, OrderReceivedEntity order, {
                   )
                 ],
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 16,
+                runSpacing: 12,
                 children: [
                   OutlinedButton(
                     onPressed: () => Navigator.pop(context),
@@ -426,7 +431,6 @@ void showOrderDetailsModal(BuildContext context, OrderReceivedEntity order, {
                       style: TextStyle(color: AppColors.grey.shade700, fontWeight: FontWeight.w600, fontSize: 14),
                     ),
                   ),
-                  16.w,
                   ElevatedButton.icon(
                     onPressed: () {
                       Navigator.pop(context);
@@ -445,8 +449,7 @@ void showOrderDetailsModal(BuildContext context, OrderReceivedEntity order, {
                       elevation: 0,
                     ),
                   ),
-                  if (order.orderStatus != 'received' && order.orderStatus != 'cancelled') ...[
-                    16.w,
+                  if (order.orderStatus != 'received' && order.orderStatus != 'cancelled')
                     ElevatedButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
@@ -465,7 +468,6 @@ void showOrderDetailsModal(BuildContext context, OrderReceivedEntity order, {
                         elevation: 0,
                       ),
                     ),
-                  ],
                 ],
               ),
             ),

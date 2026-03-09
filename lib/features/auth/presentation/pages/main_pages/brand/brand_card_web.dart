@@ -1,9 +1,9 @@
-﻿// ignore_for_file: unnecessary_null_comparison
+﻿// ignore_for_file: unnecessary_null_comparison, deprecated_member_use
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
@@ -30,111 +30,142 @@ class BrandGridCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return AnimatedHoverCard(
-      padding: EdgeInsets.zero,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(0.08),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-            // Image area
-            Expanded(
-              flex: 3,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest
-                      .withValues(alpha: 0.3),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
-                  ),
+          // Image area
+          Expanded(
+            flex: 5,
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
                 ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
-                  ),
-                  child: brand.logourl.isNotEmpty
-                      ? ShimmerImage(
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
+                child: brand.logourl.isNotEmpty
+                    ? SizedBox.expand(
+                        child: ShimmerImage(
                           imageUrl: brand.logourl,
                           fit: BoxFit.cover,
                           borderRadius: 0,
-                        )
-                      : Center(
-                          child: Icon(
-                            Icons.branding_watermark_rounded,
-                            size: 40,
-                            color: theme.colorScheme.primary
-                                .withValues(alpha: 0.4),
-                          ),
                         ),
-                ),
+                      )
+                    : Center(
+                        child: Icon(
+                          Icons.branding_watermark_rounded,
+                          size: 40,
+                          color: AppColors.grey.withValues(alpha: 0.5),
+                        ),
+                      ),
               ),
             ),
-            // Info area
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      brand.name,
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
+          ),
+          // Info area
+          Expanded(
+            flex: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    brand.name,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: theme.textTheme.bodyLarge?.color,
+                      height: 1.2,
+                      fontFamily: 'Inter',
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: brand.status
+                          ? AppColors.emerald.withValues(alpha: 0.1)
+                          : AppColors.chartRed.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      brand.status ? 'Active' : 'Inactive',
+                      style: TextStyle(
+                        fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: theme.textTheme.bodyLarge?.color,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    4.h,
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: brand.status
-                            ? AppColors.emerald.withValues(alpha: 0.1)
-                            : AppColors.chartRed.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        brand.status ? 'Active' : 'Inactive',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: brand.status
-                              ? AppColors.emerald
-                              : AppColors.chartRed,
-                        ),
+                        color: brand.status ? AppColors.emerald : AppColors.chartRed,
+                        fontFamily: 'Inter',
                       ),
                     ),
-                    const Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        _actionButton(
-                          icon: Icons.edit_rounded,
-                          color: AppColors.chartBlue,
-                          onTap: onEdit,
-                          tooltip: 'Edit',
+                  ),
+                  8.h,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: AppColors.chartBlue.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
                         ),
-                        6.w,
-                        _actionButton(
-                          icon: Icons.delete_outline_rounded,
-                          color: AppColors.chartRed,
-                          onTap: onDelete,
-                          tooltip: 'Delete',
+                        child: IconButton(
+                          constraints: const BoxConstraints(),
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.edit_rounded, color: AppColors.chartBlue, size: 14),
+                          onPressed: onEdit,
+                          tooltip: 'Edit Brand',
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                      4.w,
+                      Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: AppColors.chartRed.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          constraints: const BoxConstraints(),
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.delete_outline_rounded, color: AppColors.chartRed, size: 14),
+                          onPressed: onDelete,
+                          tooltip: 'Delete Brand',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
+  // ignore: unused_element
   Widget _actionButton({
     required IconData icon,
     required Color color,
@@ -214,10 +245,11 @@ class BrandListCard extends StatelessWidget {
                   children: [
                     Text(
                       brand.name,
-                      style: GoogleFonts.inter(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: theme.textTheme.bodyLarge?.color,
+                        fontFamily: 'Inter',
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -250,12 +282,13 @@ class BrandListCard extends StatelessWidget {
                               4.w,
                               Text(
                                 brand.status ? 'Active' : 'Inactive',
-                                style: GoogleFonts.inter(
+                                style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                   color: brand.status
                                       ? AppColors.emerald
                                       : AppColors.chartRed,
+                                  fontFamily: 'Inter',
                                 ),
                               ),
                             ],
@@ -266,9 +299,10 @@ class BrandListCard extends StatelessWidget {
                           Flexible(
                             child: Text(
                               brand.description,
-                              style: GoogleFonts.inter(
+                              style: TextStyle(
                                 fontSize: 12,
                                 color: theme.textTheme.bodySmall?.color,
+                                fontFamily: 'Inter',
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,

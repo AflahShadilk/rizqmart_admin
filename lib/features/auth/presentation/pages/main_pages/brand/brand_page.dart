@@ -1,7 +1,7 @@
 ﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
@@ -115,9 +115,11 @@ class BrandPageState extends State<BrandPage> {
                         16.h,
                         Text(
                           'Loading brands...',
-                          style: GoogleFonts.inter(
+                          style: TextStyle(
                             color: theme.textTheme.bodySmall?.color,
-                            fontSize: 14,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Inter',
                           ),
                         ),
                       ],
@@ -146,18 +148,20 @@ class BrandPageState extends State<BrandPage> {
                           24.h,
                           Text(
                             'No brands yet',
-                            style: GoogleFonts.inter(
+                            style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
                               color: theme.textTheme.bodyLarge?.color,
+                              fontFamily: 'Inter',
                             ),
                           ),
                           8.h,
                           Text(
                             'Start by adding your first brand.',
-                            style: GoogleFonts.inter(
+                            style: TextStyle(
                               fontSize: 15,
                               color: theme.textTheme.bodySmall?.color,
+                              fontFamily: 'Inter',
                             ),
                           ),
                           24.h,
@@ -217,21 +221,21 @@ class BrandPageState extends State<BrandPage> {
                               children: [
                                 Text(
                                   'Brands',
-                                  style: GoogleFonts.inter(
+                                  style: TextStyle(
                                     fontSize: isCompact ? 20 : 24,
                                     fontWeight: FontWeight.w700,
-                                    color:
-                                        theme.textTheme.bodyLarge?.color,
+                                    color: theme.textTheme.bodyLarge?.color,
                                     letterSpacing: -0.5,
+                                    fontFamily: 'Inter',
                                   ),
                                 ),
                                 4.h,
                                 Text(
                                   '${allBrands.length} ${allBrands.length == 1 ? 'brand' : 'brands'} available',
-                                  style: GoogleFonts.inter(
+                                  style: TextStyle(
                                     fontSize: isCompact ? 12 : 14,
-                                    color:
-                                        theme.textTheme.bodySmall?.color,
+                                    color: theme.textTheme.bodySmall?.color,
+                                    fontFamily: 'Inter',
                                   ),
                                 ),
                               ],
@@ -311,14 +315,16 @@ class BrandPageState extends State<BrandPage> {
                             onChanged: (value) {
                               pageCubit.updateSearchQuery(value);
                             },
-                            style: GoogleFonts.inter(
+                            style: TextStyle(
                               color: theme.textTheme.bodyLarge?.color,
+                              fontFamily: 'Inter',
                             ),
                             decoration: InputDecoration(
                               hintText: 'Search brands...',
-                              hintStyle: GoogleFonts.inter(
+                              hintStyle: TextStyle(
                                 color: theme.hintColor,
                                 fontSize: 14,
+                                fontFamily: 'Inter',
                               ),
                               prefixIcon: Icon(
                                 Icons.search_rounded,
@@ -366,10 +372,10 @@ class BrandPageState extends State<BrandPage> {
                                     16.h,
                                     Text(
                                       'No brands match "${pageState.searchQuery}"',
-                                      style: GoogleFonts.inter(
-                                        color: theme
-                                            .textTheme.bodySmall?.color,
+                                      style: TextStyle(
+                                        color: theme.textTheme.bodySmall?.color,
                                         fontSize: 14,
+                                        fontFamily: 'Inter',
                                       ),
                                     ),
                                   ],
@@ -388,17 +394,16 @@ class BrandPageState extends State<BrandPage> {
                                       separatorBuilder:
                                           (context, index) => 12.h,
                                       itemBuilder: (context, index) {
-                                        final brand =
-                                            displayBrands[index]
-                                                as BrandEntity;
-                                        return BrandListCard(
-                                          brand: brand,
-                                          onEdit: () =>
-                                              _showEditBrandDialog(
-                                                  context, brand),
-                                          onDelete: () =>
-                                              handleDelete(
-                                                  context, brand),
+                                        final brand = displayBrands[index] as BrandEntity;
+                                        return Center(
+                                          child: ConstrainedBox(
+                                            constraints: const BoxConstraints(maxWidth: 900),
+                                            child: BrandListCard(
+                                              brand: brand,
+                                              onEdit: () => _showEditBrandDialog(context, brand),
+                                              onDelete: () => handleDelete(context, brand),
+                                            ),
+                                          ),
                                         );
                                       },
                                     );
@@ -408,8 +413,7 @@ class BrandPageState extends State<BrandPage> {
                                   int crossAxisCount = 1;
                                   if (constraints.maxWidth > 1400) {
                                     crossAxisCount = 6;
-                                  } else if (constraints.maxWidth >
-                                      1100) {
+                                  } else if (constraints.maxWidth > 1100) {
                                     crossAxisCount = 5;
                                   } else if (constraints.maxWidth > 800) {
                                     crossAxisCount = 4;
@@ -418,26 +422,15 @@ class BrandPageState extends State<BrandPage> {
                                   }
 
                                   return GridView.builder(
-                                    padding:
-                                        const EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                       horizontal: 24,
                                       vertical: 16,
                                     ),
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: crossAxisCount,
-                                      crossAxisSpacing:
-                                          crossAxisCount == 1
-                                              ? 12
-                                              : 20,
-                                      mainAxisSpacing:
-                                          crossAxisCount == 1
-                                              ? 12
-                                              : 20,
-                                      childAspectRatio:
-                                          crossAxisCount == 1
-                                              ? 2.5
-                                              : 0.85,
+                                      crossAxisSpacing: crossAxisCount == 1 ? 12 : 20,
+                                      mainAxisSpacing: crossAxisCount == 1 ? 12 : 20,
+                                      childAspectRatio: crossAxisCount == 1 ? 1.2 : 0.72,
                                     ),
                                     itemCount: displayBrands.length,
                                     itemBuilder: (context, index) {
@@ -473,18 +466,20 @@ class BrandPageState extends State<BrandPage> {
                         20.h,
                         Text(
                           'Failed to load brands',
-                          style: GoogleFonts.inter(
+                          style: TextStyle(
                             color: theme.textTheme.bodyLarge?.color,
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
+                            fontFamily: 'Inter',
                           ),
                         ),
                         8.h,
                         Text(
                           state.error,
-                          style: GoogleFonts.inter(
+                          style: TextStyle(
                             color: theme.textTheme.bodySmall?.color,
                             fontSize: 14,
+                            fontFamily: 'Inter',
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -508,10 +503,11 @@ class BrandPageState extends State<BrandPage> {
       icon: const Icon(Icons.add_rounded, size: 22, color: AppColors.white),
       label: Text(
         'Add Brand',
-        style: GoogleFonts.inter(
+        style: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w600,
           color: AppColors.white,
+          fontFamily: 'Inter',
         ),
       ),
       style: ElevatedButton.styleFrom(

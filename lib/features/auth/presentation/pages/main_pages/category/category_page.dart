@@ -1,4 +1,6 @@
-﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿// ignore_for_file: deprecated_member_use
+
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -384,40 +386,46 @@ class _CategoryPageState extends State<CategoryPage> {
                               )
                             : LayoutBuilder(
                                 builder: (context, constraints) {
+                                  final isMobile = constraints.maxWidth < 768;
+
                                   if (!isGridView) {
                                     // List View
                                     return ListView.separated(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 24,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: isMobile ? 16 : 24,
                                         vertical: 16,
                                       ),
                                       itemCount:
                                           displayCategories.length,
                                       separatorBuilder:
-                                          (context, index) => 12.h,
+                                          (context, index) => SizedBox(height: isMobile ? 12 : 16),
                                       itemBuilder: (context, index) {
                                         final category =
                                             displayCategories[index];
-                                        return CategoryListCard(
-                                          category: category,
-                                          onEdit: () => _showEditDialog(
-                                              context,
-                                              allCategories,
-                                              category),
-                                          onDelete: () =>
-                                              handleDeleteCategory(
-                                                  context, category),
+                                        return Center(
+                                          child: ConstrainedBox(
+                                            constraints: const BoxConstraints(maxWidth: 900),
+                                            child: CategoryListCard(
+                                              category: category,
+                                              onEdit: () => _showEditDialog(
+                                                  context,
+                                                  allCategories,
+                                                  category),
+                                              onDelete: () =>
+                                                  handleDeleteCategory(
+                                                      context, category),
+                                            ),
+                                          ),
                                         );
                                       },
                                     );
                                   }
 
-                                  // Grid View
+                                  // Grid View Mode: Matches Product Page Sizing
                                   int crossAxisCount = 1;
                                   if (constraints.maxWidth > 1400) {
                                     crossAxisCount = 6;
-                                  } else if (constraints.maxWidth >
-                                      1100) {
+                                  } else if (constraints.maxWidth > 1100) {
                                     crossAxisCount = 5;
                                   } else if (constraints.maxWidth > 800) {
                                     crossAxisCount = 4;
@@ -426,22 +434,15 @@ class _CategoryPageState extends State<CategoryPage> {
                                   }
 
                                   return GridView.builder(
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                      horizontal: 24,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: isMobile ? 16 : 24,
                                       vertical: 16,
                                     ),
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: crossAxisCount,
-                                      crossAxisSpacing:
-                                          crossAxisCount == 1 ? 12 : 20,
-                                      mainAxisSpacing:
-                                          crossAxisCount == 1 ? 12 : 20,
-                                      childAspectRatio:
-                                          crossAxisCount == 1
-                                              ? 2.5
-                                              : 0.85,
+                                      crossAxisSpacing: crossAxisCount == 1 ? 12 : 20,
+                                      mainAxisSpacing: crossAxisCount == 1 ? 12 : 20,
+                                      childAspectRatio: crossAxisCount == 1 ? 1.2 : 0.72,
                                     ),
                                     itemCount:
                                         displayCategories.length,
@@ -533,121 +534,147 @@ class CategoryGridCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return AnimatedHoverCard(
-      padding: EdgeInsets.zero,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(0.08),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-            // Image area
-            Expanded(
-              flex: 3,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest
-                      .withValues(alpha: 0.3),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
-                  ),
+          // Image area
+          Expanded(
+            flex: 5,
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
                 ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
-                  ),
-                  child: category.logoUrl != null &&
-                          category.logoUrl!.isNotEmpty
-                      ? ShimmerImage(
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
+                child: category.logoUrl != null &&
+                        category.logoUrl!.isNotEmpty
+                    ? SizedBox.expand(
+                        child: ShimmerImage(
                           imageUrl: category.logoUrl!,
                           fit: BoxFit.cover,
                           borderRadius: 0,
-                        )
-                      : Center(
-                          child: Icon(
-                            Icons.category_rounded,
-                            size: 40,
-                            color: theme.colorScheme.primary
-                                .withValues(alpha: 0.4),
+                        ),
+                      )
+                    : Center(
+                        child: Icon(
+                          Icons.category_rounded,
+                          size: 40,
+                          color: AppColors.grey.withValues(alpha: 0.5),
+                        ),
+                      ),
+              ),
+            ),
+          ),
+          // Info area
+          Expanded(
+            flex: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    category.name,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: theme.textTheme.bodyLarge?.color,
+                      height: 1.2,
+                      fontFamily: 'Inter',
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const Spacer(),
+                  if (category.variants != null &&
+                      category.variants!.isNotEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: theme.dividerColor.withValues(alpha:0.1)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.inventory_outlined, size: 12, color: theme.textTheme.bodySmall?.color),
+                          4.w,
+                          Text(
+                            '${category.variants!.length} ${category.variants!.length == 1 ? 'variant' : 'variants'}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: theme.textTheme.bodySmall?.color,
+                              fontFamily: 'Inter',
+                            ),
                           ),
-                        ),
-                ),
-              ),
-            ),
-            // Info area
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      category.name,
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: theme.textTheme.bodyLarge?.color,
+                        ],
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    4.h,
-                    if (category.variants != null &&
-                        category.variants!.isNotEmpty)
-                      Text(
-                        '${category.variants!.length} ${category.variants!.length == 1 ? 'variant' : 'variants'}',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: theme.textTheme.bodySmall?.color,
-                        ),
-                      ),
-                    const Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        _actionButton(
-                          icon: Icons.edit_rounded,
-                          color: AppColors.chartBlue,
-                          onTap: onEdit,
-                          tooltip: 'Edit',
-                        ),
-                        6.w,
-                        _actionButton(
-                          icon: Icons.delete_outline_rounded,
-                          color: AppColors.chartRed,
-                          onTap: onDelete,
-                          tooltip: 'Delete',
-                        ),
-                      ],
-                    ),
+                    8.h,
                   ],
-                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: AppColors.chartBlue.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          constraints: const BoxConstraints(),
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.edit_rounded, color: AppColors.chartBlue, size: 14),
+                          onPressed: onEdit,
+                          tooltip: 'Edit Category',
+                        ),
+                      ),
+                      4.w,
+                      Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: AppColors.chartRed.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          constraints: const BoxConstraints(),
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.delete_outline_rounded, color: AppColors.chartRed, size: 14),
+                          onPressed: onDelete,
+                          tooltip: 'Delete Category',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-    );
-  }
-
-  Widget _actionButton({
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-    required String tooltip,
-  }) {
-    return Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        shape: BoxShape.circle,
-      ),
-      child: IconButton(
-        constraints: const BoxConstraints(),
-        padding: EdgeInsets.zero,
-        icon: Icon(icon, color: color, size: 15),
-        onPressed: onTap,
-        tooltip: tooltip,
+          ),
+        ],
       ),
     );
   }

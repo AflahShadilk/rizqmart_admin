@@ -1,8 +1,9 @@
-﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿// ignore_for_file: deprecated_member_use
+
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
@@ -14,7 +15,6 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/c
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_state.dart';
-import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
 import 'package:rizqmartadmin/widgets/global_add_button.dart';
 import 'package:rizqmartadmin/widgets/grid_list_toggle.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/widgets/search_with_filter.dart';
@@ -29,6 +29,7 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   late ProductsPageCubit _pageCubit;
   bool isGridView = true;
 
@@ -36,15 +37,29 @@ class _ProductsPageState extends State<ProductsPage> {
   void initState() {
     super.initState();
     _pageCubit = ProductsPageCubit();
+    
+    _scrollController.addListener(_onScroll);
+    
     Future.delayed(Duration.zero, () {
       // ignore: use_build_context_synchronously
       context.read<ProductBloc>().add(const LoadingProductEvent());
     });
   }
 
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      // Trigger infinite scroll by requesting the next page limit.
+      // This will increment `currentPage` in the Cubit, widening the display slice.
+      // We pass a very large number for `totalItems` because our `enIndex` bounds logic
+      // cleanly handles the maximum length constraint during rendering natively.
+      _pageCubit.nextPage(99999);
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     _pageCubit.close();
     super.dispose();
   }
@@ -134,21 +149,21 @@ class _ProductsPageState extends State<ProductsPage> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(
+        title: const Text(
           'Delete Product',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          style: TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Inter'),
         ),
         content: Text(
           'Are you sure you want to delete "${product.name}"?',
-          style: GoogleFonts.inter(),
+          style: const TextStyle(fontFamily: 'Inter'),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
+            child: const Text(
               'Cancel',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w500),
+              style: TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Inter'),
             ),
           ),
           TextButton(
@@ -162,10 +177,10 @@ class _ProductsPageState extends State<ProductsPage> {
                 const SnackBar(content: Text('Product deleted')),
               );
             },
-            child: Text(
+            child: const Text(
               'Delete',
-              style: GoogleFonts.inter(
-                  color: AppColors.matRed, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: AppColors.matRed, fontWeight: FontWeight.w600, fontFamily: 'Inter'),
             ),
           ),
         ],
@@ -217,13 +232,11 @@ class _ProductsPageState extends State<ProductsPage> {
                       ? filterProductsbySearch(allProducts, _searchController.text)
                       : pageState.filterProducts.where((p) => allProducts.any((ap) => ap.id == p.id)).toList();
 
-                  // Client-side pagination
+                  // Infinite scroll display logic
                   final totalItems = productsToDisplay.length;
-                  final totalPages = (totalItems / pageState.itemsPerPage).ceil();
-                  final startIndex = (pageState.currentPage - 1) * pageState.itemsPerPage;
-                  final endIndex = (startIndex + pageState.itemsPerPage).clamp(0, totalItems);
+                  final displayCount = (pageState.currentPage * pageState.itemsPerPage).clamp(0, totalItems);
                   final paginatedProducts = totalItems > 0
-                      ? productsToDisplay.sublist(startIndex, endIndex)
+                      ? productsToDisplay.sublist(0, displayCount)
                       : <AddProductEntity>[];
 
                   return Column(
@@ -267,19 +280,21 @@ class _ProductsPageState extends State<ProductsPage> {
                               children: [
                                 Text(
                                   'Product Catalog',
-                                  style: GoogleFonts.inter(
+                                  style: TextStyle(
                                     fontSize: isCompact ? 20 : 24,
                                     fontWeight: FontWeight.w700,
                                     color: theme.textTheme.bodyLarge?.color,
                                     letterSpacing: -0.5,
+                                    fontFamily: 'Inter',
                                   ),
                                 ),
                                 4.h,
                                 Text(
                                   '${allProducts.length} ${allProducts.length == 1 ? 'product' : 'products'} available in store',
-                                  style: GoogleFonts.inter(
+                                  style: TextStyle(
                                     fontSize: isCompact ? 12 : 14,
                                     color: theme.textTheme.bodySmall?.color,
+                                    fontFamily: 'Inter',
                                   ),
                                 ),
                               ],
@@ -378,10 +393,11 @@ class _ProductsPageState extends State<ProductsPage> {
                                     24.h,
                                     Text(
                                       'Loading product catalog...',
-                                      style: GoogleFonts.inter(
+                                      style: TextStyle(
                                         color: theme.textTheme.bodySmall?.color,
                                         fontSize: 15,
                                         fontWeight: FontWeight.w500,
+                                        fontFamily: 'Inter',
                                       ),
                                     ),
                                   ],
@@ -395,23 +411,25 @@ class _ProductsPageState extends State<ProductsPage> {
                                         Icon(
                                           Icons.error_outline,
                                           size: 64,
-                                          color: AppColors.matRed.withValues(alpha: 0.8),
+                                          color: AppColors.matRed.withOpacity(0.8),
                                         ),
                                         20.h,
                                         Text(
                                           'Failed to load products',
-                                          style: GoogleFonts.inter(
+                                          style: TextStyle(
                                             color: theme.textTheme.bodyLarge?.color,
                                             fontSize: 20,
                                             fontWeight: FontWeight.w600,
+                                            fontFamily: 'Inter',
                                           ),
                                         ),
                                         8.h,
                                         Text(
                                           state.message,
-                                          style: GoogleFonts.inter(
+                                          style: TextStyle(
                                             color: theme.textTheme.bodySmall?.color,
                                             fontSize: 14,
+                                            fontFamily: 'Inter',
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
@@ -438,7 +456,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                                 Container(
                                                   padding: const EdgeInsets.all(24),
                                                   decoration: BoxDecoration(
-                                                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                                                    color: theme.colorScheme.primary.withOpacity(0.1),
                                                     shape: BoxShape.circle,
                                                   ),
                                                   child: Icon(
@@ -450,18 +468,20 @@ class _ProductsPageState extends State<ProductsPage> {
                                                 24.h,
                                                 Text(
                                                   'No products found',
-                                                  style: GoogleFonts.inter(
+                                                  style: TextStyle(
                                                     fontSize: 22,
                                                     color: theme.textTheme.bodyLarge?.color,
                                                     fontWeight: FontWeight.w700,
+                                                    fontFamily: 'Inter',
                                                   ),
                                                 ),
                                                 8.h,
                                                 Text(
                                                   'Start by adding your first product to the catalog.',
-                                                  style: GoogleFonts.inter(
+                                                  style: TextStyle(
                                                     fontSize: 15,
                                                     color: theme.textTheme.bodySmall?.color,
+                                                    fontFamily: 'Inter',
                                                   ),
                                                 ),
                                               ],
@@ -472,6 +492,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                               if (!isGridView) {
                                                 // List View Mode
                                                 return ListView.separated(
+                                                  controller: _scrollController,
                                                   padding: const EdgeInsets.symmetric(
                                                     horizontal: 24,
                                                     vertical: 16,
@@ -480,14 +501,19 @@ class _ProductsPageState extends State<ProductsPage> {
                                                   separatorBuilder: (context, index) => 12.h,
                                                   itemBuilder: (context, index) {
                                                     final product = paginatedProducts[index];
-                                                    return ProductListCard(
-                                                      product: product,
-                                                      categoryState: state,
-                                                      brandState: state,
-                                                      onEdit: () => context.go('/Addproducts', extra: product),
-                                                      onDelete: () => showDeleteDialog(context, product),
-                                                      getCategoryName: getCategoryName,
-                                                      getBrandName: getBrandName,
+                                                    return Center(
+                                                      child: ConstrainedBox(
+                                                        constraints: const BoxConstraints(maxWidth: 900),
+                                                        child: ProductListCard(
+                                                          product: product,
+                                                          categoryState: state,
+                                                          brandState: state,
+                                                          onEdit: () => context.go('/Addproducts', extra: product),
+                                                          onDelete: () => showDeleteDialog(context, product),
+                                                          getCategoryName: getCategoryName,
+                                                          getBrandName: getBrandName,
+                                                        ),
+                                                      ),
                                                     );
                                                   },
                                                 );
@@ -506,6 +532,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                               }
 
                                               return GridView.builder(
+                                                controller: _scrollController,
                                                 padding: const EdgeInsets.symmetric(
                                                   horizontal: 24,
                                                   vertical: 16,
@@ -536,78 +563,6 @@ class _ProductsPageState extends State<ProductsPage> {
                                         child: Text('No state available'),
                                       ),
                       ),
-                      // Pagination Bar
-                      if (totalPages > 1)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                          decoration: BoxDecoration(
-                            color: theme.cardTheme.color,
-                            border: Border(
-                              top: BorderSide(
-                                color: theme.dividerColor.withValues(alpha: 0.1),
-                              ),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: pageState.currentPage > 1 
-                                      ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(Icons.chevron_left_rounded),
-                                  color: pageState.currentPage > 1 ? theme.colorScheme.primary : theme.disabledColor,
-                                  onPressed: pageState.currentPage > 1
-                                      ? () => _pageCubit.previousPage()
-                                      : null,
-                                  tooltip: 'Previous page',
-                                ),
-                              ),
-                              24.w,
-                              Column(
-                                children: [
-                                  Text(
-                                    'Page ${pageState.currentPage} of $totalPages',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.textTheme.bodyMedium?.color,
-                                    ),
-                                  ),
-                                  4.h,
-                                  Text(
-                                    'Showing ${startIndex + 1}–$endIndex of $totalItems',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      color: theme.textTheme.bodySmall?.color,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              24.w,
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: pageState.currentPage < totalPages 
-                                      ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(Icons.chevron_right_rounded),
-                                  color: pageState.currentPage < totalPages ? theme.colorScheme.primary : theme.disabledColor,
-                                  onPressed: pageState.currentPage < totalPages
-                                      ? () => _pageCubit.nextPage(totalItems)
-                                      : null,
-                                  tooltip: 'Next page',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                     ],
                   );
                 },
@@ -677,8 +632,21 @@ class ProductGridCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
-    return AnimatedHoverCard(
-      padding: EdgeInsets.zero,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(0.08),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -725,10 +693,11 @@ class ProductGridCard extends StatelessWidget {
                       ),
                       child: Text(
                         product.status == true ? 'Active' : 'Inactive',
-                        style: GoogleFonts.inter(
+                        style: const TextStyle(
                           fontSize: 10,
                           color: AppColors.white,
                           fontWeight: FontWeight.w700,
+                          fontFamily: 'Inter',
                         ),
                       ),
                     ),
@@ -747,11 +716,12 @@ class ProductGridCard extends StatelessWidget {
                   children: [
                     Text(
                       product.name,
-                      style: GoogleFonts.inter(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: theme.textTheme.bodyLarge?.color,
                         height: 1.2,
+                        fontFamily: 'Inter',
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -771,10 +741,11 @@ class ProductGridCard extends StatelessWidget {
                           4.w,
                           Text(
                             'Stock: ${getTotalQuantity().toInt()}',
-                            style: GoogleFonts.inter(
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
                               color: theme.textTheme.bodySmall?.color,
+                              fontFamily: 'Inter',
                             ),
                           ),
                         ],
@@ -788,10 +759,11 @@ class ProductGridCard extends StatelessWidget {
                         Flexible(
                           child: Text(
                             '₹${getFirstVariantPrice().toStringAsFixed(2)}',
-                            style: GoogleFonts.inter(
+                            style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
                               color: AppColors.emerald,
+                              fontFamily: 'Inter',
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -903,8 +875,22 @@ class ProductListCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return AnimatedHoverCard(
-      padding: const EdgeInsets.all(12),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(0.08),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Row(
         children: [
               Container(
@@ -933,10 +919,11 @@ class ProductListCard extends StatelessWidget {
                   children: [
                     Text(
                       product.name,
-                      style: GoogleFonts.inter(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: theme.textTheme.bodyLarge?.color,
+                        fontFamily: 'Inter',
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -946,19 +933,21 @@ class ProductListCard extends StatelessWidget {
                       children: [
                         Text(
                           '₹${getFirstVariantPrice().toStringAsFixed(2)}',
-                          style: GoogleFonts.inter(
+                          style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
                             color: AppColors.emerald,
+                            fontFamily: 'Inter',
                           ),
                         ),
                         16.w,
                         Text(
                           'Stock: ${getTotalQuantity().toInt()}',
-                          style: GoogleFonts.inter(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                             color: theme.textTheme.bodySmall?.color,
+                            fontFamily: 'Inter',
                           ),
                         ),
                         16.w,
