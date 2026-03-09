@@ -11,4 +11,8 @@ class CouponsPageCubit extends Cubit<CouponsPageState> {
   void clearSearch() {
     emit(state.copyWith(searchQuery: ''));
   }
+
+  void toggleView(bool isGrid) {
+    emit(state.copyWith(isGridView: isGrid));
+  }
 }

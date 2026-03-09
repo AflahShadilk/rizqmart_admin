@@ -140,7 +140,13 @@ class SalesReportDataSourceImpl implements SalesReportDataSource {
           final productId = item['id'] ?? item['productId'] ?? '';
           final productName = item['name'] ?? item['productName'] ?? 'Unknown';
           final quantity = _parseAmount(item['count'] ?? item['quantity'] ?? 0).toInt();
-          final price = _parseAmount(item['price'] ?? 0);
+          
+          final variantIndex = (item['variantIndex'] as num?)?.toInt() ?? 0;
+          final variants = item['variantDetails'] as List<dynamic>?;
+          final variant = (variants != null && variants.isNotEmpty && variantIndex < variants.length)
+              ? variants[variantIndex] as Map<String, dynamic>
+              : <String, dynamic>{};
+          final price = _parseAmount(variant['price'] ?? item['price'] ?? 0);
 
           if (productId.isEmpty) continue;
 

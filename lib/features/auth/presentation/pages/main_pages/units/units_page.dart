@@ -1,6 +1,4 @@
-﻿
-
-import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,13 +6,15 @@ import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/units_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_event.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/unit/search/unit_search_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_state.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/units/display_card.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/units/unit_adding_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/units/widgets/unit_delete_config.dart';
+import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
+import 'package:rizqmartadmin/widgets/global_add_button.dart';
+import 'package:rizqmartadmin/widgets/grid_list_toggle.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/unit/search/unit_search_state.dart';
 
 class UnitsPage extends StatefulWidget {
   const UnitsPage({super.key});
@@ -46,8 +46,19 @@ class _UnitsPageState extends State<UnitsPage> {
     super.dispose();
   }
 
+  void _showAddUnitDialog(BuildContext context, List<UnitsEntity> allUnits) {
+    UnitDialog.show(context, allUnits: allUnits);
+  }
+
+  void _showEditUnitDialog(BuildContext context, List<UnitsEntity> allUnits, UnitsEntity unit) {
+    UnitDialog.show(context, allUnits: allUnits, unit: unit);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return BlocProvider(
       create: (context) => UnitsSearchCubit(),
       child: BlocConsumer<UnitBloc, UnitState>(
@@ -58,6 +69,7 @@ class _UnitsPageState extends State<UnitsPage> {
                 content: Text(state.message),
                 backgroundColor: AppColors.matGreen,
                 behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2),
               ),
             );
           } else if (state is UnitFailureState) {
@@ -66,36 +78,28 @@ class _UnitsPageState extends State<UnitsPage> {
                 content: Text(state.message),
                 backgroundColor: AppColors.matRed,
                 behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2),
               ),
             );
           }
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                'Units',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
-              ),
-              elevation: 0,
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            ),
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            backgroundColor: theme.scaffoldBackgroundColor,
             body: Builder(builder: (context) {
               if (state is UnitLoadingState) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const CircularProgressIndicator(),
+                      CircularProgressIndicator(
+                        color: theme.colorScheme.primary,
+                      ),
                       16.h,
                       Text(
                         'Loading units...',
-                        style: GoogleFonts.poppins(
-                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                        style: GoogleFonts.inter(
+                          color: theme.textTheme.bodySmall?.color,
                           fontSize: 14,
                         ),
                       ),
@@ -104,240 +108,344 @@ class _UnitsPageState extends State<UnitsPage> {
                 );
               } else if (state is UnitLoadedState) {
                 final allUnits = state.unit;
+
                 if (allUnits.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.category_outlined,
-                          size: 64,
-                          color: AppColors.grey.shade300,
-                        ),
-                        16.h,
-                        Text(
-                          'No units found',
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            color: Theme.of(context).textTheme.bodyMedium?.color,
-                            fontWeight: FontWeight.w500,
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: AppColors.purple.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.straighten_rounded,
+                            size: 64,
+                            color: AppColors.purple,
                           ),
                         ),
                         24.h,
-                        BuildAddButtonUnits(allUnits: allUnits),
+                        Text(
+                          'No units yet',
+                          style: GoogleFonts.inter(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: theme.textTheme.bodyLarge?.color,
+                          ),
+                        ),
+                        8.h,
+                        Text(
+                          'Start by adding your first unit variant.',
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            color: theme.textTheme.bodySmall?.color,
+                          ),
+                        ),
+                        24.h,
+                        _buildAddButton(context, allUnits),
                       ],
                     ),
                   );
                 }
-                return BlocBuilder<UnitsSearchCubit, String>(
-                  builder: (context, searchQuery) {
-                    final display = filterVariant(allUnits, searchQuery);
+
+                return BlocBuilder<UnitsSearchCubit, UnitSearchState>(
+                  builder: (context, searchState) {
+                    final display = filterVariant(allUnits, searchState.searchQuery);
+                    final isGridView = searchState.isGridView;
+
                     return Column(
                       children: [
+                        // Modern Header Card
                         Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 20),
+                          margin: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).cardTheme.color,
+                            color: theme.cardTheme.color,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: theme.colorScheme.outline
+                                  .withValues(alpha: 0.1),
+                            ),
                             boxShadow: [
                               BoxShadow(
-                                color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
+                                color: AppColors.black
+                                    .withValues(alpha: isDark ? 0.2 : 0.04),
+                                blurRadius: 16,
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Manage Units',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                        color: Theme.of(context).textTheme.bodyLarge?.color,
-                                      ),
+                          child: LayoutBuilder(
+                            builder: (context, headerConstraints) {
+                              final isCompact =
+                                  headerConstraints.maxWidth < 600;
+
+                              final icon = Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: AppColors.purple
+                                      .withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: const Icon(
+                                  Icons.straighten_rounded,
+                                  color: AppColors.purple,
+                                  size: 28,
+                                ),
+                              );
+
+                              final titleColumn = Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Units & Variants',
+                                    style: GoogleFonts.inter(
+                                      fontSize: isCompact ? 20 : 24,
+                                      fontWeight: FontWeight.w700,
+                                      color:
+                                          theme.textTheme.bodyLarge?.color,
+                                      letterSpacing: -0.5,
                                     ),
-                                    4.h,
-                                    Text(
-                                      '${allUnits.length} ${allUnits.length == 1 ? 'Unit' : 'Units'} available',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 13,
-                                        color: Theme.of(context).textTheme.bodySmall?.color,
-                                      ),
+                                  ),
+                                  4.h,
+                                  Text(
+                                    '${allUnits.length} ${allUnits.length == 1 ? 'unit' : 'units'} available',
+                                    style: GoogleFonts.inter(
+                                      fontSize: isCompact ? 12 : 14,
+                                      color:
+                                          theme.textTheme.bodySmall?.color,
+                                    ),
+                                  ),
+                                ],
+                              );
+
+                              final toggleButtons = GridListToggle(
+                                isGridView: isGridView,
+                                onToggle: (isGrid) {
+                                  context.read<UnitsSearchCubit>().toggleView(isGrid);
+                                },
+                              );
+
+                              final addButton =
+                                  _buildAddButton(context, allUnits);
+
+                              if (isCompact) {
+                                return Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        icon,
+                                        16.w,
+                                        Expanded(child: titleColumn),
+                                      ],
+                                    ),
+                                    16.h,
+                                    Row(
+                                      children: [
+                                        toggleButtons,
+                                        const Spacer(),
+                                        addButton,
+                                      ],
                                     ),
                                   ],
-                                ),
-                              ),
-                              BuildAddButtonUnits(allUnits: allUnits),
-                            ],
+                                );
+                              }
+
+                              return Row(
+                                children: [
+                                  icon,
+                                  20.w,
+                                  Expanded(child: titleColumn),
+                                  toggleButtons,
+                                  16.w,
+                                  addButton,
+                                ],
+                              );
+                            },
                           ),
                         ),
 
+                        // Search Bar
                         Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (value) {
-                              context.read<UnitsSearchCubit>().updateSearch(value);
-                            },
-                            decoration: InputDecoration(
-                              hintText: 'Search Units...',
-                              hintStyle: GoogleFonts.poppins(
-                                color: Theme.of(context).hintColor,
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 24),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: theme.cardTheme.color,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: theme.colorScheme.outline
+                                    .withValues(alpha: 0.1),
                               ),
-                              prefixIcon: Icon(
-                                Icons.search,
-                                color: Theme.of(context).iconTheme.color,
-                                size: 24,
-                              ),
-                              suffixIcon: searchQuery.isNotEmpty
-                                  ? IconButton(
-                                      icon: Icon(
-                                        Icons.clear,
-                                        color: Theme.of(context).iconTheme.color,
-                                        size: 24,
-                                      ),
-                                      onPressed: () {
-                                        _searchController.clear();
-                                        context.read<UnitsSearchCubit>().clearSearch();
-                                      },
-                                    )
-                                  : null,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  width: 2,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.black.withValues(
+                                      alpha: isDark ? 0.1 : 0.02),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
                                 ),
+                              ],
+                            ),
+                            child: TextField(
+                              controller: _searchController,
+                              onChanged: (value) {
+                                context
+                                    .read<UnitsSearchCubit>()
+                                    .updateSearch(value);
+                              },
+                              style: GoogleFonts.inter(
+                                color: theme.textTheme.bodyLarge?.color,
                               ),
-                              filled: true,
-                              fillColor: Theme.of(context).cardTheme.color,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
+                              decoration: InputDecoration(
+                                hintText: 'Search units...',
+                                hintStyle: GoogleFonts.inter(
+                                  color: theme.hintColor,
+                                  fontSize: 14,
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.search_rounded,
+                                  color: theme.hintColor,
+                                  size: 22,
+                                ),
+                                suffixIcon: searchState.searchQuery.isNotEmpty
+                                    ? IconButton(
+                                        icon: Icon(
+                                          Icons.close_rounded,
+                                          color: theme.hintColor,
+                                          size: 20,
+                                        ),
+                                        onPressed: () {
+                                          _searchController.clear();
+                                          context
+                                              .read<UnitsSearchCubit>()
+                                              .clearSearch();
+                                        },
+                                      )
+                                    : null,
+                                border: InputBorder.none,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 14,
+                                ),
                               ),
                             ),
                           ),
                         ),
+                        16.h,
 
+                        // Content Area
                         Expanded(
                           child: display.isEmpty
                               ? Center(
                                   child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
                                     children: [
                                       Icon(
-                                        Icons.search_off,
+                                        Icons.search_off_rounded,
                                         size: 64,
-                                        color: AppColors.grey.shade300,
+                                        color:
+                                            theme.textTheme.bodySmall?.color,
                                       ),
                                       16.h,
                                       Text(
-                                        'No Units match "$searchQuery"',
-                                        style: GoogleFonts.poppins(
-                                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                                        'No units match "${searchState.searchQuery}"',
+                                        style: GoogleFonts.inter(
+                                          color: theme
+                                              .textTheme.bodySmall?.color,
                                           fontSize: 14,
                                         ),
                                       ),
                                     ],
                                   ),
                                 )
-                              : ListView.builder(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
-                                  itemCount: display.length,
-                                  itemBuilder: (context, index) {
-                                    final unit = display[index];
-
-                                    return UnitCardAnimationWrapper(
-                                      delay: index * 50,
-                                      child: UnitCard(
-                                        unit: unit,
-                                        onEdit: () {
-                                          showDialog(
-                                            context: context,
-                                            barrierDismissible: false,
-                                            builder: (_) => MultiBlocProvider(
-                                                providers: [
-                                                  BlocProvider.value(
-                                                    value: BlocProvider.of<UnitBloc>(
-                                                        context),
-                                                  ),
-                                                  BlocProvider.value(
-                                                    value:
-                                                        BlocProvider.of<CategoryBloc>(
-                                                            context),
-                                                  ),
-                                                ],
-                                                child: BlocBuilder<CategoryBloc,
-                                                        CategoryState>(
-                                                    builder: (context, state) {
-                                                  List<String> categories = [];
-                                                  String? selectedCatName;
-                                                  if (state is CategoryLoadedState) {
-                                                    categories = state.cotegories
-                                                        .map((cate) => cate.name)
-                                                        .toList();
-                                                    if (unit.category.isNotEmpty) {
-                                                      try {
-                                                        final matchingCategory = state
-                                                            .cotegories
-                                                            .firstWhere((cat) =>
-                                                                cat.id ==
-                                                                unit.category);
-                                                        selectedCatName =
-                                                            matchingCategory.name;
-                                                      } catch (e) {
-                                                        
-                                                        selectedCatName = null;
-                                                      }
-                                                    }
-                                                  } else if (state
-                                                      is CategoryLoadingState) {
-                                                    return const Center(
-                                                      child:
-                                                          CircularProgressIndicator(),
-                                                    );
-                                                  } else if (state
-                                                      is CategoryFailureState) {
-                                                    return AlertDialog(
-                                                      title: const Text('Error'),
-                                                      content: Text(state.error),
-                                                      actions: [
-                                                        TextButton(
-                                                          onPressed: () =>
-                                                              Navigator.pop(context),
-                                                          child: const Text('Close'),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  }
-                                                  return UnitDialog(
-                                                    existingUnits: allUnits,
-                                                    existingUnit: unit,
-                                                    categories: categories,
-                                                    selectedCategory: selectedCatName,
-                                                  );
-                                                })),
+                              : LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    if (!isGridView) {
+                                      return ListView.separated(
+                                        padding:
+                                            const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 16,
+                                        ),
+                                        itemCount: display.length,
+                                        separatorBuilder:
+                                            (context, index) => 12.h,
+                                        itemBuilder: (context, index) {
+                                          final unit = display[index];
+                                          return UnitListCard(
+                                            unit: unit,
+                                            onEdit: () =>
+                                                _showEditUnitDialog(
+                                                    context,
+                                                    allUnits,
+                                                    unit),
+                                            onDelete: () =>
+                                                handleDeleteUnit(
+                                                    context, unit),
                                           );
                                         },
-                                        onDelete: () {
-                                          handleDeleteUnit(context, unit);
-                                        },
+                                      );
+                                    }
+
+                                    // Grid View
+                                    int crossAxisCount = 1;
+                                    if (constraints.maxWidth > 1400) {
+                                      crossAxisCount = 6;
+                                    } else if (constraints.maxWidth >
+                                        1100) {
+                                      crossAxisCount = 5;
+                                    } else if (constraints.maxWidth >
+                                        800) {
+                                      crossAxisCount = 4;
+                                    } else if (constraints.maxWidth >
+                                        550) {
+                                      crossAxisCount = 2;
+                                    }
+
+                                    return GridView.builder(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 16,
                                       ),
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: crossAxisCount,
+                                        crossAxisSpacing:
+                                            crossAxisCount == 1
+                                                ? 12
+                                                : 20,
+                                        mainAxisSpacing:
+                                            crossAxisCount == 1
+                                                ? 12
+                                                : 20,
+                                        childAspectRatio:
+                                            crossAxisCount == 1
+                                                ? 2.5
+                                                : 1.0,
+                                      ),
+                                      itemCount: display.length,
+                                      itemBuilder: (context, index) {
+                                        final unit = display[index];
+                                        return UnitGridCard(
+                                          unit: unit,
+                                          onEdit: () =>
+                                              _showEditUnitDialog(
+                                                  context,
+                                                  allUnits,
+                                                  unit),
+                                          onDelete: () =>
+                                              handleDeleteUnit(
+                                                  context, unit),
+                                        );
+                                      },
                                     );
                                   },
                                 ),
@@ -354,83 +462,266 @@ class _UnitsPageState extends State<UnitsPage> {
       ),
     );
   }
+
+  Widget _buildAddButton(BuildContext context, List<UnitsEntity> allUnits) {
+    return GlobalAddButton(
+      label: 'Add Unit',
+      onPressed: () => _showAddUnitDialog(context, allUnits),
+    );
+  }
 }
 
-class BuildAddButtonUnits extends StatelessWidget {
-  final List<UnitsEntity> allUnits;
+// ─── Grid Card ───────────────────────────────────────────────────────────────
+class UnitGridCard extends StatelessWidget {
+  final UnitsEntity unit;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
-  const BuildAddButtonUnits({
+  const UnitGridCard({
     super.key,
-    required this.allUnits,
+    required this.unit,
+    required this.onEdit,
+    required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider.value(
-                  value: BlocProvider.of<UnitBloc>(context),
-                ),
-                BlocProvider.value(
-                  value: BlocProvider.of<CategoryBloc>(context),
-                ),
-              ],
-              child: BlocBuilder<CategoryBloc, CategoryState>(
-                  builder: (context, state) {
-                List<String> categories = [];
+    final theme = Theme.of(context);
 
-                if (state is CategoryLoadedState) {
-                  categories = state.cotegories
-                      .map((category) => category.name)
-                      .toList();
-                } else if (state is CategoryLoadingState) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (state is CategoryFailureState) {
-                  return AlertDialog(
-                    title: const Text('Error'),
-                    content: Text(state.error),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Close'),
+    return AnimatedHoverCard(
+      color: theme.cardTheme.color,
+      borderRadius: BorderRadius.circular(16),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.purple.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.straighten_rounded,
+                      color: AppColors.purple,
+                      size: 22,
+                    ),
+                  ),
+                  const Spacer(),
+                  _actionButton(
+                    icon: Icons.edit_rounded,
+                    color: AppColors.chartBlue,
+                    onTap: onEdit,
+                    tooltip: 'Edit',
+                  ),
+                  6.w,
+                  _actionButton(
+                    icon: Icons.delete_outline_rounded,
+                    color: AppColors.chartRed,
+                    onTap: onDelete,
+                    tooltip: 'Delete',
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Text(
+                unit.unitName,
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: theme.textTheme.bodyLarge?.color,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              6.h,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppColors.emerald.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      unit.unitType,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.emerald,
                       ),
-                    ],
-                  );
-                }
-                return UnitDialog(
-                  existingUnits: allUnits,
-                  categories: categories,
-                );
-              })),
-        );
-      },
-      icon: const Icon(Icons.add_circle_outline, size: 20),
-      label: Text(
-        'Add Unit',
-        style: GoogleFonts.poppins(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-        ),
+                    ),
+                  ),
+                  8.w,
+                  Flexible(
+                    child: Text(
+                      '${unit.wieght}',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: theme.textTheme.bodySmall?.color,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+      );
+    
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+    required String tooltip,
+  }) {
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        shape: BoxShape.circle,
       ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.matGreen,
-        foregroundColor: AppColors.white,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 24,
-          vertical: 14,
-        ),
-        elevation: 2,
-        shadowColor: AppColors.matGreen.withValues(alpha: 0.3),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+      child: IconButton(
+        constraints: const BoxConstraints(),
+        padding: EdgeInsets.zero,
+        icon: Icon(icon, color: color, size: 15),
+        onPressed: onTap,
+        tooltip: tooltip,
       ),
     );
+  }
+}
+
+// ─── List Card ───────────────────────────────────────────────────────────────
+class UnitListCard extends StatelessWidget {
+  final UnitsEntity unit;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  const UnitListCard({
+    super.key,
+    required this.unit,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return AnimatedHoverCard(
+      color: theme.cardTheme.color,
+      borderRadius: BorderRadius.circular(16),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+            children: [
+              // Icon
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.purple.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.straighten_rounded,
+                  color: AppColors.purple,
+                  size: 24,
+                ),
+              ),
+              16.w,
+              // Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      unit.unitName,
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    4.h,
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.emerald.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            unit.unitType,
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.emerald,
+                            ),
+                          ),
+                        ),
+                        8.w,
+                        Text(
+                          '${unit.wieght}',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: theme.textTheme.bodySmall?.color,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              // Actions
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.chartBlue.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.edit_rounded,
+                      color: AppColors.chartBlue, size: 16),
+                  onPressed: onEdit,
+                  tooltip: 'Edit Unit',
+                ),
+              ),
+              8.w,
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.chartRed.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.delete_outline_rounded,
+                      color: AppColors.chartRed, size: 16),
+                  onPressed: onDelete,
+                  tooltip: 'Delete Unit',
+                ),
+              ),
+            ],
+          ),
+      );
   }
 }

@@ -12,6 +12,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/d
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_state.dart';
+import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -32,6 +33,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -45,17 +47,21 @@ class _DashboardPageState extends State<DashboardPage> {
             constraints: const BoxConstraints(maxWidth: 1400),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeaderSection(theme, colorScheme),
-                  32.h,
+                  40.h,
                   Text(
                     'Business Overview',
-                    style: theme.textTheme.headlineMedium,
+                    style: GoogleFonts.inter(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? AppColors.white : AppColors.dashboardDark1,
+                    ),
                   ),
-                  16.h,
+                  20.h,
                   BlocBuilder<DashboardBloc, DashboardState>(
                     builder: (context, state) {
                       if (state is DashboardLoading) {
@@ -82,12 +88,12 @@ class _DashboardPageState extends State<DashboardPage> {
                           int crossAxisCount =
                               width >= 1100 ? 4 : (width >= 700 ? 2 : 1);
                           double childAspectRatio =
-                              width >= 1100 ? 2.2 : (width >= 700 ? 2.0 : 2.8);
+                              width >= 1100 ? 2.5 : (width >= 700 ? 2.2 : (width >= 400 ? 2.8 : 2.2));
 
                           return GridView.count(
                             crossAxisCount: crossAxisCount,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 24,
+                            mainAxisSpacing: 24,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             childAspectRatio: childAspectRatio,
@@ -95,7 +101,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               _buildStatCard(
                                 theme,
                                 'Daily Revenue',
-                                state.stats.dailyRevenue.toStringAsFixed(2),
+                                '₹${state.stats.dailyRevenue.toStringAsFixed(2)}',
                                 Icons.currency_rupee,
                                 AppColors.emerald,
                               ),
@@ -127,40 +133,59 @@ class _DashboardPageState extends State<DashboardPage> {
                       return const SizedBox.shrink();
                     },
                   ),
-                  32.h,
+                  40.h,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'Recent Orders',
-                        style: theme.textTheme.headlineMedium,
+                        style: GoogleFonts.inter(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? AppColors.white : AppColors.dashboardDark1,
+                        ),
                       ),
                       TextButton.icon(
+                        style: TextButton.styleFrom(
+                          foregroundColor: colorScheme.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                         onPressed: () => context.go('/order'),
                         icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-                        label: const Text('View All'),
+                        label: Text(
+                          'View All',
+                          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ],
                   ),
-                  16.h,
+                  20.h,
                   _buildRecentOrdersOrStatus(theme, colorScheme),
-                  32.h,
+                  40.h,
                   Text(
                     'Quick Access',
-                    style: theme.textTheme.headlineMedium,
+                    style: GoogleFonts.inter(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? AppColors.white : AppColors.dashboardDark1,
+                    ),
                   ),
-                  16.h,
+                  20.h,
                   LayoutBuilder(builder: (context, constraints) {
                     double width = constraints.maxWidth;
                     int crossAxisCount =
                         width >= 1100 ? 4 : (width >= 700 ? 3 : 2);
+                    // Use a squarer ratio on small screens to give cards more height
+                    double aspectRatio = crossAxisCount <= 2 ? (width >= 400 ? 1.2 : 0.9) : 1.6;
                     return GridView.count(
                       crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
+                      crossAxisSpacing: crossAxisCount <= 2 ? 16 : 24,
+                      mainAxisSpacing: crossAxisCount <= 2 ? 16 : 24,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      childAspectRatio: 1.5,
+                      childAspectRatio: aspectRatio,
                       children: [
                         _buildQuickAccessCard(
                           theme,
@@ -193,6 +218,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       ],
                     );
                   }),
+                  32.h,
                 ],
               ),
             ),
@@ -206,16 +232,25 @@ class _DashboardPageState extends State<DashboardPage> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 36),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
-              ? [AppColors.cardDark, AppColors.dashboardDark1]
-              : [AppColors.dashboardDark1, AppColors.dashboardDark2],
+              ? [const Color(0xFF1E293B), const Color(0xFF0F172A)] // Deep slate
+              : [const Color(0xFF2DD4BF), const Color(0xFF0D9488)], // Calming Teal
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: isDark 
+                ? AppColors.black.withValues(alpha: 0.3)
+                : AppColors.teal.withValues(alpha: 0.2),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -224,34 +259,40 @@ class _DashboardPageState extends State<DashboardPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome Back, Admin!',
+                  'Welcome Back, Admin! 👋',
                   style: GoogleFonts.inter(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
                     color: AppColors.white,
+                    letterSpacing: -0.5,
                   ),
                 ),
-                8.h,
+                10.h,
                 Text(
                   'Here is what is happening with your store today.',
                   style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: AppColors.white70,
+                    fontSize: 15,
+                    color: AppColors.white.withValues(alpha: 0.85),
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: colorScheme.primary.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(14),
+              color: AppColors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: AppColors.white.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
             ),
-            child: Icon(
-              Icons.dashboard_outlined,
-              color: colorScheme.primary,
-              size: 28,
+            child: const Icon(
+              Icons.dashboard_rounded,
+              color: AppColors.white,
+              size: 34,
             ),
           ),
         ],
@@ -261,96 +302,97 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget _buildStatCard(
       ThemeData theme, String title, String value, IconData icon, Color color) {
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.cardTheme.color,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: theme.colorScheme.outline.withValues(alpha: 0.15),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+
+    return AnimatedHoverCard(
+      color: theme.cardTheme.color,
+      borderRadius: BorderRadius.circular(20),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(icon, color: color, size: 28),
             ),
-            child: Icon(icon, color: color, size: 22),
-          ),
-          12.w,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    value,
+            16.w,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      value,
+                      style: GoogleFonts.inter(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                        color: theme.textTheme.bodyLarge?.color,
+                        letterSpacing: -0.5,
+                      ),
+                      maxLines: 1,
+                    ),
+                  ),
+                  4.h,
+                  Text(
+                    title,
                     style: GoogleFonts.inter(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: theme.textTheme.bodyLarge?.color,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: theme.textTheme.bodySmall?.color,
                     ),
                     maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                2.h,
-                Text(
-                  title,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: theme.textTheme.bodySmall?.color,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
   }
 
   Widget _buildQuickAccessCard(ThemeData theme, String title, IconData icon,
       Color color, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.cardTheme.color,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: theme.colorScheme.outline.withValues(alpha: 0.15),
-          ),
-        ),
-        padding: const EdgeInsets.all(16),
+    return AnimatedHoverCard(
+      color: theme.cardTheme.color,
+      borderRadius: BorderRadius.circular(20),
+      padding: const EdgeInsets.all(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: color.withValues(alpha: 0.2),
+                ),
               ),
-              child: Icon(icon, color: color, size: 28),
+              child: Icon(icon, color: color, size: 24),
             ),
-            12.h,
-            Text(
-              title,
-              style: GoogleFonts.inter(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-                color: theme.textTheme.bodyLarge?.color,
+            10.h,
+            Flexible(
+              child: Text(
+                title,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                  color: theme.textTheme.bodyLarge?.color,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -359,12 +401,13 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildRecentOrdersOrStatus(ThemeData theme, ColorScheme colorScheme) {
+
     return BlocBuilder<OrderReceivedBloc, OrderReceivedState>(
       builder: (context, state) {
         if (state is OrderReceivedLoading) {
           return Center(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(30),
               child: CircularProgressIndicator(color: colorScheme.primary),
             ),
           );
@@ -379,102 +422,148 @@ class _DashboardPageState extends State<DashboardPage> {
 
         if (orders.isEmpty) {
           if (state is OrderReceivedError) {
-            return Text(
-              'Could not load orders: ${state.message}',
-              style: TextStyle(color: colorScheme.error),
+            return Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: colorScheme.error.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                'Could not load orders: ${state.message}',
+                style: TextStyle(color: colorScheme.error),
+              ),
             );
           }
-          return Text(
-            'No recent orders.',
-            style: theme.textTheme.bodyMedium,
+          return Container(
+            padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: theme.cardTheme.color,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: colorScheme.outline.withValues(alpha: 0.08),
+              ),
+            ),
+            child: Center(
+              child: Text(
+                'No recent orders yet.',
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  color: theme.textTheme.bodyMedium?.color,
+                ),
+              ),
+            ),
           );
         }
 
         final recentOrders = orders.take(5).toList();
 
-        return Container(
-          decoration: BoxDecoration(
-            color: theme.cardTheme.color,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: colorScheme.outline.withValues(alpha: 0.15),
-            ),
-          ),
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: recentOrders.length,
-            separatorBuilder: (context, index) => Divider(
-              color: colorScheme.outline.withValues(alpha: 0.1),
-              height: 1,
-            ),
-            itemBuilder: (context, index) {
-              final order = recentOrders[index];
-              return ListTile(
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                leading: CircleAvatar(
-                  backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
-                  child: Text(
-                    order.userName.isNotEmpty
-                        ? order.userName[0].toUpperCase()
-                        : '?',
-                    style: GoogleFonts.inter(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+        return AnimatedHoverCard( 
+          color: theme.cardTheme.color,
+          borderRadius: BorderRadius.circular(20),
+          padding: EdgeInsets.zero,
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: recentOrders.length,
+                separatorBuilder: (context, index) => Divider(
+                  color: colorScheme.outline.withValues(alpha: 0.08),
+                  height: 1,
                 ),
-                title: Text(
-                  'Order #${order.orderNumber}',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: theme.textTheme.bodyLarge?.color,
-                  ),
-                ),
-                subtitle: Text(
-                  '${order.itemCount} items • ${DateFormat('MMM dd, HH:mm').format(order.createdAt)}',
-                  style: theme.textTheme.bodySmall,
-                ),
-                trailing: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      order.totalAmount.toStringAsFixed(2),
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                        color: theme.textTheme.bodyLarge?.color,
-                      ),
-                    ),
-                    4.h,
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(order.orderStatus)
-                            .withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        order.orderStatus.toUpperCase(),
-                        style: GoogleFonts.inter(
-                          fontSize: 10,
-                          color: _getStatusColor(order.orderStatus),
-                          fontWeight: FontWeight.w700,
+                itemBuilder: (context, index) {
+                  final order = recentOrders[index];
+                  return Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        context.go('/order');
+                      },
+                      hoverColor: colorScheme.primary.withValues(alpha: 0.03),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
+                              child: Text(
+                                order.userName.isNotEmpty
+                                    ? order.userName[0].toUpperCase()
+                                    : '?',
+                                style: GoogleFonts.inter(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            16.w,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Order #${order.orderNumber}',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15,
+                                      color: theme.textTheme.bodyLarge?.color,
+                                    ),
+                                  ),
+                                  4.h,
+                                  Text(
+                                    '${order.itemCount} items • ${DateFormat('MMM dd, HH:mm').format(order.createdAt)}',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 13,
+                                      color: theme.textTheme.bodySmall?.color,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '₹${order.totalAmount.toStringAsFixed(2)}',
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 16,
+                                    color: theme.textTheme.bodyLarge?.color,
+                                  ),
+                                ),
+                                8.h,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: _getStatusColor(order.orderStatus)
+                                        .withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    order.orderStatus.toUpperCase(),
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: _getStatusColor(order.orderStatus),
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                ),
-                onTap: () {
-                  context.go('/order');
+                  );
                 },
-              );
-            },
-          ),
+              ),
+            ),
         );
       },
     );
@@ -497,3 +586,4 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 }
+

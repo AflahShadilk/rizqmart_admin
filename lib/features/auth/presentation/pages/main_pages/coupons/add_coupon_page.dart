@@ -53,7 +53,7 @@ class _AddCouponPageViewState extends State<_AddCouponPageView> {
   final TextEditingController _nameController = TextEditingController(); // This is the Code
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _minOrderController = TextEditingController();
-  final TextEditingController _usageLimitController = TextEditingController();
+  final TextEditingController _usageLimitController = TextEditingController(text: '1');
 
   @override
   void initState() {
@@ -324,9 +324,29 @@ class _AddCouponPageViewState extends State<_AddCouponPageView> {
           decoration: InputDecoration(
             labelText: 'Usage Limit',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            prefixIcon: const Icon(Icons.repeat),
+            prefixIcon: IconButton(
+              icon: const Icon(Icons.remove_circle_outline),
+              onPressed: () {
+                int currentVal = int.tryParse(_usageLimitController.text) ?? 1;
+                if (currentVal > 1) {
+                  _usageLimitController.text = (currentVal - 1).toString();
+                }
+              },
+            ),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.add_circle_outline),
+              onPressed: () {
+                int currentVal = int.tryParse(_usageLimitController.text) ?? 1;
+                _usageLimitController.text = (currentVal + 1).toString();
+              },
+            ),
           ),
-          validator: (v) => v!.isEmpty ? 'Required' : null,
+          textAlign: TextAlign.center,
+          validator: (v) {
+            if (v == null || v.isEmpty) return 'Required';
+            if (int.tryParse(v) == null || int.parse(v) < 1) return 'Must be >= 1';
+            return null;
+          },
         ),
         16.h,
         InkWell(

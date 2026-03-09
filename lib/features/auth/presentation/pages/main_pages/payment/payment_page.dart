@@ -13,6 +13,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/p
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/payment/payment_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/payment/payment_page_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/payment/payment_page_cubit_state.dart';
+import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
 
 class PaymentPage extends StatelessWidget {
   const PaymentPage({super.key});
@@ -275,13 +276,10 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
     Color color,
     IconData icon,
   ) {
-    return Container(
+    return AnimatedHoverCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
+      color: color.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(16),
       child: Column(
         children: [
           Icon(icon, color: color, size: 24),
@@ -309,13 +307,10 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
   }
 
   Widget buildPaymentAmountCard(String label, String amount, Color color) {
-    return Container(
+    return AnimatedHoverCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
+      color: color.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -632,16 +627,11 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
   }
 
   Widget buildPaymentCardMobile(PaymentEntity payment) {
-    return Card(
-      elevation: 0,
+    return AnimatedHoverCard(
       color: Theme.of(context).cardTheme.color,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Theme.of(context).dividerColor),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      borderRadius: BorderRadius.circular(16),
+      padding: const EdgeInsets.all(16),
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -746,21 +736,15 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
             ),
           ],
         ),
-      ),
     );
   }
 
   Widget buildPaymentCardDesktop(PaymentEntity payment) {
-    return Card(
-      elevation: 0,
+    return AnimatedHoverCard(
       color: Theme.of(context).cardTheme.color,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Theme.of(context).dividerColor),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
+      borderRadius: BorderRadius.circular(16),
+      padding: const EdgeInsets.all(16),
+      child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
@@ -901,7 +885,6 @@ class _PaymentPageViewState extends State<_PaymentPageView> {
               ),
           ],
         ),
-      ),
     );
   }
 

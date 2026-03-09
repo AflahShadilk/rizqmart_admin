@@ -1,17 +1,17 @@
-﻿class CouponsPageState {
+class UnitSearchState {
   final String searchQuery;
   final bool isGridView;
 
-  const CouponsPageState({
+  const UnitSearchState({
     this.searchQuery = '',
     this.isGridView = true,
   });
 
-  CouponsPageState copyWith({
+  UnitSearchState copyWith({
     String? searchQuery,
     bool? isGridView,
   }) {
-    return CouponsPageState(
+    return UnitSearchState(
       searchQuery: searchQuery ?? this.searchQuery,
       isGridView: isGridView ?? this.isGridView,
     );

@@ -6,6 +6,7 @@ import 'package:rizqmartadmin/features/auth/domain/entities/main/user_entity.dar
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_event.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
 
 class UserCard extends StatelessWidget {
   final UserEntity user;
@@ -14,11 +15,12 @@ class UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      color: Theme.of(context).cardTheme.color,
-      child: Padding(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      child: AnimatedHoverCard(
         padding: const EdgeInsets.all(16),
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -31,8 +33,7 @@ class UserCard extends StatelessWidget {
             _buildActions(context),
           ],
         ),
-      ),
-    );
+    ));
   }
 
   Widget _buildHeader(BuildContext context) {

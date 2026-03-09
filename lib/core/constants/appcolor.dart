@@ -124,6 +124,9 @@ class AppColors {
   static const red300 = Color(0xFFE57373);
   static const green600 = Color(0xFF43A047);
 
+  // Global Action Button Color (used for all Add buttons across pages)
+  static const addButtonColor = Color(0xFF0D9488); // Teal 600
+
   // App Theme specific colors
   static const tealLight25 = Color(0x402DD4BF);
   static const backgroundColorDark = Color(0xFF0B1120);

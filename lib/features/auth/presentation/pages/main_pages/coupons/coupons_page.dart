@@ -12,6 +12,8 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/coupon
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/coupon/coupons_page_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/coupon/coupons_page_cubit_state.dart';
+import 'package:rizqmartadmin/widgets/global_add_button.dart';
+import 'package:rizqmartadmin/widgets/grid_list_toggle.dart';
 
 class CouponsPage extends StatelessWidget {
   const CouponsPage({super.key});
@@ -125,16 +127,9 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                             ),
                           ),
                           24.h,
-                          ElevatedButton.icon(
+                          GlobalAddButton(
+                            label: 'Add Offer',
                             onPressed: () => _showAddOfferDialog(context),
-                            icon: const Icon(Icons.add_circle_outline),
-                            label: const Text('Add Offer'),
-                             style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.matGreen,
-                                foregroundColor: AppColors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              ),
                           ),
                         ],
                       ),
@@ -152,13 +147,8 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: Theme.of(context).cardTheme.color,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Theme.of(context).dividerColor),
                           ),
                           child: Row(
                             children: [
@@ -185,20 +175,16 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                                   ],
                                 ),
                               ),
-                              ElevatedButton.icon(
+                              GridListToggle(
+                                isGridView: cubitState.isGridView,
+                                onToggle: (isGrid) {
+                                  context.read<CouponsPageCubit>().toggleView(isGrid);
+                                },
+                              ),
+                              16.w,
+                              GlobalAddButton(
+                                label: 'Add Offer',
                                 onPressed: () => _showAddOfferDialog(context),
-                                icon: const Icon(Icons.add_circle_outline, size: 20),
-                                label: Text(
-                                  'Add Offer',
-                                  style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.matGreen,
-                                  foregroundColor: AppColors.white,
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  elevation: 2,
-                                ),
                               ),
                             ],
                           ),
@@ -245,13 +231,31 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
                                     style: GoogleFonts.poppins(color: Theme.of(context).textTheme.bodyMedium?.color),
                                   ),
                                 )
-                              : ListView.builder(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                  itemCount: displayCoupons.length,
-                                  itemBuilder: (context, index) {
-                                    return OfferCard(offer: displayCoupons[index]);
-                                  },
-                                ),
+                              : cubitState.isGridView 
+                                  ? LayoutBuilder(
+                                      builder: (context, constraints) {
+                                        return GridView.builder(
+                                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: constraints.maxWidth > 1200 ? 3 : (constraints.maxWidth > 800 ? 2 : 1),
+                                            childAspectRatio: constraints.maxWidth > 800 ? 2.5 : (constraints.maxWidth > 400 ? 3.0 : 2.0),
+                                            crossAxisSpacing: 16,
+                                            mainAxisSpacing: 16,
+                                          ),
+                                          itemCount: displayCoupons.length,
+                                          itemBuilder: (context, index) {
+                                            return OfferCard(offer: displayCoupons[index]);
+                                          },
+                                        );
+                                      }
+                                    )
+                                  : ListView.builder(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      itemCount: displayCoupons.length,
+                                      itemBuilder: (context, index) {
+                                        return OfferCard(offer: displayCoupons[index]);
+                                      },
+                                    ),
                         ),
                       ],
                     );

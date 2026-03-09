@@ -12,6 +12,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/user/u
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/user/user_data_table.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/respnsive_page.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
 
 class UsersPage extends StatelessWidget {
   const UsersPage({super.key});
@@ -288,13 +289,10 @@ class StatsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedHoverCard(
+      color: color.withValues(alpha: 0.05),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
-      ),
+      borderRadius: BorderRadius.circular(16),
       child: Row(
         children: [
           Container(

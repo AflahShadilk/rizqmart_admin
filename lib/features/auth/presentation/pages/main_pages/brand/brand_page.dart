@@ -1,17 +1,17 @@
-﻿
-
-import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/brand/page/brand_page_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/brand/page/brand_page_cubit_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/add_brand_form_web.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/brand_card_web.dart';
-
-import '../../../../../../core/constants/appcolor.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/delete_config.dart';
+import 'package:rizqmartadmin/widgets/grid_list_toggle.dart';
 
 class BrandPage extends StatefulWidget {
   const BrandPage({super.key});
@@ -23,6 +23,7 @@ class BrandPage extends StatefulWidget {
 class BrandPageState extends State<BrandPage> {
   final TextEditingController searchController = TextEditingController();
   late BrandPageCubit pageCubit;
+  bool isGridView = true;
 
   @override
   void initState() {
@@ -37,55 +38,43 @@ class BrandPageState extends State<BrandPage> {
     super.dispose();
   }
 
-  List<dynamic> filterBrands(
-    List<dynamic> brands,
-    String query,
-  ) {
+  List<dynamic> filterBrands(List<dynamic> brands, String query) {
     if (query.isEmpty) return brands;
-
     return brands.where((brand) {
       final brandName = brand.name?.toLowerCase() ?? '';
       return brandName.contains(query.toLowerCase());
     }).toList();
   }
 
-  Widget buildAddButton(BuildContext context) {
-    final theme = Theme.of(context);
-    return ElevatedButton.icon(
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (_) => BlocProvider.value(
-            value: BlocProvider.of<BrandBloc>(context),
-            child: const AddBrandFormWeb(),
-          ),
-        );
-      },
-      icon: const Icon(Icons.add_circle_outline, size: 20),
-      label: Text(
-        'Add Brand',
-        style: GoogleFonts.poppins(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-        ),
+  void _showAddBrandDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => BlocProvider.value(
+        value: BlocProvider.of<BrandBloc>(context),
+        child: const AddBrandFormWeb(),
       ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 24,
-          vertical: 14,
-        ),
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+    );
+  }
+
+  void _showEditBrandDialog(BuildContext context, BrandEntity brand) {
+    final brandState = BlocProvider.of<BrandBloc>(context).state;
+    final brandList = brandState is BrandLoadedState
+        ? (brandState).brand.cast<BrandEntity>()
+        : <BrandEntity>[];
+    showDialog(
+      context: context,
+      builder: (_) => BlocProvider.value(
+        value: BlocProvider.of<BrandBloc>(context),
+        child: AddBrandFormWeb(brands: brand, brandslist: brandList),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return BlocProvider.value(
       value: pageCubit,
       child: BlocConsumer<BrandBloc, BrandState>(
@@ -96,6 +85,7 @@ class BrandPageState extends State<BrandPage> {
                 content: Text(state.message),
                 backgroundColor: AppColors.matGreen,
                 behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2),
               ),
             );
           } else if (state is BrandFailureState) {
@@ -104,37 +94,29 @@ class BrandPageState extends State<BrandPage> {
                 content: Text(state.error),
                 backgroundColor: AppColors.matRed,
                 behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2),
               ),
             );
           }
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                'Brands',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
-              ),
-              elevation: 0,
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            ),
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            body: BlocBuilder<BrandPageCubit,BrandPageCubitState>(
+            backgroundColor: theme.scaffoldBackgroundColor,
+            body: BlocBuilder<BrandPageCubit, BrandPageCubitState>(
               builder: (context, pageState) {
                 if (state is BrandLoadingState) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const CircularProgressIndicator(),
+                        CircularProgressIndicator(
+                          color: theme.colorScheme.primary,
+                        ),
                         16.h,
                         Text(
                           'Loading brands...',
-                          style: GoogleFonts.poppins(
-                            color: Theme.of(context).textTheme.bodySmall?.color,
+                          style: GoogleFonts.inter(
+                            color: theme.textTheme.bodySmall?.color,
                             fontSize: 14,
                           ),
                         ),
@@ -149,22 +131,37 @@ class BrandPageState extends State<BrandPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.shopping_bag_outlined,
-                            size: 64,
-                            color: Theme.of(context).textTheme.bodySmall?.color,
-                          ),
-                          16.h,
-                          Text(
-                            'No brands found',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              color: Theme.of(context).textTheme.bodySmall?.color,
-                              fontWeight: FontWeight.w500,
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: AppColors.indigo.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.branding_watermark_rounded,
+                              size: 64,
+                              color: AppColors.indigo,
                             ),
                           ),
                           24.h,
-                          buildAddButton(context),
+                          Text(
+                            'No brands yet',
+                            style: GoogleFonts.inter(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              color: theme.textTheme.bodyLarge?.color,
+                            ),
+                          ),
+                          8.h,
+                          Text(
+                            'Start by adding your first brand.',
+                            style: GoogleFonts.inter(
+                              fontSize: 15,
+                              color: theme.textTheme.bodySmall?.color,
+                            ),
+                          ),
+                          24.h,
+                          _buildAddButton(context),
                         ],
                       ),
                     );
@@ -175,135 +172,288 @@ class BrandPageState extends State<BrandPage> {
 
                   return Column(
                     children: [
+                      // Modern Header Card
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 20),
+                        margin: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).cardTheme.color,
+                          color: theme.cardTheme.color,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: theme.colorScheme.outline
+                                .withValues(alpha: 0.1),
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
+                              color: AppColors.black
+                                  .withValues(alpha: isDark ? 0.2 : 0.04),
+                              blurRadius: 16,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Manage Brands',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                                    ),
+                        child: LayoutBuilder(
+                          builder: (context, headerConstraints) {
+                            final isCompact =
+                                headerConstraints.maxWidth < 600;
+
+                            final icon = Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.indigo
+                                    .withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: const Icon(
+                                Icons.branding_watermark_rounded,
+                                color: AppColors.indigo,
+                                size: 28,
+                              ),
+                            );
+
+                            final titleColumn = Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Brands',
+                                  style: GoogleFonts.inter(
+                                    fontSize: isCompact ? 20 : 24,
+                                    fontWeight: FontWeight.w700,
+                                    color:
+                                        theme.textTheme.bodyLarge?.color,
+                                    letterSpacing: -0.5,
                                   ),
-                                  4.h,
-                                  Text(
-                                    '${allBrands.length} ${allBrands.length == 1 ? 'brand' : 'brands'} available',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 13,
-                                      color: Theme.of(context).textTheme.bodySmall?.color,
-                                    ),
+                                ),
+                                4.h,
+                                Text(
+                                  '${allBrands.length} ${allBrands.length == 1 ? 'brand' : 'brands'} available',
+                                  style: GoogleFonts.inter(
+                                    fontSize: isCompact ? 12 : 14,
+                                    color:
+                                        theme.textTheme.bodySmall?.color,
+                                  ),
+                                ),
+                              ],
+                            );
+
+                            final toggleButtons = GridListToggle(
+                              isGridView: isGridView,
+                              onToggle: (isGrid) {
+                                setState(() {
+                                  isGridView = isGrid;
+                                });
+                              },
+                            );
+
+                            final addButton = _buildAddButton(context);
+
+                            if (isCompact) {
+                              return Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      icon,
+                                      16.w,
+                                      Expanded(child: titleColumn),
+                                    ],
+                                  ),
+                                  16.h,
+                                  Row(
+                                    children: [
+                                      toggleButtons,
+                                      const Spacer(),
+                                      addButton,
+                                    ],
                                   ),
                                 ],
-                              ),
-                            ),
-                            buildAddButton(context),
-                          ],
+                              );
+                            }
+
+                            return Row(
+                              children: [
+                                icon,
+                                20.w,
+                                Expanded(child: titleColumn),
+                                toggleButtons,
+                                16.w,
+                                addButton,
+                              ],
+                            );
+                          },
                         ),
                       ),
+
+                      // Search Bar
                       Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: TextField(
-                          controller: searchController,
-                          onChanged: (value) {
-                            pageCubit.updateSearchQuery(value);
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Search brands...',
-                            hintStyle: GoogleFonts.poppins(
-                              color: Theme.of(context).hintColor,
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: theme.cardTheme.color,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: theme.colorScheme.outline
+                                  .withValues(alpha: 0.1),
                             ),
-                            prefixIcon:  Icon(
-                              Icons.search,
-                              color: Theme.of(context).iconTheme.color,
-                              size: 24,
-                            ),
-                            suffixIcon: pageState.searchQuery.isNotEmpty
-                                ? IconButton(
-                                    icon:  Icon(
-                                      Icons.clear,
-                                      color: Theme.of(context).iconTheme.color,
-                                      size: 24,
-                                    ),
-                                    onPressed: () {
-                                      searchController.clear();
-                                      pageCubit.clearSearch();
-                                    },
-                                  )
-                                : null,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide:  BorderSide(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 2,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.black.withValues(
+                                    alpha: isDark ? 0.1 : 0.02),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
                               ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: searchController,
+                            onChanged: (value) {
+                              pageCubit.updateSearchQuery(value);
+                            },
+                            style: GoogleFonts.inter(
+                              color: theme.textTheme.bodyLarge?.color,
                             ),
-                            filled: true,
-                            fillColor: Theme.of(context).cardTheme.color,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
+                            decoration: InputDecoration(
+                              hintText: 'Search brands...',
+                              hintStyle: GoogleFonts.inter(
+                                color: theme.hintColor,
+                                fontSize: 14,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search_rounded,
+                                color: theme.hintColor,
+                                size: 22,
+                              ),
+                              suffixIcon: pageState.searchQuery.isNotEmpty
+                                  ? IconButton(
+                                      icon: Icon(
+                                        Icons.close_rounded,
+                                        color: theme.hintColor,
+                                        size: 20,
+                                      ),
+                                      onPressed: () {
+                                        searchController.clear();
+                                        pageCubit.clearSearch();
+                                      },
+                                    )
+                                  : null,
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
                             ),
                           ),
                         ),
                       ),
+                      16.h,
+
+                      // Content Area
                       Expanded(
                         child: displayBrands.isEmpty
                             ? Center(
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.center,
                                   children: [
                                     Icon(
-                                      Icons.search_off,
+                                      Icons.search_off_rounded,
                                       size: 64,
-                                      color: Theme.of(context).textTheme.bodySmall?.color,
+                                      color: theme
+                                          .textTheme.bodySmall?.color,
                                     ),
                                     16.h,
                                     Text(
                                       'No brands match "${pageState.searchQuery}"',
-                                      style: GoogleFonts.poppins(
-                                        color: Theme.of(context).textTheme.bodySmall?.color,
+                                      style: GoogleFonts.inter(
+                                        color: theme
+                                            .textTheme.bodySmall?.color,
                                         fontSize: 14,
                                       ),
                                     ),
                                   ],
                                 ),
                               )
-                            : ListView.builder(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                itemCount: displayBrands.length,
-                                itemBuilder: (context, index) {
-                                  final brand = displayBrands[index];
+                            : LayoutBuilder(
+                                builder: (context, constraints) {
+                                  if (!isGridView) {
+                                    // List View
+                                    return ListView.separated(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 16,
+                                      ),
+                                      itemCount: displayBrands.length,
+                                      separatorBuilder:
+                                          (context, index) => 12.h,
+                                      itemBuilder: (context, index) {
+                                        final brand =
+                                            displayBrands[index]
+                                                as BrandEntity;
+                                        return BrandListCard(
+                                          brand: brand,
+                                          onEdit: () =>
+                                              _showEditBrandDialog(
+                                                  context, brand),
+                                          onDelete: () =>
+                                              handleDelete(
+                                                  context, brand),
+                                        );
+                                      },
+                                    );
+                                  }
 
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 4),
-                                    child: BrandCardWeb(brand: brand),
+                                  // Grid View
+                                  int crossAxisCount = 1;
+                                  if (constraints.maxWidth > 1400) {
+                                    crossAxisCount = 6;
+                                  } else if (constraints.maxWidth >
+                                      1100) {
+                                    crossAxisCount = 5;
+                                  } else if (constraints.maxWidth > 800) {
+                                    crossAxisCount = 4;
+                                  } else if (constraints.maxWidth > 550) {
+                                    crossAxisCount = 2;
+                                  }
+
+                                  return GridView.builder(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 16,
+                                    ),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: crossAxisCount,
+                                      crossAxisSpacing:
+                                          crossAxisCount == 1
+                                              ? 12
+                                              : 20,
+                                      mainAxisSpacing:
+                                          crossAxisCount == 1
+                                              ? 12
+                                              : 20,
+                                      childAspectRatio:
+                                          crossAxisCount == 1
+                                              ? 2.5
+                                              : 0.85,
+                                    ),
+                                    itemCount: displayBrands.length,
+                                    itemBuilder: (context, index) {
+                                      final brand =
+                                          displayBrands[index]
+                                              as BrandEntity;
+                                      return BrandGridCard(
+                                        brand: brand,
+                                        onEdit: () =>
+                                            _showEditBrandDialog(
+                                                context, brand),
+                                        onDelete: () =>
+                                            handleDelete(
+                                                context, brand),
+                                      );
+                                    },
                                   );
                                 },
                               ),
@@ -318,15 +468,25 @@ class BrandPageState extends State<BrandPage> {
                         Icon(
                           Icons.error_outline,
                           size: 64,
-                          color: AppColors.matRed.shade300,
+                          color: AppColors.matRed.withValues(alpha: 0.8),
                         ),
-                        16.h,
+                        20.h,
+                        Text(
+                          'Failed to load brands',
+                          style: GoogleFonts.inter(
+                            color: theme.textTheme.bodyLarge?.color,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        8.h,
                         Text(
                           state.error,
-                          style: GoogleFonts.poppins(
-                            color: AppColors.matRed.shade700,
-                            fontSize: 16,
+                          style: GoogleFonts.inter(
+                            color: theme.textTheme.bodySmall?.color,
+                            fontSize: 14,
                           ),
+                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),
@@ -338,6 +498,30 @@ class BrandPageState extends State<BrandPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildAddButton(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: () => _showAddBrandDialog(context),
+      icon: const Icon(Icons.add_rounded, size: 22, color: AppColors.white),
+      label: Text(
+        'Add Brand',
+        style: GoogleFonts.inter(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: AppColors.white,
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.addButtonColor,
+        foregroundColor: AppColors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
       ),
     );
   }

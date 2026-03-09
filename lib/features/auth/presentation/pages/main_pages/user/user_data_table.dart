@@ -7,6 +7,7 @@ import 'package:rizqmartadmin/features/auth/domain/entities/main/user_entity.dar
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_event.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
 
 class UsersDataTable extends StatelessWidget {
   final List<UserEntity> users;
@@ -15,13 +16,17 @@ class UsersDataTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return AnimatedHoverCard(
+      padding: EdgeInsets.zero,
       color: Theme.of(context).cardTheme.color,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          headingRowColor: WidgetStateProperty.resolveWith((states) => Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)),
-          headingTextStyle: TextStyle(
+      borderRadius: BorderRadius.circular(16),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            headingRowColor: WidgetStateProperty.resolveWith((states) => AppColors.deepPurple.withValues(alpha: 0.05)),
+            headingTextStyle: TextStyle(
             color: Theme.of(context).textTheme.bodyLarge?.color,
             fontWeight: FontWeight.w600,
           ),
@@ -42,7 +47,7 @@ class UsersDataTable extends StatelessWidget {
           rows: users.map((user) => _buildDataRow(context, user)).toList(),
         ),
       ),
-    );
+    ));
   }
 
   DataRow _buildDataRow(BuildContext context, UserEntity user) {

@@ -18,6 +18,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/c
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/sales_report/top_selling_products/top_selling_products_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/sales_report/top_selling_products/top_selling_products_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/sales_report/top_selling_products/top_selling_products_state.dart';
+import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
 
 class SalesReportPage extends StatelessWidget {
   const SalesReportPage({super.key});
@@ -303,19 +304,9 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
   }
 
   Widget _buildSummaryCard(String title, String value, IconData icon, Color color) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return AnimatedHoverCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      borderRadius: BorderRadius.circular(16),
       child: Row(
         children: [
           Container(
@@ -364,15 +355,12 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
   }
 
   Widget _buildRevenueChart(List<SalesDataPoint> data) {
-    return Container(
+    return SizedBox(
       height: 400,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Theme.of(context).shadowColor.withValues(alpha: 0.1), blurRadius: 16)],
-      ),
-      child: Column(
+      child: AnimatedHoverCard(
+        padding: const EdgeInsets.all(24),
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Revenue Trend', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -453,20 +441,17 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
           ),
         ],
       ),
-    );
+    ));
   }
 
 
   Widget _buildOrderStatusChart(SalesReportEntity report) {
-    return Container(
+    return SizedBox(
       height: 400,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Theme.of(context).shadowColor.withValues(alpha: 0.1), blurRadius: 16)],
-      ),
-      child: Column(
+      child: AnimatedHoverCard(
+        padding: const EdgeInsets.all(24),
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Order Status', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -515,7 +500,7 @@ class _SalesReportPageViewState extends State<_SalesReportPageView> {
           _buildLegendItem(AppColors.chartRed, 'Cancelled: ${report.cancelledOrders}'),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildFilterChip(String label, SalesFilter filter, SalesReportPageState dateState) {
@@ -579,18 +564,9 @@ class _TopSellingProductsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TopSellingProductsBloc, TopSellingProductsState>(
       builder: (context, state) {
-        return Container(
+        return AnimatedHoverCard(
           padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardTheme.color,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
-                blurRadius: 16,
-              ),
-            ],
-          ),
+          borderRadius: BorderRadius.circular(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

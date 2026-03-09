@@ -6,10 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
-import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/image/empty_image_placeholder.dart';
 import 'package:rizqmartadmin/features/auth/data/model/add_product_model.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/units_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_state.dart';
@@ -18,17 +16,14 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/c
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/product/productadding/form_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/product/productadding/form_cubit_state.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/fields_products.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/widgets.dart';
 import 'package:rizqmartadmin/features/auth/presentation/validators/text_field_validator.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/buttons/buttons.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/image/shimmer_image.dart';
-import 'package:uuid/uuid.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/product_form_logic.dart';
 
 class FormProducts extends StatefulWidget {
   final ProductModel? model;
@@ -50,304 +45,239 @@ class _FormProductsState extends State<FormProducts> {
     _formCubit = FormCubit();
     context.read<CategoryBloc>().add(LoadingCategoryEvent());
 
-    if (widget.model != null) {
-      _formCubit.initializeForEdit(widget.model!);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setupEditMode();
-      });
-    }
-  }
-
-  Future<void> setupEditMode() async {
-    final product = widget.model!;
-    _productName.text = product.name;
-    _description.text = product.description ?? '';
-
-    await context.read<CategoryBloc>().stream.firstWhere(
-          (state) => state is CategoryLoadedState,
-          orElse: () => throw Exception('Categories failed to load'),
-        );
-
-    final categoryState = context.read<CategoryBloc>().state as CategoryLoadedState;
-    final category = categoryState.cotegories.firstWhere(
-      (cat) => cat.name == product.category,
-    );
-
-    _formCubit.selectCategory(category.id);
-    context.read<UnitBloc>().add(GetUnitbyCategoryEvent(product.category));
-
-    await context.read<UnitBloc>().stream.firstWhere(
-          (state) => state is UnitLoadedState,
-        );
-
-    final unitState = context.read<UnitBloc>().state;
-    if (unitState is UnitLoadedState) {
-      _formCubit.loadEditModeVariants(unitState.unit, product.variantDetails);
-    }
-  }
-
-  Future<void> pickVariantImage(int variantIndex, int imageIndex) async {
-    try {
-      final url = await ImageUploadService().pickAndUpload();
-      if (url != null) {
-        _formCubit.updateVariantImage(variantIndex, imageIndex, url);
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to upload image: $e')),
-      );
-    }
-  }
-
-  bool validateVariants(FormCubitState formState) {
-    if (formState.currentUnits.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one variant')),
-      );
-      return false;
-    }
-
-    bool hasAtLeastOneFilledVariant = false;
-
-    for (int i = 0; i < formState.currentUnits.length; i++) {
-      final price = formState.variantPrices[i]?.trim() ?? '';
-      final mrp = formState.variantMrps[i]?.trim() ?? '';
-      final quantity = formState.variantStocks[i]?.trim() ?? '';
-
-      if (price.isEmpty || mrp.isEmpty || quantity.isEmpty) {
-        continue;
-      }
-
-      final priceValue = double.tryParse(price);
-      if (priceValue == null || priceValue <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Variant ${i + 1}: Price must be greater than 0')),
-        );
-        return false;
-      }
-
-      final mrpValue = double.tryParse(mrp);
-      if (mrpValue == null || mrpValue <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Variant ${i + 1}: Selling price must be greater than 0')),
-        );
-        return false;
-      }
-
-      if (mrpValue <= priceValue) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Variant ${i + 1}: Selling price must be > regular price')),
-        );
-        return false;
-      }
-
-      final quantityValue = double.tryParse(quantity);
-      if (quantityValue == null || quantityValue <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Variant ${i + 1}: Quantity must be greater than 0')),
-        );
-        return false;
-      }
-
-      final hasImage = (formState.variantImageUrls[i] ?? []).any((img) => img.isNotEmpty);
-      if (!hasImage) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Variant ${i + 1}: Please upload at least one image')),
-        );
-        return false;
-      }
-
-      hasAtLeastOneFilledVariant = true;
-    }
-
-    if (!hasAtLeastOneFilledVariant) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill at least one complete variant')),
-      );
-      return false;
-    }
-
-    return true;
-  }
-
-  void handleSaveProduct(FormCubitState formState) {
-    if (!_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all required fields')),
-      );
-      return;
-    }
-
-    if (formState.selectedCategoryId == null || formState.selectedCategoryId!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a category')),
-      );
-      return;
-    }
-
-    if (formState.selectedBrandId == null || formState.selectedBrandId!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a brand')),
-      );
-      return;
-    }
-
-    if (!validateVariants(formState)) {
-      return;
-    }
-
-    List<Map<String, dynamic>> variantDetails = [];
-
-    for (int i = 0; i < formState.currentUnits.length; i++) {
-      final price = formState.variantPrices[i]?.trim() ?? '';
-      final mrp = formState.variantMrps[i]?.trim() ?? '';
-      final quantity = formState.variantStocks[i]?.trim() ?? '';
-
-      if (price.isEmpty || mrp.isEmpty || quantity.isEmpty) {
-        continue;
-      }
-
-      variantDetails.add({
-        'unitId': formState.currentUnits[i].id,
-        'unitName': formState.currentUnits[i].unitName,
-        'unitType': formState.currentUnits[i].unitType,
-        'price': double.tryParse(price) ?? 0.0,
-        'mrp': double.tryParse(mrp) ?? 0.0,
-        'quantity': double.tryParse(quantity) ?? 0.0,
-        'imageUrls': formState.variantImageUrls[i] ?? [],
-      });
-    }
-
-    final categoryState = context.read<CategoryBloc>().state;
-    String categoryNameToSave = formState.selectedCategoryId ?? '';
-
-    if (categoryState is CategoryLoadedState) {
-      try {
-        final selectedCat = categoryState.cotegories.firstWhere(
-          (cat) => cat.id == formState.selectedCategoryId,
-        );
-        categoryNameToSave = selectedCat.name;
-      } catch (e) {
-        categoryNameToSave = formState.selectedCategoryId ?? '';
+      if (widget.model != null) {
+        _formCubit.initializeForEdit(widget.model!);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ProductFormLogic.setupEditMode(
+            context: context,
+            product: widget.model!,
+            productNameController: _productName,
+            descriptionController: _description,
+            formCubit: _formCubit,
+          );
+        });
       }
     }
-
-    final product = AddProductEntity(
-      id: formState.isEditMode ? formState.productId! : const Uuid().v4(),
-      name: _productName.text.trim(),
-      description: _description.text.trim(),
-      category: categoryNameToSave,
-      brand: formState.selectedBrandId ?? '',
-      discount: 0.0,
-      createdAt: formState.isEditMode ? widget.model!.createdAt : DateTime.now(),
-      updateAt: DateTime.now(),
-      features: false,
-      status: formState.status,
-      variantDetails: variantDetails,
-    );
-
-    if (formState.isEditMode) {
-      context.read<ProductBloc>().add(UpdatingProductEvent(product));
-    } else {
-      context.read<ProductBloc>().add(AddingProductEvent(product));
-    }
-
-    _formKey.currentState!.reset();
-    if (!formState.isEditMode) {
-      _productName.clear();
-      _description.clear();
-      _formCubit.reset();
-    }
-
-    context.go('/products');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(formState.isEditMode
-            ? 'Product updated successfully'
-            : 'Product added successfully'),
-        duration: const Duration(seconds: 2),
+  
+  // Custom Card Wrapper for the new form aesthetic
+  Widget _buildFormCard(BuildContext context, {required String title, required IconData icon, required Widget child}) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: theme.cardTheme.color,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(
+          color: theme.dividerColor.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: theme.colorScheme.primary, size: 20),
+              ),
+              12.w,
+              Text(
+                title,
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: theme.textTheme.bodyLarge?.color,
+                ),
+              ),
+            ],
+          ),
+          24.h,
+          child,
+        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return BlocProvider.value(
       value: _formCubit,
       child: BlocBuilder<FormCubit, FormCubitState>(
         builder: (context, formState) {
           return SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                pageHeading(formState.isEditMode ? 'Edit Product' : 'Add New Product'),
-                30.h,
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            width: double.infinity,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch, // Allow cards to span full width of the container
+                children: [
+                  Row(
                     children: [
-                      10.h,
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        child: WebTextField(
-                          label: 'Product name',
-                          hintText: 'Enter product name',
-                          controller: _productName,
-                          keyboardType: TextInputType.name,
-                          maxLines: 1,
-                          validator: ProductTextValidators.name,
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(
+                          formState.isEditMode ? Icons.edit_note_rounded : Icons.add_box_rounded,
+                          color: theme.colorScheme.primary,
+                          size: 28,
                         ),
                       ),
-                      20.h,
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        child: WebTextArea(
-                          label: 'Description',
-                          hintText: 'Enter description',
-                          controller: _description,
-                          maxLines: 10,
-                          validator: ProductTextValidators.description,
-                        ),
-                      ),
-                      20.h,
-                      buildBrandSection(formState),
-                      20.h,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                      20.w,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          buildCategorySection(formState),
-                          20.w,
-                          buildStatusSection(formState),
-                        ],
-                      ),
-                      20.h,
-                      if (formState.selectedCategoryId != null &&
-                          formState.selectedCategoryId!.isNotEmpty)
-                        buildVariantSection(formState),
-                      20.h,
-                      40.h,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          SecondaryButton(
-                            label: 'Cancel',
-                            onPressed: () {
-                              context.go('/products');
-                            },
+                          Text(
+                            formState.isEditMode ? 'Edit Product' : 'Add New Product',
+                            style: GoogleFonts.inter(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              color: theme.textTheme.bodyLarge?.color,
+                              letterSpacing: -0.5,
+                            ),
                           ),
-                          20.w,
-                          elevatedButtonForSave(
-                            text: formState.isEditMode ? 'Update Product' : 'Save Product',
-                            onPressed: () => handleSaveProduct(formState),
+                          4.h,
+                          Text(
+                            formState.isEditMode ? 'Update product details and variants.' : 'Create a new product for the catalog.',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              color: theme.textTheme.bodySmall?.color,
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                ),
-              ],
+                  40.h,
+                  
+                  // Card 1: Basic Information
+                  _buildFormCard(
+                    context,
+                    title: 'Basic Information',
+                    icon: Icons.info_outline_rounded,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        WebTextField(
+                          label: 'Product name',
+                          hintText: 'e.g. Premium Organic Apples',
+                          controller: _productName,
+                          keyboardType: TextInputType.name,
+                          maxLines: 1,
+                          validator: ProductTextValidators.name,
+                        ),
+                        20.h,
+                        WebTextArea( // Assumes this uses a similar styled decoration internally
+                          label: 'Description',
+                          hintText: 'Enter a detailed product description...',
+                          controller: _description,
+                          maxLines: 6,
+                          validator: ProductTextValidators.description,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Card 2: Classification
+                  _buildFormCard(
+                    context,
+                    title: 'Classification',
+                    icon: Icons.category_outlined,
+                    child: Wrap(
+                      spacing: 24,
+                      runSpacing: 24,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        buildBrandSection(formState),
+                        buildCategorySection(formState),
+                        buildStatusSection(formState),
+                      ],
+                    ),
+                  ),
+
+                  // Card 3: Variants (dynamic) 
+                  if (formState.selectedCategoryId != null && formState.selectedCategoryId!.isNotEmpty)
+                    _buildFormCard(
+                      context,
+                      title: 'Pricing & Variants',
+                      icon: Icons.style_outlined,
+                      child: buildVariantSection(formState),
+                    ),
+                  
+                  40.h,
+                  // Floating action bar style footer
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                    decoration: BoxDecoration(
+                      color: theme.cardTheme.color,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: theme.dividerColor.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton(
+                          onPressed: () => context.go('/products'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                            side: BorderSide(color: theme.dividerColor.withValues(alpha: 0.2)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: Text(
+                            'Cancel',
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w600,
+                              color: theme.textTheme.bodyMedium?.color,
+                            ),
+                          ),
+                        ),
+                        16.w,
+                        elevatedButtonForSave( // Keeps your existing widget but ideally we'd restyle it if we had the code
+                          text: formState.isEditMode ? 'Update Product' : 'Save Product',
+                          onPressed: () => ProductFormLogic.handleSaveProduct(
+                            context: context,
+                            formKey: _formKey,
+                            formCubit: _formCubit,
+                            formState: formState,
+                            productNameController: _productName,
+                            descriptionController: _description,
+                            originalModel: widget.model,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  40.h,
+                ],
+              ),
             ),
           );
         },
@@ -355,13 +285,14 @@ class _FormProductsState extends State<FormProducts> {
     );
   }
 
+  // Adjusted to drop strict width constraints so it flows in the Wrap
   Widget buildBrandSection(FormCubitState formState) {
     return BlocBuilder<BrandBloc, BrandState>(
       builder: (context, state) {
         List<DropdownMenuItem<String>> brandItems = [];
 
         if (state is BrandLoadingState) {
-          return const Center(child: CircularProgressIndicator());
+          return const SizedBox(width: 250, child: Center(child: CircularProgressIndicator()));
         } else if (state is BrandLoadedState) {
           brandItems = state.brand.map((brand) {
             return DropdownMenuItem<String>(
@@ -370,11 +301,11 @@ class _FormProductsState extends State<FormProducts> {
             );
           }).toList();
         } else if (state is BrandFailureState) {
-          return Center(child: Text('Failed to load brands'));
+          return const SizedBox(width: 250, child: Center(child: Text('Failed to load brands')));
         }
 
         return SizedBox(
-          width: MediaQuery.of(context).size.width * 0.42,
+          width: 320, // Specific width for Wrap layout
           child: WebTextFields(
             label: 'Brand',
             hintText: 'Select Brand',
@@ -397,13 +328,14 @@ class _FormProductsState extends State<FormProducts> {
     );
   }
 
+  // Adjusted to drop strict width constraints so it flows in the Wrap
   Widget buildCategorySection(FormCubitState formState) {
     return BlocBuilder<CategoryBloc, CategoryState>(
       builder: (context, state) {
         List<DropdownMenuItem<String>> categoryItems = [];
 
         if (state is CategoryLoadingState) {
-          return const Center(child: CircularProgressIndicator());
+           return const SizedBox(width: 250, child: Center(child: CircularProgressIndicator()));
         } else if (state is CategoryLoadedState) {
           categoryItems = state.cotegories.map((cat) {
             return DropdownMenuItem<String>(
@@ -412,11 +344,11 @@ class _FormProductsState extends State<FormProducts> {
             );
           }).toList();
         } else if (state is CategoryFailureState) {
-          return const Center(child: Text('Failed to load categories'));
+          return const SizedBox(width: 250, child: Center(child: Text('Failed to load categories')));
         }
 
         return SizedBox(
-          width: MediaQuery.of(context).size.width * 0.42,
+          width: 320, // Specific width for Wrap layout
           child: WebTextFields(
             label: 'Category',
             hintText: 'Select category',
@@ -447,7 +379,7 @@ class _FormProductsState extends State<FormProducts> {
               }
               return null;
             },
-            prefixIcon: Icons.category,
+            prefixIcon: Icons.category_outlined,
           ),
         );
       },
@@ -455,33 +387,51 @@ class _FormProductsState extends State<FormProducts> {
   }
 
   Widget buildStatusSection(FormCubitState formState) {
-    return Row(
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Status',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Visibility Status',
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+              color: theme.textTheme.bodySmall?.color,
             ),
-            8.h,
-            Row(
-              children: [
-                12.w,
-                Switch(
-                  value: formState.status,
-                  onChanged: (val) {
-                    _formCubit.toggleStatus();
-                  },
+          ),
+          4.h,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                formState.status ? 'Active' : 'Hidden',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  color: formState.status ? AppColors.matGreen : theme.hintColor,
                 ),
-              ],
-            ),
-          ],
-        ),
-      ],
+              ),
+              8.w,
+              Switch(
+                value: formState.status,
+                activeColor: AppColors.matGreen,
+                onChanged: (val) {
+                  _formCubit.toggleStatus();
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -494,49 +444,54 @@ class _FormProductsState extends State<FormProducts> {
       },
       builder: (context, state) {
         if (state is UnitLoadingState) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: CircularProgressIndicator(),
+          ));
         } else if (state is UnitFailureState) {
-          return Center(child: Text('Error loading variants: ${state.message}'));
+          return Center(child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Text('Error loading variants: ${state.message}'),
+          ));
         } else if (state is UnitLoadedState) {
           final displayUnits = formState.currentUnits.isEmpty ? state.unit : formState.currentUnits;
 
           if (displayUnits.isEmpty) {
-            return const Center(child: Text('No variants available for this category'));
+            return const Center(child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Text('No variants available for this category'),
+            ));
           }
 
-          return Container(
-            width: MediaQuery.of(context).size.width * 0.95,
-            decoration: BoxDecoration(
-              color: AppColors.charcoal.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.lightBlue,
-                width: 2,
-              ),
-            ),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Product Variants (${displayUnits.length} available)',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.blueAccent,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'This category requires ${displayUnits.length} volume variants. Please set pricing and upload images for at least one to activate the product.',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: Theme.of(context).colorScheme.primary,
+                    height: 1.5,
                   ),
                 ),
-                20.h,
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: displayUnits.length,
-                  itemBuilder: (context, index) {
-                    return buildVariantCard(index, displayUnits[index], formState);
-                  },
-                ),
-              ],
-            ),
+              ),
+              24.h,
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: displayUnits.length,
+                separatorBuilder: (context, index) => 16.h,
+                itemBuilder: (context, index) {
+                  return buildVariantCard(index, displayUnits[index], formState);
+                },
+              ),
+            ],
           );
         }
         return const SizedBox.shrink();
@@ -545,130 +500,227 @@ class _FormProductsState extends State<FormProducts> {
   }
 
   Widget buildVariantCard(int index, UnitsEntity unit, FormCubitState formState) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Container(
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
-          color: AppColors.white,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Variant ${index + 1}: ${unit.unitName} (${unit.wieght}${unit.unitType})',
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-                color: AppColors.blackHeading
-              ),
-            ),
-            15.h,
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: 'Regular Price',
-                          hintText: 'e.g., 50',
-                        ),
-                        keyboardType: TextInputType.number,
-                        initialValue: formState.variantPrices[index] ?? '',
-                        onChanged: (value) {
-                          _formCubit.updateVariantPrice(index, value);
-                        },
-                      ),
-                      15.h,
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: 'Selling Price',
-                          hintText: 'e.g., 100',
-                        ),
-                        keyboardType: TextInputType.number,
-                        initialValue: formState.variantMrps[index] ?? '',
-                        onChanged: (value) {
-                          _formCubit.updateVariantMrp(index, value);
-                        },
-                      ),
-                      15.h,
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: 'Stock Quantity',
-                          hintText: 'e.g., 50',
-                        ),
-                        keyboardType: TextInputType.number,
-                        initialValue: formState.variantStocks[index] ?? '',
-                        onChanged: (value) {
-                          _formCubit.updateVariantStock(index, value);
-                        },
-                      ),
-                    ],
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3) : AppColors.white,
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.15)),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.secondary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Variant ${index + 1}',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    color: theme.colorScheme.secondary,
                   ),
                 ),
-                20.w,
-                Expanded(
-                  child: buildVariantImages(index, formState),
+              ),
+              12.w,
+              Text(
+                '${unit.unitName} (${unit.wieght}${unit.unitType})',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: theme.textTheme.bodyLarge?.color,
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+          20.h,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              // Stack fields vertically if constraint width is too small (e.g. tablet portrait)
+              if (constraints.maxWidth < 600) {
+                 return Column(
+                  children: [
+                     TextFormField(
+                       decoration: InputDecoration(
+                         labelText: 'Regular Price (₹)',
+                         hintText: 'e.g., 50',
+                         border: const OutlineInputBorder(),
+                         labelStyle: TextStyle(color: theme.textTheme.bodyMedium?.color),
+                       ),
+                       style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                       keyboardType: TextInputType.number,
+                       initialValue: formState.variantPrices[index] ?? '',
+                       onChanged: (value) => _formCubit.updateVariantPrice(index, value),
+                     ),
+                     16.h,
+                     TextFormField(
+                       decoration: InputDecoration(
+                         labelText: 'Selling Price (₹)',
+                         hintText: 'e.g., 40',
+                         border: const OutlineInputBorder(),
+                         labelStyle: TextStyle(color: theme.textTheme.bodyMedium?.color),
+                       ),
+                       style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                       keyboardType: TextInputType.number,
+                       initialValue: formState.variantMrps[index] ?? '',
+                       onChanged: (value) => _formCubit.updateVariantMrp(index, value),
+                     ),
+                     16.h,
+                     TextFormField(
+                       decoration: InputDecoration(
+                         labelText: 'Stock Qty',
+                         hintText: 'e.g., 100',
+                         border: const OutlineInputBorder(),
+                         labelStyle: TextStyle(color: theme.textTheme.bodyMedium?.color),
+                       ),
+                       style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                       keyboardType: TextInputType.number,
+                       initialValue: formState.variantStocks[index] ?? '',
+                       onChanged: (value) => _formCubit.updateVariantStock(index, value),
+                     ),
+                     24.h,
+                     buildVariantImages(index, formState),
+                  ],
+                 );
+              }
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Regular Price (₹)',
+                            hintText: 'e.g. 50',
+                            filled: true,
+                            fillColor: theme.colorScheme.surface,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            labelStyle: TextStyle(color: theme.textTheme.bodyMedium?.color),
+                          ),
+                          style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                          keyboardType: TextInputType.number,
+                          initialValue: formState.variantPrices[index] ?? '',
+                          onChanged: (value) => _formCubit.updateVariantPrice(index, value),
+                        ),
+                        16.h,
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Selling Price MSRP (₹)',
+                            hintText: 'e.g. 40',
+                            filled: true,
+                            fillColor: theme.colorScheme.surface,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            labelStyle: TextStyle(color: theme.textTheme.bodyMedium?.color),
+                          ),
+                          style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                          keyboardType: TextInputType.number,
+                          initialValue: formState.variantMrps[index] ?? '',
+                          onChanged: (value) => _formCubit.updateVariantMrp(index, value),
+                        ),
+                        16.h,
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Stock Qty',
+                            hintText: 'e.g. 100',
+                            filled: true,
+                            fillColor: theme.colorScheme.surface,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            labelStyle: TextStyle(color: theme.textTheme.bodyMedium?.color),
+                          ),
+                          style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                          keyboardType: TextInputType.number,
+                          initialValue: formState.variantStocks[index] ?? '',
+                          onChanged: (value) => _formCubit.updateVariantStock(index, value),
+                        ),
+                      ],
+                    ),
+                  ),
+                  24.w,
+                  Expanded(
+                    flex: 6,
+                    child: buildVariantImages(index, formState),
+                  ),
+                ],
+              );
+            }
+          ),
+        ],
       ),
     );
   }
 
   Widget buildVariantImages(int variantIndex, FormCubitState formState) {
+    final theme = Theme.of(context);
     final images = formState.variantImageUrls[variantIndex] ?? ['', '', ''];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Images',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        Text(
+          'Product Images (Max 3)',
+          style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: theme.hintColor),
         ),
-        10.h,
+        12.h,
         Row(
           children: List.generate(3, (imageIndex) {
             final imageUrl = imageIndex < images.length ? images[imageIndex] : '';
             return Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5),
+                padding: const EdgeInsets.only(right: 12),
                 child: GestureDetector(
-                  onTap: () => pickVariantImage(variantIndex, imageIndex),
+                  onTap: () => ProductFormLogic.pickVariantImage(
+                    context: context,
+                    formCubit: _formCubit,
+                    variantIndex: variantIndex,
+                    imageIndex: imageIndex,
+                  ),
                   child: Container(
-                    height: 100,
+                    height: 120, // Taller for better preview
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.gray.withValues(alpha: .3)),
-                      borderRadius: BorderRadius.circular(8),
+                      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
+                      border: Border.all(
+                        color: imageUrl.isEmpty ? theme.dividerColor : theme.colorScheme.primary.withValues(alpha: 0.5),
+                        style: imageUrl.isEmpty ? BorderStyle.solid : BorderStyle.solid, // Removed dashed to prevent custom painter need
+                        width: imageUrl.isEmpty ? 1 : 2,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: imageUrl.isNotEmpty
                         ? Stack(
                             fit: StackFit.expand,
                             children: [
-                              ShimmerImage(
-                                imageUrl: imageUrl,
-                                fit: BoxFit.cover,
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10), // inner radius
+                                child: ShimmerImage(
+                                  imageUrl: imageUrl,
+                                  fit: BoxFit.cover,
+                                  borderRadius: 0,
+                                ),
                               ),
                               Positioned(
-                                top: 5,
-                                right: 5,
+                                top: 6,
+                                right: 6,
                                 child: GestureDetector(
                                   onTap: () {
                                     _formCubit.removeVariantImage(variantIndex, imageIndex);
                                   },
                                   child: Container(
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.matRed,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withValues(alpha: 0.6),
                                       shape: BoxShape.circle,
                                     ),
-                                    padding: const EdgeInsets.all(4),
+                                    padding: const EdgeInsets.all(6),
                                     child: const Icon(
-                                      Icons.close,
+                                      Icons.close_rounded,
                                       color: AppColors.white,
                                       size: 14,
                                     ),
@@ -678,8 +730,8 @@ class _FormProductsState extends State<FormProducts> {
                             ],
                           )
                         : const EmptyImagePlaceholder(
-                            text: '',
-                            iconSize: 24,
+                            text: 'Upload',
+                            iconSize: 28,
                             type: PlaceholderType.product,
                           ),
                   ),

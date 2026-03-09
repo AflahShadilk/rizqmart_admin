@@ -8,6 +8,8 @@ import 'package:rizqmartadmin/features/auth/domain/entities/main/units_entity.da
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/unit/unit_dialog_category_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_event.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_state.dart';
 import 'package:uuid/uuid.dart';
 
 class UnitDialog extends StatefulWidget {
@@ -23,6 +25,55 @@ class UnitDialog extends StatefulWidget {
     required this.categories,
     this.selectedCategory,
   });
+
+  static void show(BuildContext context, {required List<UnitsEntity> allUnits, UnitsEntity? unit}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: BlocProvider.of<UnitBloc>(context)),
+          BlocProvider.value(value: BlocProvider.of<CategoryBloc>(context)),
+        ],
+        child: BlocBuilder<CategoryBloc, CategoryState>(
+          builder: (context, state) {
+            List<String> categories = [];
+            String? selectedCatName;
+            if (state is CategoryLoadedState) {
+              categories = state.cotegories.map((cate) => cate.name).toList();
+              if (unit != null && unit.category.isNotEmpty) {
+                try {
+                  final matchingCategory = state.cotegories.firstWhere((cat) => cat.id == unit.category);
+                  selectedCatName = matchingCategory.name;
+                } catch (e) {
+                  selectedCatName = null;
+                }
+              }
+            } else if (state is CategoryLoadingState) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is CategoryFailureState) {
+              return AlertDialog(
+                title: const Text('Error'),
+                content: Text(state.error),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Close'),
+                  ),
+                ],
+              );
+            }
+            return UnitDialog(
+              existingUnits: allUnits,
+              existingUnit: unit,
+              categories: categories,
+              selectedCategory: selectedCatName,
+            );
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   State<UnitDialog> createState() => _UnitDialogState();

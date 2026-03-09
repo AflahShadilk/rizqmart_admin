@@ -10,7 +10,9 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/o
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/order/order_received_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/order/print_order.dart';
-import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
+import 'package:rizqmartadmin/widgets/grid_list_toggle.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/respnsive_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/order/order_page_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/order/order_page_cubit_state.dart';
@@ -39,6 +41,7 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
   late OrderReceivedBloc _orderBloc;
   late PageController _pageController;
   int itemsPerPage = 12;
+  bool isGridView = true;
 
   @override
   void initState() {
@@ -103,6 +106,16 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
           ],
         ),
         actions: [
+          Center(
+            child: GridListToggle(
+              isGridView: isGridView,
+              onToggle: (val) {
+                setState(() {
+                  isGridView = val;
+                });
+              },
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: IconButton(
@@ -127,15 +140,12 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
         },
         child: Container(
           color: theme.scaffoldBackgroundColor,
-        child: Container(
-          color: theme.scaffoldBackgroundColor,
-          child: CustomScrollView(
-            slivers: [
-              // 1. Top Stats Section
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: BlocBuilder<OrderReceivedBloc, OrderReceivedState>(
+          child: Column(
+            children: [
+              // 1. Top Stats Section (Fixed)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                child: BlocBuilder<OrderReceivedBloc, OrderReceivedState>(
                     builder: (context, state) {
                       int totalOrders = 0;
                       if (state is NewOrdersLoaded) {
@@ -144,21 +154,21 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                         totalOrders = state.orders.length;
                       }
 
-                      // Modern Gradient Stats Card
+                      // Modern Glassmorphism-style Stats Card
                       return Container(
                         padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [AppColors.matBlue.shade900, AppColors.matBlue.shade500],
+                            colors: [AppColors.matBlue.shade900, AppColors.matIndigo.shade700],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.matBlue.withValues(alpha: 0.4),
-                              blurRadius: 16,
-                              offset: const Offset(0, 8),
+                              color: AppColors.matBlue.withValues(alpha: 0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
                             ),
                           ],
                         ),
@@ -168,68 +178,66 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.white.withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: const Text(
-                                    'Processing Dashboard',
-                                    style: TextStyle(
-                                      color: AppColors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.5,
+                                Row(
+                                  children: [
+                                    Icon(Icons.dashboard_customize_rounded, color: AppColors.white.withValues(alpha: 0.9), size: 20),
+                                    8.w,
+                                    Text(
+                                      'Processing Dashboard',
+                                      style: TextStyle(
+                                        color: AppColors.white.withValues(alpha: 0.9),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.5,
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                                 16.h,
                                 Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                                  textBaseline: TextBaseline.alphabetic,
                                   children: [
                                     Text(
                                       totalOrders.toString(),
                                       style: const TextStyle(
                                         color: AppColors.white,
-                                        fontSize: 48,
+                                        fontSize: 56,
                                         height: 1,
                                         fontWeight: FontWeight.w800,
                                       ),
                                     ),
                                     8.w,
-                                    const Padding(
-                                      padding: EdgeInsets.only(bottom: 6),
-                                      child: Text(
-                                        'Orders to process',
-                                        style: TextStyle(
-                                          color: AppColors.white70,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                                    Text(
+                                      'Orders',
+                                      style: TextStyle(
+                                        color: AppColors.white.withValues(alpha: 0.8),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                   ],
                                 ),
                                 8.h,
                                 Text(
-                                  'Payments verified & ready for fulfillment',
+                                  'Ready for fulfillment & processing',
                                   style: TextStyle(
-                                    color: AppColors.white.withValues(alpha: 0.6),
-                                    fontSize: 12,
+                                    color: AppColors.white.withValues(alpha: 0.7),
+                                    fontSize: 13,
                                   ),
                                 ),
                               ],
                             ),
                             Container(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 color: AppColors.white.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
+                                border: Border.all(color: AppColors.white.withValues(alpha: 0.2), width: 1.5),
                               ),
                               child: const Icon(
-                                Icons.analytics_outlined,
-                                size: 48,
+                                Icons.inventory_2_rounded,
+                                size: 52,
                                 color: AppColors.white,
                               ),
                             ),
@@ -239,83 +247,79 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                     },
                   ),
                 ),
-              ),
 
-              // 2. Filters Section
-              SliverToBoxAdapter(
-                child: Container(
-                  color: theme.cardTheme.color,
+              // 2. Filters Section (Fixed)
+              Container(
+                decoration: BoxDecoration(),
                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                   margin: const EdgeInsets.only(bottom: 24),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        ('all', 'All Orders', Icons.list, AppColors.matBlue),
-                        ('pending', 'Pending', Icons.hourglass_bottom, AppColors.amber),
-                        ('processing', 'Processing', Icons.build, AppColors.matBlue),
-                        ('shipped', 'Shipped', Icons.local_shipping, AppColors.matIndigo),
-                        ('out for delivery', 'Out for Delivery', Icons.directions_bike, AppColors.matTeal),
-                        ('delivered', 'Delivered', Icons.done_all, AppColors.matGreen[800]),
-                        ('received', 'Received', Icons.check_circle, AppColors.matGreen),
-                        ('cancelled', 'Cancelled', Icons.cancel, AppColors.matRed),
+                        ('all', 'All Orders', Icons.grid_view_rounded, AppColors.grey),
+                        ('pending', 'Pending', Icons.schedule_rounded, AppColors.amber),
+                        ('processing', 'Processing', Icons.autorenew_rounded, AppColors.matBlue),
+                        ('shipped', 'Shipped', Icons.local_shipping_rounded, AppColors.matIndigo),
+                        ('out for delivery', 'Out for Delivery', Icons.directions_bike_rounded, AppColors.matTeal),
+                        ('delivered', 'Delivered', Icons.task_alt_rounded, AppColors.matGreen[700]),
+                        ('received', 'Received', Icons.inventory_rounded, AppColors.matGreen),
+                        ('cancelled', 'Cancelled', Icons.cancel_rounded, AppColors.matRed),
                       ]
                           .asMap()
                           .entries
                           .map((entry) {
                         final index = entry.key;
-                        final filters = [
-                          ('all', 'All Orders', Icons.list, AppColors.matBlue),
-                          ('pending', 'Pending', Icons.hourglass_bottom, AppColors.amber),
-                          ('processing', 'Processing', Icons.build, AppColors.matBlue),
-                          ('shipped', 'Shipped', Icons.local_shipping, AppColors.matIndigo),
-                          ('out for delivery', 'Out for Delivery', Icons.directions_bike, AppColors.matTeal),
-                          ('delivered', 'Delivered', Icons.done_all, AppColors.matGreen[800]),
-                          ('received', 'Received', Icons.check_circle, AppColors.matGreen),
-                          ('cancelled', 'Cancelled', Icons.cancel, AppColors.matRed),
-                        ];
                         final filter = entry.value;
                         final isSelected = context.watch<OrderPageCubit>().state.selectedFilter == filter.$1;
                         
-                        // Modern Filter Chip look
                         return Padding(
-                          padding: EdgeInsets.only(right: index < filters.length - 1 ? 12 : 0),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            child: FilterChip(
-                              avatar: Icon(filter.$3, size: 16, color: isSelected ? filter.$4 : AppColors.grey[500]),
-                              label: Text(filter.$2),
-                              selected: isSelected,
-                              backgroundColor: AppColors.white,
-                              selectedColor: filter.$4!.withValues(alpha: 0.08),
-                              elevation: isSelected ? 0 : 2,
-                              pressElevation: 0,
-                              shadowColor: AppColors.black.withValues(alpha: 0.05),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
-                                side: BorderSide(
-                                  color: isSelected ? filter.$4! : AppColors.grey[200]!,
-                                  width: isSelected ? 1.5 : 1,
+                          padding: const EdgeInsets.only(right: 12),
+                          child: InkWell(
+                            onTap: () {
+                              context.read<OrderPageCubit>().updateFilter(filter.$1);
+                              if (filter.$1 == 'all') {
+                                _orderBloc.add(const FetchNewOrdersEvent());
+                              } else {
+                                _orderBloc.add(FetchOrdersByStatusEvent(status: filter.$1));
+                              }
+                            },
+                            borderRadius: BorderRadius.circular(30),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: isSelected ? filter.$4!.withValues(alpha: 0.1) :theme.cardTheme.color,
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  color: isSelected ? filter.$4! : AppColors.grey.shade200,
+                                  width: isSelected ? 1.5 : 1.0,
                                 ),
+                                boxShadow: isSelected 
+                                  ? [] 
+                                  : [BoxShadow(color: AppColors.black.withValues(alpha: 0.02), blurRadius: 4, offset: const Offset(0, 2))],
                               ),
-                              showCheckmark: false,
-                              labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              labelStyle: TextStyle(
-                                color: isSelected ? filter.$4 : AppColors.grey[700],
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                                fontSize: 13,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    filter.$3, 
+                                    size: 18, 
+                                    color: isSelected ? filter.$4 : AppColors.grey.shade500,
+                                  ),
+                                  8.w,
+                                  Text(
+                                    filter.$2,
+                                    style: TextStyle(
+                                      color: isSelected ? filter.$4 : AppColors.grey.shade700,
+                                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              onSelected: (selected) {
-                                context.read<OrderPageCubit>().updateFilter(filter.$1);
-
-                                if (filter.$1 == 'all') {
-                                  _orderBloc.add(const FetchNewOrdersEvent());
-                                } else {
-                                  _orderBloc.add(
-                                    FetchOrdersByStatusEvent(status: filter.$1),
-                                  );
-                                }
-                              },
                             ),
                           ),
                         );
@@ -323,12 +327,14 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                     ),
                   ),
                 ),
-              ),
 
-              // 3. Grid/List of Orders
-              BlocBuilder<OrderReceivedBloc, OrderReceivedState>(
-                builder: (context, state) {
-                  if (state is OrderReceivedLoading) {
+              // 3. Grid/List of Orders (Scrollable)
+              Expanded(
+                child: CustomScrollView(
+                  slivers: [
+                    BlocBuilder<OrderReceivedBloc, OrderReceivedState>(
+                      builder: (context, state) {
+                        if (state is OrderReceivedLoading) {
                     return const SliverFillRemaining(
                       child: Center(
                         child: Column(
@@ -387,35 +393,74 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                   final isMobile = MediaQuery.of(context).size.width < 768;
 
                   if (isMobile) {
-                    return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12, left: 16, right: 16),
-                            child: orderCardMobile(paginatedOrders[index]),
-                          );
-                        },
-                        childCount: paginatedOrders.length,
-                      ),
-                    );
-                  } else {
-                    return SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      sliver: SliverGrid(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: MediaQuery.of(context).size.width > 1400 ? 4 : 3,
-                          childAspectRatio: 0.95, // Standard card ratio (between 0.75 and 1.5)
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
+                    if (isGridView) {
+                      return SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        sliver: SliverGrid(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.85,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                          ),
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              return orderCardMobile(paginatedOrders[index]);
+                            },
+                            childCount: paginatedOrders.length,
+                          ),
                         ),
+                      );
+                    } else {
+                      return SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
-                            return orderCardDesktop(paginatedOrders[index]);
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12, left: 16, right: 16),
+                              child: orderCardMobile(paginatedOrders[index]),
+                            );
                           },
                           childCount: paginatedOrders.length,
                         ),
-                      ),
-                    );
+                      );
+                    }
+                  } else {
+                    if (isGridView) {
+                      return SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        sliver: SliverGrid(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: MediaQuery.of(context).size.width > 1200 ? 5 : 4,
+                            childAspectRatio: 0.88, // Taller and narrower for cuter, compact look
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                          ),
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              return orderCardDesktop(paginatedOrders[index]);
+                            },
+                            childCount: paginatedOrders.length,
+                          ),
+                        ),
+                      );
+                    } else {
+                      return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16, left: 24, right: 24),
+                              child: Center(
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(maxWidth: 900),
+                                  child: orderCardMobile(paginatedOrders[index]),
+                                ),
+                              ),
+                            );
+                          },
+                          childCount: paginatedOrders.length,
+                        ),
+                      );
+                    }
                   }
                 },
               ),
@@ -441,12 +486,13 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                   );
                 }
                ),
-            ],
-          ),
-        ),
-        ),
-      ),
-    );
+              ],  // slivers
+            ),  // CustomScrollView
+          ),  // Expanded
+            // Column children
+       ] ),  // Column
+       ),  // Container
+     ));
   }
 
   Widget paginationWidget(int totalPages) {
@@ -503,384 +549,280 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
     );
   }
 
-  /// Mobile view for an individual order card with modern shadows and layouts
+  /// Mobile view for an individual order card with modern aesthetics
   Widget orderCardMobile(OrderReceivedEntity order) {
-    return Container(
-      decoration: BoxDecoration(
-        color:AppColors.white,
-        borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 14)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(color: AppColors.grey.shade100, width: 1.5),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(Responsive.scaleSpacing(context, 16)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Order #${order.orderNumber}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: Responsive.scaleFont(context, 14),
-                          color: AppColors.black87,
-                        ),
-                      ),
-                      SizedBox(height: Responsive.scaleSpacing(context, 4)),
-                      Text(
-                        order.userName,
-                        style: TextStyle(
-                          fontSize: Responsive.scaleFont(context, 12),
-                          color: AppColors.grey.shade600,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Responsive.scaleSpacing(context, 10),
-                    vertical: Responsive.scaleSpacing(context, 4),
-                  ),
-                  decoration: BoxDecoration(
-                    color: getStatusColor(order.orderStatus).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 6)),
-                    border: Border.all(
-                      color: getStatusColor(order.orderStatus).withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: Text(
-                    order.orderStatus.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: Responsive.scaleFont(context, 9),
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
-                      color: getStatusColor(order.orderStatus),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: Responsive.scaleSpacing(context, 12)),
-            Container(height: 1, color: AppColors.grey.shade100),
-            SizedBox(height: Responsive.scaleSpacing(context, 12)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
+    return AnimatedHoverCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '₹${order.totalAmount.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: Responsive.scaleFont(context, 16),
-                        color: AppColors.matGreen.shade700,
+                      'Order #${order.orderNumber}',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: Responsive.scaleSpacing(context, 4)),
+                    4.h,
                     Text(
-                      '${order.itemCount} items • ${DateFormat('dd MMM').format(order.createdAt)}',
-                      style: TextStyle(
-                        fontSize: Responsive.scaleFont(context, 11),
+                      DateFormat('dd MMM yyyy, HH:mm').format(order.createdAt),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
                         color: AppColors.grey.shade500,
                       ),
                     ),
                   ],
                 ),
-                IconButton(
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: getStatusColor(order.orderStatus).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  order.orderStatus.toUpperCase(),
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    color: getStatusColor(order.orderStatus),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 24),
+          Row(
+            children: [
+              Icon(Icons.person_outline, size: 16, color: AppColors.grey.shade500),
+              8.w,
+              Expanded(
+                child: Text(
+                  order.userName,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          8.h,
+          Row(
+            children: [
+              Icon(Icons.inventory_2_outlined, size: 16, color: AppColors.grey.shade500),
+              8.w,
+              Text(
+                '${order.itemCount} Items',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '₹${order.totalAmount.toStringAsFixed(2)}',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.matGreen.shade700,
+                ),
+              ),
+            ],
+          ),
+          16.h,
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
                   onPressed: () => showDetailsModal(context, order),
-                  icon: const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.matBlue),
-                  style: IconButton.styleFrom(
-                    backgroundColor: AppColors.matBlue.withValues(alpha: 0.05),
-                    padding: const EdgeInsets.all(10),
+                  icon: const Icon(Icons.receipt_long, size: 16),
+                  label: const Text('Details'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.matBlue,
+                    side: BorderSide(color: AppColors.matBlue.withValues(alpha: 0.3)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: Responsive.scaleSpacing(context, 12)),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      if (order.userId.isNotEmpty) {
-                        context.push('/chat_details', extra: {
-                          'chatId': order.orderId,
-                          'userId': order.userId,
-                          'productName': 'Order ${order.orderNumber}',
-                        });
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Cannot chat: User ID missing')),
-                        );
-                      }
-                    },
-                    icon: Icon(Icons.chat_bubble_rounded, size: Responsive.scaleFont(context, 14), color: AppColors.matBlue.shade700),
-                    label: Text('Chat', style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: AppColors.matBlue.shade700, fontWeight: FontWeight.bold)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.matBlue.shade50,
-                      elevation: 0,
-                      padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
+              ),
+              12.w,
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => showStatusDialog(context, order.orderId),
+                  icon: const Icon(Icons.edit, size: 16),
+                  label: const Text('Status'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.matGreen,
+                    foregroundColor: AppColors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
-                SizedBox(width: Responsive.scaleSpacing(context, 10)),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => showStatusDialog(context, order.orderId),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.matBlue.shade600,
-                      elevation: 0,
-                      padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    child: Text(
-                      'Update',
-                      style: TextStyle(fontSize: Responsive.scaleFont(context, 11), color: AppColors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   /// Desktop view for an individual order card with modern hover-ready aesthetics
   Widget orderCardDesktop(OrderReceivedEntity order) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 14)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return AnimatedHoverCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: getStatusColor(order.orderStatus).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  order.orderStatus.toUpperCase(),
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    color: getStatusColor(order.orderStatus),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Text(
+                DateFormat('MMM dd, yyyy').format(order.createdAt),
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: AppColors.grey.shade500,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-        ],
-        border: Border.all(color: AppColors.grey.shade100, width: 1.5),
-      ),
-      child: Material(
-        color: AppColors.transparent,
-        child: InkWell(
-          onTap: () => showDetailsModal(context, order),
-          borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 14)),
-          hoverColor: AppColors.matBlue.withValues(alpha: 0.02),
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(Responsive.scaleSpacing(context, 16)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          12.h,
+          Text(
+            'Order #${order.orderNumber}',
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+              height: 1.2,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          6.h,
+          Row(
+            children: [
+              Icon(Icons.person, size: 14, color: AppColors.grey.shade400),
+              6.w,
+              Expanded(
+                child: Text(
+                  order.userName,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.grey.shade600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              border: Border.symmetric(
+                horizontal: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Order #${order.orderNumber}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: Responsive.scaleFont(context, 13),
-                                  color: AppColors.black87,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(height: Responsive.scaleSpacing(context, 4)),
-                              Text(
-                                order.userName,
-                                style: TextStyle(
-                                  fontSize: Responsive.scaleFont(context, 11),
-                                  color: AppColors.grey.shade600,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: Responsive.scaleSpacing(context, 8),
-                            vertical: Responsive.scaleSpacing(context, 4),
-                          ),
-                          decoration: BoxDecoration(
-                            color: getStatusColor(order.orderStatus).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(Responsive.scaleRadius(context, 6)),
-                            border: Border.all(
-                              color: getStatusColor(order.orderStatus).withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: Text(
-                            order.orderStatus.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: Responsive.scaleFont(context, 8),
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.5,
-                              color: getStatusColor(order.orderStatus),
-                            ),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      'Items',
+                      style: GoogleFonts.inter(fontSize: 11, color: AppColors.grey.shade500),
                     ),
-                    SizedBox(height: Responsive.scaleSpacing(context, 8)),
-                    Container(height: 1, color: AppColors.grey.shade100),
-                    SizedBox(height: Responsive.scaleSpacing(context, 8)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '₹${order.totalAmount.toStringAsFixed(2)}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: Responsive.scaleFont(context, 16),
-                                color: AppColors.matGreen.shade700,
-                              ),
-                            ),
-                            SizedBox(height: Responsive.scaleSpacing(context, 4)),
-                            Text(
-                              '${order.itemCount} items',
-                              style: TextStyle(
-                                fontSize: Responsive.scaleFont(context, 10),
-                                color: AppColors.grey.shade600,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          DateFormat('dd MMM, HH:mm').format(order.createdAt),
-                          style: TextStyle(
-                            fontSize: Responsive.scaleFont(context, 9),
-                            color:AppColors.grey.shade500,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                    2.h,
+                    Text(
+                      '${order.itemCount}',
+                      style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Theme.of(context).textTheme.bodyLarge?.color),
                     ),
                   ],
                 ),
-                SizedBox(height: Responsive.scaleSpacing(context, 8)),
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    if (order.userId.isNotEmpty)
-                      Padding(
-                        padding: EdgeInsets.only(bottom: Responsive.scaleSpacing(context, 8)),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              context.push('/chat_details', extra: {
-                                'chatId': order.orderId,
-                                'userId': order.userId,
-                                'productName': 'Order ${order.orderNumber}',
-                              });
-                            },
-                            icon: Icon(Icons.chat_bubble_rounded, size: Responsive.scaleFont(context, 12), color: AppColors.matBlue.shade700),
-                            label: Text('Message', style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: AppColors.matBlue.shade700, fontWeight: FontWeight.bold)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.matBlue.shade50,
-                              elevation: 0,
-                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                          ),
-                        ),
-                      ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () => showDetailsModal(context, order),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.grey.shade100,
-                              elevation: 0,
-                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                            child: Text(
-                              'Details',
-                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: AppColors.grey.shade800, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: Responsive.scaleSpacing(context, 8)),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () => showStatusDialog(context, order.orderId),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.matBlue.shade600,
-                              elevation: 0,
-                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                            child: Text(
-                              'Update',
-                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: AppColors.white, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      'Total',
+                      style: GoogleFonts.inter(fontSize: 11, color: AppColors.grey.shade500),
                     ),
-                    if (order.orderStatus != 'received' && order.orderStatus != 'cancelled' && order.orderStatus != 'delivered')
-                      Padding(
-                        padding: EdgeInsets.only(top: Responsive.scaleSpacing(context, 8)),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => confirmMarkAsReceived(
-                              context,
-                              order.orderId,
-                              order.orderNumber,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.matGreen.shade600,
-                              elevation: 0,
-                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 10)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                            child: Text(
-                              'Mark Received',
-                              style: TextStyle(fontSize: Responsive.scaleFont(context, 10), color: AppColors.white, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                      ),
+                    2.h,
+                    Text(
+                      '₹${order.totalAmount.toStringAsFixed(2)}',
+                      style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.matGreen.shade700),
+                    ),
                   ],
                 ),
               ],
             ),
           ),
-        ),
+          12.h,
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => showDetailsModal(context, order),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.matBlue,
+                    side: BorderSide(color: AppColors.matBlue.withValues(alpha: 0.3)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: const Text('Details', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                ),
+              ),
+              8.w,
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => showStatusDialog(context, order.orderId),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.matGreen,
+                    foregroundColor: AppColors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: const Text('Status', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -1357,9 +1299,17 @@ Widget detailItem(String label, String value) {
 }
 
 
-  /// Displays a dialog to update the order's status using a Cubit to manage state
+  /// Displays a modern bottom/dialog layout to update the order's status
   void showStatusDialog(BuildContext context, String orderId) {
-    final statuses = ['pending', 'processing', 'shipped', 'out for delivery', 'delivered', 'received', 'cancelled'];
+    final statuses = [
+      ('pending', Icons.schedule_rounded),
+      ('processing', Icons.autorenew_rounded),
+      ('shipped', Icons.local_shipping_rounded),
+      ('out for delivery', Icons.directions_bike_rounded),
+      ('delivered', Icons.task_alt_rounded),
+      ('received', Icons.inventory_rounded),
+      ('cancelled', Icons.cancel_rounded),
+    ];
 
     showDialog(
       context: context,
@@ -1367,66 +1317,100 @@ Widget detailItem(String label, String value) {
         create: (_) => OrderStatusDialogCubit('pending'),
         child: Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
           ),
           child: Container(
-            padding: const EdgeInsets.all(24),
-            constraints: const BoxConstraints(maxWidth: 400),
+            padding: EdgeInsets.all(Responsive.scaleSpacing(context, 24)),
+            constraints: const BoxConstraints(maxWidth: 420),
             child: BlocBuilder<OrderStatusDialogCubit, String>(
               builder: (context, selectedStatus) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Update Order Status',
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.black87,
                       ),
                     ),
-                    20.h,
-                    // Status Dropdown Container
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.grey[300]!),
-                        borderRadius: BorderRadius.circular(8),
+                    SizedBox(height: Responsive.scaleSpacing(context, 8)),
+                    Text(
+                      'Select the new status for this order. This will instantly update the user.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.grey.shade600,
                       ),
-                      child: DropdownButton<String>(
-                        value: selectedStatus,
-                        isExpanded: true,
-                        underline: const SizedBox(),
-                        items: statuses
-                            .map((status) => DropdownMenuItem(
-                                  value: status,
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 8),
-                                    child: Text(
-                                      status.toUpperCase(),
-                                      style: const TextStyle(fontSize: 13),
+                    ),
+                    SizedBox(height: Responsive.scaleSpacing(context, 24)),
+                    // Modern selectable status chips
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: statuses.map((statusItem) {
+                        final statusValue = statusItem.$1;
+                        final icon = statusItem.$2;
+                        final isSelected = selectedStatus == statusValue;
+                        final color = getStatusColor(statusValue);
+
+                        return Material(
+                          color: AppColors.transparent,
+                          child: InkWell(
+                            onTap: () => context.read<OrderStatusDialogCubit>().updateStatus(statusValue),
+                            borderRadius: BorderRadius.circular(30),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: Responsive.scaleSpacing(context, 16),
+                                vertical: Responsive.scaleSpacing(context, 10),
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected ? color.withValues(alpha: 0.1) : AppColors.white,
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  color: isSelected ? color : AppColors.grey.shade300,
+                                  width: isSelected ? 1.5 : 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(icon, size: 16, color: isSelected ? color : AppColors.grey.shade600),
+                                  SizedBox(width: Responsive.scaleSpacing(context, 8)),
+                                  Text(
+                                    statusValue.toUpperCase(),
+                                    style: TextStyle(
+                                      fontSize: Responsive.scaleFont(context, 11),
+                                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                                      color: isSelected ? color : AppColors.grey.shade700,
+                                      letterSpacing: 0.5,
                                     ),
                                   ),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            context.read<OrderStatusDialogCubit>().updateStatus(value);
-                          }
-                        },
-                      ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
-                    24.h,
+                    SizedBox(height: Responsive.scaleSpacing(context, 32)),
                     // Action Buttons
                     Row(
                       children: [
                         Expanded(
                           child: OutlinedButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancel'),
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 16)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              side: BorderSide(color: AppColors.grey.shade300),
+                            ),
+                            child: Text('Cancel', style: TextStyle(color: AppColors.grey.shade700, fontWeight: FontWeight.w600)),
                           ),
                         ),
-                        12.w,
+                        SizedBox(width: Responsive.scaleSpacing(context, 12)),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
@@ -1439,9 +1423,12 @@ Widget detailItem(String label, String value) {
                               Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.matBlue,
+                              backgroundColor: AppColors.matBlue.shade700,
+                              padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 16)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              elevation: 0,
                             ),
-                            child: const Text('Update'),
+                            child: const Text('Update Status', style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold)),
                           ),
                         ),
                       ],
@@ -1465,46 +1452,60 @@ Widget detailItem(String label, String value) {
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(Responsive.scaleSpacing(context, 24)),
           constraints: const BoxConstraints(maxWidth: 400),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.check_circle_outline,
-                size: 48,
-                color: AppColors.matGreen[400],
+              Container(
+                padding: EdgeInsets.all(Responsive.scaleSpacing(context, 16)),
+                decoration: BoxDecoration(
+                  color: AppColors.matGreen.shade50,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check_circle_outline,
+                  size: 48,
+                  color: AppColors.matGreen.shade600,
+                ),
               ),
-              16.h,
+              SizedBox(height: Responsive.scaleSpacing(context, 16)),
               const Text(
                 'Mark Order as Received',
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.black87,
                 ),
               ),
-              12.h,
+              SizedBox(height: Responsive.scaleSpacing(context, 12)),
               Text(
-                'Are you sure you want to mark Order #$orderNumber as received?',
+                'Are you sure you want to mark Order #$orderNumber as received? This action cannot be undone.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,
-                  color: AppColors.grey[700],
+                  color: AppColors.grey.shade600,
+                  height: 1.4,
                 ),
               ),
-              24.h,
+              SizedBox(height: Responsive.scaleSpacing(context, 24)),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 16)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        side: BorderSide(color: AppColors.grey.shade300),
+                      ),
+                      child: Text('Cancel', style: TextStyle(color: AppColors.grey.shade700, fontWeight: FontWeight.w600)),
                     ),
                   ),
-                  12.w,
+                  SizedBox(width: Responsive.scaleSpacing(context, 12)),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -1514,9 +1515,12 @@ Widget detailItem(String label, String value) {
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.matGreen,
+                        backgroundColor: AppColors.matGreen.shade600,
+                        padding: EdgeInsets.symmetric(vertical: Responsive.scaleSpacing(context, 16)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        elevation: 0,
                       ),
-                      child: const Text('Confirm'),
+                      child: const Text('Confirm', style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],

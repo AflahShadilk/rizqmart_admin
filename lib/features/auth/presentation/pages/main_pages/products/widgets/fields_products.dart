@@ -218,7 +218,7 @@ class _WebTextAreaState extends State<WebTextArea> {
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.blackHeading,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               8.h,

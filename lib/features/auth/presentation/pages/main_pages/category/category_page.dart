@@ -1,6 +1,4 @@
-﻿
-
-import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +10,9 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/c
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/category/adding/category_cubit_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/category/category_add_edit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/category/delete_handle.dart';
+import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
+import 'package:rizqmartadmin/widgets/global_add_button.dart';
+import 'package:rizqmartadmin/widgets/grid_list_toggle.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/image/shimmer_image.dart';
 
 class CategoryPage extends StatefulWidget {
@@ -24,6 +25,7 @@ class CategoryPage extends StatefulWidget {
 class _CategoryPageState extends State<CategoryPage> {
   final TextEditingController _searchController = TextEditingController();
   late CategoryPageCubit _pageCubit;
+  bool isGridView = true;
 
   @override
   void initState() {
@@ -43,45 +45,31 @@ class _CategoryPageState extends State<CategoryPage> {
     String query,
   ) {
     if (query.isEmpty) return categories;
-
     return categories
         .where((category) =>
             category.name.toLowerCase().contains(query.toLowerCase()))
         .toList();
   }
 
-  Widget buildAddButton(BuildContext context, List<CategoryModel> categories) {
-    final theme = Theme.of(context);
-    return ElevatedButton.icon(
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (_) => BlocProvider.value(
-            value: BlocProvider.of<CategoryBloc>(context),
-            child: CategoryDialog(
-              existingCategories: categories,
-            ),
-          ),
-        );
-      },
-      icon: const Icon(Icons.add_circle_outline, size: 20),
-      label: Text(
-        'Add Category',
-        style: GoogleFonts.poppins(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-        ),
+  void _showAddDialog(BuildContext context, List<CategoryModel> categories) {
+    showDialog(
+      context: context,
+      builder: (_) => BlocProvider.value(
+        value: BlocProvider.of<CategoryBloc>(context),
+        child: CategoryDialog(existingCategories: categories),
       ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 24,
-          vertical: 14,
-        ),
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+    );
+  }
+
+  void _showEditDialog(
+      BuildContext context, List<CategoryModel> allCategories, CategoryModel category) {
+    showDialog(
+      context: context,
+      builder: (_) => BlocProvider.value(
+        value: BlocProvider.of<CategoryBloc>(context),
+        child: CategoryDialog(
+          existingCategories: allCategories,
+          existingCategory: category,
         ),
       ),
     );
@@ -89,6 +77,9 @@ class _CategoryPageState extends State<CategoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return BlocProvider.value(
       value: _pageCubit,
       child: BlocConsumer<CategoryBloc, CategoryState>(
@@ -99,6 +90,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 content: Text(state.message),
                 backgroundColor: AppColors.matGreen,
                 behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2),
               ),
             );
           } else if (state is CategoryFailureState) {
@@ -107,24 +99,14 @@ class _CategoryPageState extends State<CategoryPage> {
                 content: Text(state.error),
                 backgroundColor: AppColors.matRed,
                 behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2),
               ),
             );
           }
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                'Categories',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
-              ),
-              elevation: 0,
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            ),
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            backgroundColor: theme.scaffoldBackgroundColor,
             body: BlocBuilder<CategoryPageCubit, CategoryPageState>(
               builder: (context, pageState) {
                 if (state is CategoryLoadingState) {
@@ -132,12 +114,14 @@ class _CategoryPageState extends State<CategoryPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const CircularProgressIndicator(),
+                        CircularProgressIndicator(
+                          color: theme.colorScheme.primary,
+                        ),
                         16.h,
                         Text(
                           'Loading categories...',
-                          style: GoogleFonts.poppins(
-                        color: Theme.of(context).textTheme.bodySmall?.color,
+                          style: GoogleFonts.inter(
+                            color: theme.textTheme.bodySmall?.color,
                             fontSize: 14,
                           ),
                         ),
@@ -152,175 +136,328 @@ class _CategoryPageState extends State<CategoryPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.category_outlined,
-                            size: 64,
-                            color: Theme.of(context).textTheme.bodySmall?.color,
-                          ),
-                          16.h,
-                          Text(
-                            'No categories found',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              color: Theme.of(context).textTheme.bodySmall?.color,
-                              fontWeight: FontWeight.w500,
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary
+                                  .withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.category_outlined,
+                              size: 64,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                           24.h,
-                          buildAddButton(context, allCategories),
+                          Text(
+                            'No categories yet',
+                            style: GoogleFonts.inter(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              color: theme.textTheme.bodyLarge?.color,
+                            ),
+                          ),
+                          8.h,
+                          Text(
+                            'Start by adding your first category.',
+                            style: GoogleFonts.inter(
+                              fontSize: 15,
+                              color: theme.textTheme.bodySmall?.color,
+                            ),
+                          ),
+                          24.h,
+                          _buildAddButton(context, allCategories, theme),
                         ],
                       ),
                     );
                   }
 
-                  final displayCategories =
-                      filterCategories(allCategories, pageState.searchQuery);
+                  final displayCategories = filterCategories(
+                      allCategories, pageState.searchQuery);
 
                   return Column(
                     children: [
+                      // Modern Header Card
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 20),
+                        margin: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).cardTheme.color,
+                          color: theme.cardTheme.color,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: theme.colorScheme.outline
+                                .withValues(alpha: 0.1),
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
+                              color: AppColors.black
+                                  .withValues(alpha: isDark ? 0.2 : 0.04),
+                              blurRadius: 16,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Manage Categories',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                                    ),
+                        child: LayoutBuilder(
+                          builder: (context, headerConstraints) {
+                            final isCompact =
+                                headerConstraints.maxWidth < 600;
+
+                            final icon = Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.amber
+                                    .withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: const Icon(
+                                Icons.category_rounded,
+                                color: AppColors.amber,
+                                size: 28,
+                              ),
+                            );
+
+                            final titleColumn = Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Categories',
+                                  style: GoogleFonts.inter(
+                                    fontSize: isCompact ? 20 : 24,
+                                    fontWeight: FontWeight.w700,
+                                    color:
+                                        theme.textTheme.bodyLarge?.color,
+                                    letterSpacing: -0.5,
                                   ),
-                                  4.h,
-                                  Text(
-                                    '${allCategories.length} ${allCategories.length == 1 ? 'category' : 'categories'} available',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 13,
-                                      color: Theme.of(context).textTheme.bodySmall?.color,
-                                    ),
+                                ),
+                                4.h,
+                                Text(
+                                  '${allCategories.length} ${allCategories.length == 1 ? 'category' : 'categories'} available',
+                                  style: GoogleFonts.inter(
+                                    fontSize: isCompact ? 12 : 14,
+                                    color:
+                                        theme.textTheme.bodySmall?.color,
+                                  ),
+                                ),
+                              ],
+                            );
+
+                            final toggleButtons = GridListToggle(
+                              isGridView: isGridView,
+                              onToggle: (isGrid) {
+                                setState(() {
+                                  isGridView = isGrid;
+                                });
+                              },
+                            );
+
+                            final addButton = _buildAddButton(
+                                context, allCategories, theme);
+
+                            if (isCompact) {
+                              return Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      icon,
+                                      16.w,
+                                      Expanded(child: titleColumn),
+                                    ],
+                                  ),
+                                  16.h,
+                                  Row(
+                                    children: [
+                                      toggleButtons,
+                                      const Spacer(),
+                                      addButton,
+                                    ],
                                   ),
                                 ],
-                              ),
-                            ),
-                            buildAddButton(context, allCategories),
-                          ],
+                              );
+                            }
+
+                            return Row(
+                              children: [
+                                icon,
+                                20.w,
+                                Expanded(child: titleColumn),
+                                toggleButtons,
+                                16.w,
+                                addButton,
+                              ],
+                            );
+                          },
                         ),
                       ),
+
+                      // Search Bar
                       Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: TextField(
-                          controller: _searchController,
-                          onChanged: (value) {
-                            _pageCubit.updateSearchQuery(value);
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Search categories...',
-                            hintStyle: GoogleFonts.poppins(
-                              color: Theme.of(context).hintColor,
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: theme.cardTheme.color,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: theme.colorScheme.outline
+                                  .withValues(alpha: 0.1),
                             ),
-                            prefixIcon:  Icon(
-                              Icons.search,
-                              color: Theme.of(context).iconTheme.color,
-                              size: 24,
-                            ),
-                            suffixIcon: pageState.searchQuery.isNotEmpty
-                                ? IconButton(
-                                    icon:  Icon(
-                                      Icons.clear,
-                                      color: Theme.of(context).iconTheme.color,
-                                      size: 24,
-                                    ),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      _pageCubit.clearSearch();
-                                    },
-                                  )
-                                : null,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide:  BorderSide(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 2,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.black
+                                    .withValues(alpha: isDark ? 0.1 : 0.02),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
                               ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (value) {
+                              _pageCubit.updateSearchQuery(value);
+                            },
+                            style: GoogleFonts.inter(
+                              color: theme.textTheme.bodyLarge?.color,
                             ),
-                            filled: true,
-                            fillColor: Theme.of(context).cardTheme.color,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
+                            decoration: InputDecoration(
+                              hintText: 'Search categories...',
+                              hintStyle: GoogleFonts.inter(
+                                color: theme.hintColor,
+                                fontSize: 14,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search_rounded,
+                                color: theme.hintColor,
+                                size: 22,
+                              ),
+                              suffixIcon: pageState.searchQuery.isNotEmpty
+                                  ? IconButton(
+                                      icon: Icon(
+                                        Icons.close_rounded,
+                                        color: theme.hintColor,
+                                        size: 20,
+                                      ),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                        _pageCubit.clearSearch();
+                                      },
+                                    )
+                                  : null,
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
                             ),
                           ),
                         ),
                       ),
+                      16.h,
+
+                      // Content Area
                       Expanded(
                         child: displayCategories.isEmpty
                             ? Center(
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.center,
                                   children: [
                                     Icon(
-                                      Icons.search_off,
+                                      Icons.search_off_rounded,
                                       size: 64,
-                                      color: Theme.of(context).textTheme.bodySmall?.color,
+                                      color: theme.textTheme.bodySmall
+                                          ?.color,
                                     ),
                                     16.h,
                                     Text(
                                       'No categories match "${pageState.searchQuery}"',
-                                      style: GoogleFonts.poppins(
-                                        color: Theme.of(context).textTheme.bodySmall?.color,
+                                      style: GoogleFonts.inter(
+                                        color: theme
+                                            .textTheme.bodySmall?.color,
                                         fontSize: 14,
                                       ),
                                     ),
                                   ],
                                 ),
                               )
-                            : ListView.builder(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                itemCount: displayCategories.length,
-                                itemBuilder: (context, index) {
-                                  final category = displayCategories[index];
+                            : LayoutBuilder(
+                                builder: (context, constraints) {
+                                  if (!isGridView) {
+                                    // List View
+                                    return ListView.separated(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 16,
+                                      ),
+                                      itemCount:
+                                          displayCategories.length,
+                                      separatorBuilder:
+                                          (context, index) => 12.h,
+                                      itemBuilder: (context, index) {
+                                        final category =
+                                            displayCategories[index];
+                                        return CategoryListCard(
+                                          category: category,
+                                          onEdit: () => _showEditDialog(
+                                              context,
+                                              allCategories,
+                                              category),
+                                          onDelete: () =>
+                                              handleDeleteCategory(
+                                                  context, category),
+                                        );
+                                      },
+                                    );
+                                  }
 
-                                  return CategoryCard(
-                                    category: category,
-                                    onEdit: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (_) => BlocProvider.value(
-                                          value: BlocProvider.of<CategoryBloc>(
-                                              context),
-                                          child: CategoryDialog(
-                                            existingCategories: allCategories,
-                                            existingCategory: category,
-                                          ),
-                                        ),
+                                  // Grid View
+                                  int crossAxisCount = 1;
+                                  if (constraints.maxWidth > 1400) {
+                                    crossAxisCount = 6;
+                                  } else if (constraints.maxWidth >
+                                      1100) {
+                                    crossAxisCount = 5;
+                                  } else if (constraints.maxWidth > 800) {
+                                    crossAxisCount = 4;
+                                  } else if (constraints.maxWidth > 550) {
+                                    crossAxisCount = 2;
+                                  }
+
+                                  return GridView.builder(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 16,
+                                    ),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: crossAxisCount,
+                                      crossAxisSpacing:
+                                          crossAxisCount == 1 ? 12 : 20,
+                                      mainAxisSpacing:
+                                          crossAxisCount == 1 ? 12 : 20,
+                                      childAspectRatio:
+                                          crossAxisCount == 1
+                                              ? 2.5
+                                              : 0.85,
+                                    ),
+                                    itemCount:
+                                        displayCategories.length,
+                                    itemBuilder: (context, index) {
+                                      final category =
+                                          displayCategories[index];
+                                      return CategoryGridCard(
+                                        category: category,
+                                        onEdit: () => _showEditDialog(
+                                            context,
+                                            allCategories,
+                                            category),
+                                        onDelete: () =>
+                                            handleDeleteCategory(
+                                                context, category),
                                       );
-                                    },
-                                    onDelete: () {
-                                      handleDeleteCategory(context, category);
                                     },
                                   );
                                 },
@@ -336,15 +473,25 @@ class _CategoryPageState extends State<CategoryPage> {
                         Icon(
                           Icons.error_outline,
                           size: 64,
-                          color: AppColors.matRed.shade300,
+                          color: AppColors.matRed.withValues(alpha: 0.8),
                         ),
-                        16.h,
+                        20.h,
+                        Text(
+                          'Failed to load categories',
+                          style: GoogleFonts.inter(
+                            color: theme.textTheme.bodyLarge?.color,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        8.h,
                         Text(
                           state.error,
-                          style: GoogleFonts.poppins(
-                            color: AppColors.matRed.shade700,
-                            fontSize: 16,
+                          style: GoogleFonts.inter(
+                            color: theme.textTheme.bodySmall?.color,
+                            fontSize: 14,
                           ),
+                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),
@@ -359,14 +506,23 @@ class _CategoryPageState extends State<CategoryPage> {
       ),
     );
   }
+
+  Widget _buildAddButton(
+      BuildContext context, List<CategoryModel> categories, ThemeData theme) {
+    return GlobalAddButton(
+      label: 'Add Category',
+      onPressed: () => _showAddDialog(context, categories),
+    );
+  }
 }
 
-class CategoryCard extends StatelessWidget {
+// ─── Grid Card ───────────────────────────────────────────────────────────────
+class CategoryGridCard extends StatelessWidget {
   final CategoryModel category;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const CategoryCard({
+  const CategoryGridCard({
     super.key,
     required this.category,
     required this.onEdit,
@@ -376,68 +532,251 @@ class CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: theme.cardTheme.color,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: theme.colorScheme.outline.withValues(alpha: 0.15),
-        ),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 12,
-        ),
-        leading: Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: category.logoUrl != null && category.logoUrl!.isNotEmpty
-                ? ShimmerImage(
-                    imageUrl: category.logoUrl!,
-                    width: 50,
-                    height: 50,
-                    borderRadius: 10,
-                  )
-                :  Icon(
-                    Icons.category,
-                    color: theme.colorScheme.primary,
-                    size: 24,
+
+    return AnimatedHoverCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+            // Image area
+            Expanded(
+              flex: 3,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.3),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
                   ),
-          ),
-        ),
-        title: Text(
-          category.name,
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: theme.textTheme.bodyLarge?.color,
-          ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.edit_outlined, color: AppColors.matBlue),
-              onPressed: onEdit,
-              tooltip: 'Edit Category',
+                ),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
+                  ),
+                  child: category.logoUrl != null &&
+                          category.logoUrl!.isNotEmpty
+                      ? ShimmerImage(
+                          imageUrl: category.logoUrl!,
+                          fit: BoxFit.cover,
+                          borderRadius: 0,
+                        )
+                      : Center(
+                          child: Icon(
+                            Icons.category_rounded,
+                            size: 40,
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.4),
+                          ),
+                        ),
+                ),
+              ),
             ),
-            4.w,
-            IconButton(
-              icon: const Icon(Icons.delete_outline, color: AppColors.matRed),
-              onPressed: onDelete,
-              tooltip: 'Delete Category',
+            // Info area
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      category.name,
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    4.h,
+                    if (category.variants != null &&
+                        category.variants!.isNotEmpty)
+                      Text(
+                        '${category.variants!.length} ${category.variants!.length == 1 ? 'variant' : 'variants'}',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: theme.textTheme.bodySmall?.color,
+                        ),
+                      ),
+                    const Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        _actionButton(
+                          icon: Icons.edit_rounded,
+                          color: AppColors.chartBlue,
+                          onTap: onEdit,
+                          tooltip: 'Edit',
+                        ),
+                        6.w,
+                        _actionButton(
+                          icon: Icons.delete_outline_rounded,
+                          color: AppColors.chartRed,
+                          onTap: onDelete,
+                          tooltip: 'Delete',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+    required String tooltip,
+  }) {
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        shape: BoxShape.circle,
       ),
+      child: IconButton(
+        constraints: const BoxConstraints(),
+        padding: EdgeInsets.zero,
+        icon: Icon(icon, color: color, size: 15),
+        onPressed: onTap,
+        tooltip: tooltip,
+      ),
+    );
+  }
+}
+
+// ─── List Card ───────────────────────────────────────────────────────────────
+class CategoryListCard extends StatelessWidget {
+  final CategoryModel category;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  const CategoryListCard({
+    super.key,
+    required this.category,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return AnimatedHoverCard(
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+              // Image
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: theme.colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.3),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: category.logoUrl != null &&
+                          category.logoUrl!.isNotEmpty
+                      ? ShimmerImage(
+                          imageUrl: category.logoUrl!,
+                          width: 60,
+                          height: 60,
+                          borderRadius: 0,
+                        )
+                      : Icon(
+                          Icons.category_rounded,
+                          size: 28,
+                          color: theme.colorScheme.primary
+                              .withValues(alpha: 0.5),
+                        ),
+                ),
+              ),
+              16.w,
+              // Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      category.name,
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (category.variants != null &&
+                        category.variants!.isNotEmpty) ...[
+                      4.h,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.secondary
+                              .withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          '${category.variants!.length} ${category.variants!.length == 1 ? 'variant' : 'variants'}',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: theme.colorScheme.secondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              // Actions
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.chartBlue.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.edit_rounded,
+                      color: AppColors.chartBlue, size: 16),
+                  onPressed: onEdit,
+                  tooltip: 'Edit Category',
+                ),
+              ),
+              8.w,
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.chartRed.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.delete_outline_rounded,
+                      color: AppColors.chartRed, size: 16),
+                  onPressed: onDelete,
+                  tooltip: 'Delete Category',
+                ),
+              ),
+            ],
+          ),
     );
   }
 }
