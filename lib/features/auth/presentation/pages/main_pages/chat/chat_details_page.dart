@@ -1,15 +1,12 @@
-﻿
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/message_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_state.dart';
-import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/chat/widgets/chat_input_field.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/chat/widgets/chat_message_bubble.dart';
 
 class ChatDetailsPage extends StatefulWidget {
   final String chatId; // orderId
@@ -34,11 +31,20 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
   @override
   void initState() {
     super.initState();
+    // ---------------- Load Chat Messages ----------------
     if (widget.chatId.isNotEmpty) {
       context.read<ChatBloc>().add(LoadMessagesEvent(widget.chatId));
     }
   }
 
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  // ---------------- Chat Actions ----------------
   void _sendMessage() {
     if (_messageController.text.trim().isEmpty) return;
 
@@ -65,17 +71,27 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      // ---------------- Chat Page Header ----------------
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               widget.productName.isNotEmpty ? widget.productName : 'Order ${widget.chatId}',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16),
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+                fontSize: 16,
+              ),
             ),
             Text(
               'User: ${widget.userId}',
-              style: GoogleFonts.poppins(fontSize: 12, color: AppColors.grey.shade600),
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                color: AppColors.grey.shade600,
+              ),
             ),
           ],
         ),
@@ -85,18 +101,35 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
       ),
       body: Column(
         children: [
+          // ---------------- Chat Messages Section ----------------
           Expanded(
             child: BlocBuilder<ChatBloc, ChatState>(
               builder: (context, state) {
                 if (state is ChatLoading && state is! MessagesLoaded) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is ChatError) {
-                  return Center(child: Text("Error: ${state.message}", style: const TextStyle(color: AppColors.matRed)));
+                  return Center(
+                    child: Text(
+                      "Error: ${state.message}",
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        color: AppColors.matRed,
+                      ),
+                    ),
+                  );
                 } else if (state is MessagesLoaded) {
                   final messages = state.messages;
 
                   if (messages.isEmpty) {
-                    return Center(child: Text("Start a conversation", style: GoogleFonts.poppins(color: AppColors.grey)));
+                    return Center(
+                      child: Text(
+                        "Start a conversation",
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          color: AppColors.grey,
+                        ),
+                      ),
+                    );
                   }
 
                   return ListView.builder(
@@ -105,65 +138,8 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                     padding: const EdgeInsets.all(16),
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      final message = messages[index];
-                      final isMe = message.senderRole == 'admin';
-
-                      return Align(
-                        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.7,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isMe ? Theme.of(context).primaryColor : Theme.of(context).cardTheme.color,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(12),
-                              topRight: const Radius.circular(12),
-                              bottomLeft: isMe ? const Radius.circular(12) : Radius.zero,
-                              bottomRight: isMe ? Radius.zero : const Radius.circular(12),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              )
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Sender role label
-                              Text(
-                                isMe ? 'Admin' : 'User',
-                                style: GoogleFonts.poppins(
-                                  color: isMe ? AppColors.white70 : AppColors.grey.shade500,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              2.h,
-                              Text(
-                                message.text,
-                                style: GoogleFonts.poppins(
-                                  color: isMe ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).textTheme.bodyLarge?.color,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              4.h,
-                              Text(
-                                DateFormat('dd MMM, h:mm a').format(message.timestamp),
-                                style: TextStyle(
-                                  color: isMe ? AppColors.white70 : AppColors.grey.shade500,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      return ChatMessageBubble(
+                        message: messages[index],
                       );
                     },
                   );
@@ -172,41 +148,11 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
               },
             ),
           ),
-
-          // Input Area
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: Theme.of(context).cardTheme.color,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Type a message...',
-                      hintStyle: GoogleFonts.poppins(color: AppColors.grey.shade400),
-                      filled: true,
-                      fillColor: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).scaffoldBackgroundColor,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                8.w,
-                CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  radius: 24,
-                  child: IconButton(
-                    icon: Icon(Icons.send_rounded, color: Theme.of(context).colorScheme.onPrimary, size: 20),
-                    onPressed: _sendMessage,
-                  ),
-                ),
-              ],
-            ),
+          
+          // ---------------- Message Input Section ----------------
+          ChatInputField(
+            controller: _messageController,
+            onSend: _sendMessage,
           ),
         ],
       ),
