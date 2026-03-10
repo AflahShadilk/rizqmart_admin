@@ -6,24 +6,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
-import 'package:rizqmartadmin/features/auth/presentation/widgets/image/empty_image_placeholder.dart';
 import 'package:rizqmartadmin/features/auth/data/model/add_product_model.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/units_entity.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_event.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/category/category_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/product/productadding/form_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/product/productadding/form_cubit_state.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_bloc.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_event.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/unit/unit_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/fields_products.dart';
 import 'package:rizqmartadmin/features/auth/presentation/validators/text_field_validator.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/buttons/buttons.dart';
-import 'package:rizqmartadmin/features/auth/presentation/widgets/image/shimmer_image.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/product_form_logic.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/product_classification.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/product_variant_section.dart';
 
 class FormProducts extends StatefulWidget {
   final ProductModel? model;
@@ -72,7 +65,7 @@ class _FormProductsState extends State<FormProducts> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+            color: AppColors.black.withValues(alpha: isDark ? 0.2 : 0.04),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -169,7 +162,7 @@ class _FormProductsState extends State<FormProducts> {
                   ),
                   40.h,
                   
-                  // Card 1: Basic Information
+                  // ---------------- Basic Information Section ----------------
                   _buildFormCard(
                     context,
                     title: 'Basic Information',
@@ -197,7 +190,7 @@ class _FormProductsState extends State<FormProducts> {
                     ),
                   ),
 
-                  // Card 2: Classification
+                  // ---------------- Classification Section ----------------
                   _buildFormCard(
                     context,
                     title: 'Classification',
@@ -207,24 +200,24 @@ class _FormProductsState extends State<FormProducts> {
                       runSpacing: 24,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        buildBrandSection(formState),
-                        buildCategorySection(formState),
-                        buildStatusSection(formState),
+                        ProductBrandSection(formState: formState),
+                        ProductCategorySection(formState: formState),
+                        ProductStatusSection(formState: formState),
                       ],
                     ),
                   ),
 
-                  // Card 3: Variants (dynamic) 
+                  // ---------------- Variants Section ----------------
                   if (formState.selectedCategoryId != null && formState.selectedCategoryId!.isNotEmpty)
                     _buildFormCard(
                       context,
                       title: 'Pricing & Variants',
                       icon: Icons.style_outlined,
-                      child: buildVariantSection(formState),
+                      child: ProductVariantSection(formState: formState),
                     ),
                   
                   40.h,
-                  // Floating action bar style footer
+                  // ---------------- Form Actions Footer ----------------
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
                     decoration: BoxDecoration(
@@ -232,7 +225,7 @@ class _FormProductsState extends State<FormProducts> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                          color: AppColors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                           blurRadius: 16,
                           offset: const Offset(0, 4),
                         ),
@@ -285,6 +278,7 @@ class _FormProductsState extends State<FormProducts> {
     );
   }
 
+  /*
   // Adjusted to drop strict width constraints so it flows in the Wrap
   Widget buildBrandSection(FormCubitState formState) {
     return BlocBuilder<BrandBloc, BrandState>(
@@ -743,6 +737,7 @@ class _FormProductsState extends State<FormProducts> {
       ],
     );
   }
+  */
 
   @override
   void dispose() {

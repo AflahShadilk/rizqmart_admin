@@ -4,9 +4,10 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/produc
 import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/base_container_decoration.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/respnsive_page.dart';
 
+// ---------------- Add Product Route Wrapper ----------------
 class AddProduct extends StatelessWidget {
   final ProductModel? model;
-  const AddProduct({super.key,this.model});
+  const AddProduct({super.key, this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +26,9 @@ class AddProduct extends StatelessWidget {
         width: double.infinity,
         padding: padding,
         child: SingleChildScrollView(
-          child: FormProducts(model: model,),
+          child: FormProducts(model: model),
         ),
       ),
     );
   }
 }
-
-
-
- 

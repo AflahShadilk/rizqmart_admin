@@ -18,7 +18,10 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/p
 import 'package:rizqmartadmin/widgets/global_add_button.dart';
 import 'package:rizqmartadmin/widgets/grid_list_toggle.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/widgets/search_with_filter.dart';
-import 'package:rizqmartadmin/features/auth/presentation/widgets/image/shimmer_image.dart';
+import 'package:rizqmartadmin/features/auth/presentation/cubit/products/products_layout_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/cubit/products/products_layout_state.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/product_grid_card.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/product_list_card.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -31,12 +34,13 @@ class _ProductsPageState extends State<ProductsPage> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   late ProductsPageCubit _pageCubit;
-  bool isGridView = true;
+  late ProductsLayoutCubit _layoutCubit;
 
   @override
   void initState() {
     super.initState();
     _pageCubit = ProductsPageCubit();
+    _layoutCubit = ProductsLayoutCubit();
     
     _scrollController.addListener(_onScroll);
     
@@ -61,6 +65,7 @@ class _ProductsPageState extends State<ProductsPage> {
     _searchController.dispose();
     _scrollController.dispose();
     _pageCubit.close();
+    _layoutCubit.close();
     super.dispose();
   }
 
@@ -193,9 +198,15 @@ class _ProductsPageState extends State<ProductsPage> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return BlocProvider.value(
-      value: _pageCubit,
-      child: Scaffold(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _pageCubit),
+        BlocProvider.value(value: _layoutCubit),
+      ],
+      child: BlocBuilder<ProductsLayoutCubit, ProductsLayoutState>(
+        builder: (context, layoutState) {
+          final isGridView = layoutState.isGridView;
+          return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         body: BlocListener<ProductBloc, ProductState>(
           listener: (context, state) {
@@ -241,6 +252,7 @@ class _ProductsPageState extends State<ProductsPage> {
 
                   return Column(
                      children: [
+                      // ---------------- Products Page Header ----------------
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                         margin: const EdgeInsets.all(24),
@@ -303,9 +315,7 @@ class _ProductsPageState extends State<ProductsPage> {
                             final toggleButtons = GridListToggle(
                               isGridView: isGridView,
                               onToggle: (isGrid) {
-                                setState(() {
-                                  isGridView = isGrid;
-                                });
+                                _layoutCubit.toggleView(isGrid);
                               },
                             );
                             
@@ -355,6 +365,7 @@ class _ProductsPageState extends State<ProductsPage> {
                         ),
                       ),
                       if (allProducts.isNotEmpty)
+                        // ---------------- Product Search Section ----------------
                         BlocBuilder<CategoryBloc, CategoryState>(
                           builder: (context, catstate) {
                             return BlocBuilder<BrandBloc, BrandState>(
@@ -383,6 +394,7 @@ class _ProductsPageState extends State<ProductsPage> {
                           },
                         ),
                       16.h,
+                      // ---------------- Products Grid/List Section ----------------
                       Expanded(
                         child: state is LoadingProductState
                             ? Center(
@@ -570,21 +582,15 @@ class _ProductsPageState extends State<ProductsPage> {
             },
           ),
         ),
+      );
+        },
       ),
     );
   }
 }
 
-class ProductGridCard extends StatelessWidget {
-  final AddProductEntity product;
-  final ProductState categoryState;
-  final ProductState brandState;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-  final Function(String, CategoryState) getCategoryName;
-  final Function(String, BrandState) getBrandName;
-
-  const ProductGridCard({
+/*
+  ProductGridCard({
     super.key,
     required this.product,
     required this.categoryState,
@@ -1012,3 +1018,4 @@ class ProductListCard extends StatelessWidget {
     );
   }
 }
+*/
