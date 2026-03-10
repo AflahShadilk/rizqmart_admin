@@ -1,19 +1,14 @@
-﻿
-
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
-import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/coupon_entity.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/coupon_bloc.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/coupons/add_coupon_page.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/coupons/offer_card.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_bloc.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/coupon/coupons_page_cubit.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/coupon/coupons_page_cubit_state.dart';
-import 'package:rizqmartadmin/widgets/global_add_button.dart';
-import 'package:rizqmartadmin/widgets/grid_list_toggle.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/coupons/add_coupon_page.dart';
+import 'package:rizqmartadmin/features/auth/presentation/cubit/coupons/coupons_cubit.dart';
+import 'widgets/coupon_header_section.dart';
+import 'widgets/coupon_search_bar.dart';
+import 'widgets/coupon_empty_state.dart';
+import 'widgets/coupon_list_content.dart';
 
 class CouponsPage extends StatelessWidget {
   const CouponsPage({super.key});
@@ -21,7 +16,7 @@ class CouponsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CouponsPageCubit(),
+      create: (_) => CouponsCubit(),
       child: const _CouponsPageView(),
     );
   }
@@ -43,13 +38,7 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
     super.dispose();
   }
 
-  List<CouponEntity> _filterCoupons(List<CouponEntity> coupons, String searchQuery) {
-    if (searchQuery.isEmpty) return coupons;
-    return coupons.where((coupon) {
-      return coupon.name.toLowerCase().contains(searchQuery.toLowerCase());
-    }).toList();
-  }
-
+  // ---------------- Add Offer Dialog ----------------
   void _showAddOfferDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -67,6 +56,7 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
   Widget build(BuildContext context) {
     return BlocConsumer<CouponBloc, CouponsState>(
       listener: (context, state) {
+        // ---------------- Snackbar Notifications ----------------
         if (state is LoadingCouponSuccessfulState) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -88,12 +78,14 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
       },
       builder: (context, state) {
         return Scaffold(
+          // ---------------- Coupons Page AppBar ----------------
           appBar: AppBar(
             title: Text(
               'Offers',
-              style: GoogleFonts.poppins(
+              style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).textTheme.bodyLarge?.color,
+                fontFamily: 'Inter',
               ),
             ),
             elevation: 0,
@@ -102,174 +94,41 @@ class _CouponsPageViewState extends State<_CouponsPageView> {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: Builder(
             builder: (context) {
+              // ---------------- Loading State ----------------
               if (state is LoadingCouponState) {
                 return const Center(child: CircularProgressIndicator());
-              } else if (state is LoadedCouponsState) {
+              }
+
+              // ---------------- Loaded State ----------------
+              if (state is LoadedCouponsState) {
                 final allCoupons = state.coupons;
 
+                // ---------------- Empty State ----------------
                 if (allCoupons.isEmpty) {
-                   return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.local_offer_outlined,
-                            size: 64,
-                            color: AppColors.grey.shade300,
-                          ),
-                          16.h,
-                          Text(
-                            'No offers found',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              color: Theme.of(context).textTheme.bodyMedium?.color,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          24.h,
-                          GlobalAddButton(
-                            label: 'Add Offer',
-                            onPressed: () => _showAddOfferDialog(context),
-                          ),
-                        ],
-                      ),
-                    );
+                  return CouponEmptyState(
+                    onAddOffer: () => _showAddOfferDialog(context),
+                  );
                 }
 
-                return BlocBuilder<CouponsPageCubit, CouponsPageState>(
-                  builder: (context, cubitState) {
-                    final displayCoupons = _filterCoupons(allCoupons, cubitState.searchQuery);
+                return Column(
+                  children: [
+                    // ---------------- Coupons Page Header ----------------
+                    CouponHeaderSection(
+                      couponCount: allCoupons.length,
+                      onAddOffer: () => _showAddOfferDialog(context),
+                    ),
 
-                    return Column(
-                      children: [
-                        // Header Section
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardTheme.color,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Theme.of(context).dividerColor),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Manage Offers',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                        color: Theme.of(context).textTheme.bodyLarge?.color,
-                                      ),
-                                    ),
-                                    4.h,
-                                    Text(
-                                      '${allCoupons.length} ${allCoupons.length == 1 ? 'offer' : 'offers'} available',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 13,
-                                        color: Theme.of(context).textTheme.bodySmall?.color,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              GridListToggle(
-                                isGridView: cubitState.isGridView,
-                                onToggle: (isGrid) {
-                                  context.read<CouponsPageCubit>().toggleView(isGrid);
-                                },
-                              ),
-                              16.w,
-                              GlobalAddButton(
-                                label: 'Add Offer',
-                                onPressed: () => _showAddOfferDialog(context),
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        // Search Bar
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (value) {
-                              context.read<CouponsPageCubit>().updateSearchQuery(value);
-                            },
-                            decoration: InputDecoration(
-                              hintText: 'Search offers...',
-                              hintStyle: GoogleFonts.poppins(color: Theme.of(context).hintColor),
-                              prefixIcon: Icon(Icons.search, color: Theme.of(context).iconTheme.color),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: Theme.of(context).cardTheme.color,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              suffixIcon: cubitState.searchQuery.isNotEmpty
-                                ? IconButton(
-                                    icon: const Icon(Icons.clear, color: AppColors.grey),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      context.read<CouponsPageCubit>().clearSearch();
-                                    },
-                                  )
-                                : null,
-                            ),
-                          ),
-                        ),
+                    // ---------------- Coupon Search Section ----------------
+                    CouponSearchBar(controller: _searchController),
 
-                        // List
-                        Expanded(
-                          child: displayCoupons.isEmpty
-                              ? Center(
-                                  child: Text(
-                                    'No offers match "${cubitState.searchQuery}"',
-                                    style: GoogleFonts.poppins(color: Theme.of(context).textTheme.bodyMedium?.color),
-                                  ),
-                                )
-                              : cubitState.isGridView 
-                                  ? LayoutBuilder(
-                                      builder: (context, constraints) {
-                                        return GridView.builder(
-                                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: constraints.maxWidth > 1200 ? 3 : (constraints.maxWidth > 800 ? 2 : 1),
-                                            childAspectRatio: constraints.maxWidth > 800 ? 2.5 : (constraints.maxWidth > 400 ? 3.0 : 2.0),
-                                            crossAxisSpacing: 16,
-                                            mainAxisSpacing: 16,
-                                          ),
-                                          itemCount: displayCoupons.length,
-                                          itemBuilder: (context, index) {
-                                            return OfferCard(offer: displayCoupons[index]);
-                                          },
-                                        );
-                                      }
-                                    )
-                                    : ListView.builder(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                        itemCount: displayCoupons.length,
-                                        itemBuilder: (context, index) {
-                                          return Center(
-                                            child: ConstrainedBox(
-                                              constraints: const BoxConstraints(maxWidth: 900),
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(bottom: 12),
-                                                child: OfferCard(offer: displayCoupons[index]),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                        ),
-                      ],
-                    );
-                  },
+                    // ---------------- Coupons List/Grid Section ----------------
+                    Expanded(
+                      child: CouponListContent(coupons: allCoupons),
+                    ),
+                  ],
                 );
               }
+
               return const SizedBox();
             },
           ),

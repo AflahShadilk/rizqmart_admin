@@ -1,9 +1,8 @@
-﻿// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/image/empty_image_placeholder.dart';
@@ -253,10 +252,11 @@ class _AddCouponPageViewState extends State<_AddCouponPageView> {
       children: [
         Text(
           widget.couponToEdit != null ? 'Edit Offer' : 'Add New Offer',
-          style: GoogleFonts.poppins(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: AppColors.blackHeading,
+            fontFamily: 'Inter',
           ),
         ),
         24.h,

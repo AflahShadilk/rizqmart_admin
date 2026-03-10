@@ -1,8 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/order_recieved_entity.dart';
 
 Future<void> saveOrderPdf(BuildContext context, OrderReceivedEntity order) async {
@@ -14,14 +15,14 @@ Future<void> saveOrderPdf(BuildContext context, OrderReceivedEntity order) async
     );
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PDF saved successfully'), backgroundColor: Colors.green),
+        const SnackBar(content: Text('PDF saved successfully'), backgroundColor: AppColors.matGreen),
       );
     }
   } catch (e) {
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving PDF: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text('Error saving PDF: $e'), backgroundColor: AppColors.matRed),
       );
     }
   }
@@ -39,7 +40,7 @@ Future<void> printOrderDetail(BuildContext context, OrderReceivedEntity order) a
 
      if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error printing PDF: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text('Error printing PDF: $e'), backgroundColor: AppColors.matRed),
       );
     }
   }

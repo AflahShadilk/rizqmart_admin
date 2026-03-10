@@ -17,7 +17,7 @@ void showOrderDetailsModal(BuildContext context, OrderReceivedEntity order, {
         borderRadius: BorderRadius.circular(24),
       ),
       elevation: 0,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       child: Container(
         constraints: const BoxConstraints(maxWidth: 650, maxHeight: 850),
         decoration: BoxDecoration(
@@ -39,7 +39,7 @@ void showOrderDetailsModal(BuildContext context, OrderReceivedEntity order, {
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.matBlue.shade50, Colors.white],
+                  colors: [AppColors.matBlue.shade50, AppColors.white],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),

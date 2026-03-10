@@ -1,10 +1,7 @@
-﻿
-
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
-import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/coupon_entity.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/coupon_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/coupons/add_coupon_page.dart';
@@ -19,10 +16,12 @@ class OfferCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
       child: AnimatedHoverCard(
-        color: Theme.of(context).cardTheme.color,
+        color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(16),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Row(
@@ -33,7 +32,7 @@ class OfferCard extends StatelessWidget {
               height: 80,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                color: theme.colorScheme.surfaceContainerHighest,
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
@@ -44,7 +43,7 @@ class OfferCard extends StatelessWidget {
                         height: 80,
                         borderRadius: 12,
                       )
-                    : const Icon(Icons.local_offer, color: AppColors.blueAccent, size: 30),
+                    : const Icon(Icons.local_offer, color: AppColors.matBlue, size: 30),
               ),
             ),
             20.w,
@@ -55,24 +54,26 @@ class OfferCard extends StatelessWidget {
                 children: [
                    Text(
                     offer.name, 
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                      color: theme.textTheme.bodyLarge?.color,
+                      fontFamily: 'Inter',
                     ),
                   ),
                   4.h,
                   Row(
                     children: [
-                      Icon(Icons.currency_rupee, size: 14, color: Theme.of(context).textTheme.bodyMedium?.color),
+                      Icon(Icons.currency_rupee, size: 14, color: theme.textTheme.bodyMedium?.color),
                       Text(
                          (offer.percentage ?? 0) > 0 
                             ? '${offer.percentage}% OFF' 
                             : '${offer.amount ?? 0} OFF',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: theme.colorScheme.primary,
+                          fontFamily: 'Inter',
                         ),
                       ),
                       12.w,
@@ -84,10 +85,11 @@ class OfferCard extends StatelessWidget {
                         ),
                         child: Text(
                           offer.isActive ? "Active" : "Inactive",
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(
                             fontSize: 12,
                             color: offer.isActive ? AppColors.matGreen : AppColors.matRed,
                             fontWeight: FontWeight.w500,
+                            fontFamily: 'Inter',
                           ),
                         ),
                       ),
@@ -96,9 +98,10 @@ class OfferCard extends StatelessWidget {
                   4.h,
                    Text(
                     'Min Order: ${offer.minOrderValue} | Using: ${offer.usageLimit}',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: Theme.of(context).textTheme.bodySmall?.color,
+                      color: theme.textTheme.bodySmall?.color,
+                      fontFamily: 'Inter',
                     ),
                   ),
                 ],
@@ -109,9 +112,6 @@ class OfferCard extends StatelessWidget {
               children: [
                 IconButton(
                   onPressed: () {
-                    // Edit Logic
-
-
                      showDialog(
                         context: context,
                         builder: (_) => MultiBlocProvider(
@@ -128,7 +128,6 @@ class OfferCard extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () {
-                    // Delete Logic
                     final couponBloc = context.read<CouponBloc>();
                     showDialog(
                       context: context,
