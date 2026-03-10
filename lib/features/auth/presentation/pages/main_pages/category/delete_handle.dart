@@ -11,6 +11,7 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/p
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/product/product_state.dart';
 
+// ---------------- Delete Category Action ----------------
 void handleDeleteCategory(BuildContext context, CategoryModel category) {
   try {
     final productBloc = context.read<ProductBloc>();
@@ -52,6 +53,7 @@ void handleDeleteCategory(BuildContext context, CategoryModel category) {
   }
 }
 
+// ---------------- Delete Confirmation Dialog ----------------
 void showDeleteConfirmDialog(BuildContext context, CategoryModel category) {
   final categoryBloc = context.read<CategoryBloc>();
 
@@ -64,7 +66,7 @@ void showDeleteConfirmDialog(BuildContext context, CategoryModel category) {
         ),
         title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
+            Icon(Icons.warning_amber_rounded, color: AppColors.matOrange.shade700),
             12.w,
             Text(
               'Delete Category',

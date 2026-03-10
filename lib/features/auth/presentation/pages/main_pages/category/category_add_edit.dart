@@ -29,11 +29,13 @@ class CategoryDialog extends StatefulWidget {
 }
 
 class CategoryDialogState extends State<CategoryDialog> {
+  // ---------------- State Variables & Controllers ----------------
   final formKey = GlobalKey<FormState>();
   late TextEditingController nameController;
   final uuid = const Uuid();
   late CategoryDialogCubit dialogCubit;
 
+  // ---------------- Initialization & Lifecycle ----------------
   @override
   void initState() {
     super.initState();
@@ -46,6 +48,7 @@ class CategoryDialogState extends State<CategoryDialog> {
     }
   }
 
+  // ---------------- Core Logic & Handlers ----------------
   Future<void> pickImage() async {
     dialogCubit.setUploading(true);
     try {
@@ -109,6 +112,7 @@ class CategoryDialogState extends State<CategoryDialog> {
     context.pop();
   }
 
+  // ---------------- UI Build Method ----------------
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -123,7 +127,7 @@ class CategoryDialogState extends State<CategoryDialog> {
           horizontal: horizontalPadding,
           vertical: verticalPadding,
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
           child: Container(
@@ -133,7 +137,7 @@ class CategoryDialogState extends State<CategoryDialog> {
             color: AppColors.white,
             boxShadow: const [
               BoxShadow(
-                color: Color(0x1A000000),
+                color: AppColors.black12,
                 blurRadius: 20,
                 offset: Offset(0, 10),
               ),
@@ -153,12 +157,12 @@ class CategoryDialogState extends State<CategoryDialog> {
                       decoration: BoxDecoration(
                         color: isEditMode
                             ? AppColors.blueAccent.withValues(alpha: 0.1)
-                            : Colors.green.withValues(alpha: 0.1),
+                            : AppColors.green.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                         isEditMode ? Icons.edit_outlined : Icons.add_circle_outline,
-                        color: isEditMode ? AppColors.blueAccent : Colors.green,
+                        color: isEditMode ? AppColors.blueAccent : AppColors.green,
                         size: 28,
                       ),
                     ),
@@ -274,7 +278,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(
-                            color: isEditMode ? AppColors.blueAccent : Colors.green,
+                            color: isEditMode ? AppColors.blueAccent : AppColors.green,
                             width: 2,
                           ),
                         ),
@@ -366,7 +370,7 @@ class CategoryDialogState extends State<CategoryDialog> {
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
-                                isEditMode ? AppColors.blueAccent : Colors.green,
+                                isEditMode ? AppColors.blueAccent : AppColors.green,
                             foregroundColor: AppColors.white,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,
