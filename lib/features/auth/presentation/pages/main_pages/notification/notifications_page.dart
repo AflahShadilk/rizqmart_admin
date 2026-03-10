@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/notification/notification_bell_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/notification/notification_bell_cubit_state.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/notification/widgets/chat_notification_tile.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/notification/widgets/general_notification_tile.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/notification/widgets/notification_header.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/notification/widgets/notification_section_header.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
@@ -16,208 +18,125 @@ class NotificationsPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(
-          'Notifications',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_sweep_outlined),
-            tooltip: 'Clear All',
-            onPressed: () {
-              context.read<NotificationBellCubit>().clearNotifications();
-            },
-          ),
-        ],
-      ),
+      // ---------------- Notifications Body ----------------
       body: BlocBuilder<NotificationBellCubit, NotificationBellState>(
         builder: (context, state) {
-          if (state.notifications.isEmpty && state.unreadChats.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.notifications_none_outlined,
-                    size: 80,
-                    color: colorScheme.primary.withValues(alpha: 0.2),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No notifications yet',
-                    style: GoogleFonts.inter(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+          final totalCount = state.notifications.length + state.unreadChats.length;
 
-          return ListView(
-            padding: const EdgeInsets.all(16),
+          return Column(
             children: [
-              if (state.unreadChats.isNotEmpty) ...[
-                _buildSectionHeader('Messages', Icons.chat_outlined, context),
-                ...state.unreadChats.map((chat) => _buildChatNotificationTile(chat, context)),
-               const SizedBox(height: 24),
-              ],
-              if (state.notifications.isNotEmpty) ...[
-                _buildSectionHeader('Updates', Icons.notifications_outlined, context),
-                ...state.notifications.map((notif) => _buildNormalNotificationTile(notif, context)),
-              ],
+              // ---------------- Notifications Header ----------------
+              NotificationHeader(
+                totalCount: totalCount,
+                messageCount: state.unreadChats.length,
+                updateCount: state.notifications.length,
+                onClearAll: () {
+                  context.read<NotificationBellCubit>().clearNotifications();
+                },
+              ),
+
+              // ---------------- Notifications Content ----------------
+              Expanded(
+                child: totalCount == 0
+                    ? _EmptyNotificationsView(colorScheme: colorScheme)
+                    : _NotificationListView(state: state),
+              ),
             ],
           );
         },
       ),
     );
   }
+}
 
-  Widget _buildSectionHeader(String title, IconData icon, BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
+// ---------------- Empty State Widget ----------------
+class _EmptyNotificationsView extends StatelessWidget {
+  final ColorScheme colorScheme;
+
+  const _EmptyNotificationsView({required this.colorScheme});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withValues(alpha: 0.06),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.notifications_none_outlined,
+              size: 64,
+              color: colorScheme.primary.withValues(alpha: 0.3),
+            ),
+          ),
+          const SizedBox(height: 20),
           Text(
-            title,
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.primary,
+            'All caught up!',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'No new notifications at the moment',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 14,
+              color: AppColors.grey500,
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildChatNotificationTile(dynamic chat, BuildContext context) {
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.grey[200]!),
-      ),
-      child: InkWell(
-        onTap: () {
-          context.push('/chat_details', extra: {
-            'chatId': chat.id,
-            'productName': chat.productName,
-            'userId': chat.userId,
-          });
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.matBlue.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.person_outline, color: AppColors.matBlue),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      chat.productName.isNotEmpty ? chat.productName : 'Order ${chat.id}',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      chat.lastMessage,
-                      style: GoogleFonts.inter(color: AppColors.grey[600], fontSize: 14),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _formatTime(chat.timestamp),
-                      style: GoogleFonts.inter(color: AppColors.grey[400], fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right, color: AppColors.grey),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+// ---------------- Notification List Widget ----------------
+class _NotificationListView extends StatelessWidget {
+  final NotificationBellState state;
 
-  Widget _buildNormalNotificationTile(Map<String, dynamic> notif, BuildContext context) {
-     final bool isOrder = notif['title'].toString().toLowerCase().contains('order');
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.grey[200]!),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
+  const _NotificationListView({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 800),
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: (isOrder ? AppColors.matGreen : AppColors.amber).withValues(alpha: 0.1),
-                shape: BoxShape.circle,
+            // ---------------- Messages Section ----------------
+            if (state.unreadChats.isNotEmpty) ...[
+              const NotificationSectionHeader(
+                title: 'Messages',
+                icon: Icons.chat_outlined,
               ),
-              child: Icon(
-                isOrder ? Icons.shopping_cart_outlined : Icons.info_outline,
-                color: isOrder ? AppColors.matGreen : AppColors.amber,
+              ...state.unreadChats.map(
+                (chat) => ChatNotificationTile(chat: chat),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    notif['title'],
-                    style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    notif['body'],
-                    style: GoogleFonts.inter(color: AppColors.grey[600], fontSize: 14),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _formatTime(notif['timestamp']),
-                    style: GoogleFonts.inter(color: AppColors.grey[400], fontSize: 12),
-                  ),
-                ],
+              const SizedBox(height: 20),
+            ],
+            // ---------------- Updates Section ----------------
+            if (state.notifications.isNotEmpty) ...[
+              NotificationSectionHeader(
+                title: 'Updates',
+                icon: Icons.notifications_outlined,
+                color: AppColors.matGreen,
               ),
-            ),
+              ...state.notifications.map(
+                (notif) => GeneralNotificationTile(notification: notif),
+              ),
+            ],
           ],
         ),
       ),
     );
-  }
-
-  String _formatTime(DateTime timestamp) {
-    final now = DateTime.now();
-    final difference = now.difference(timestamp);
-
-    if (difference.inSeconds < 60) return 'now';
-    if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
-    if (difference.inHours < 24) return '${difference.inHours}h ago';
-    return '${difference.inDays}d ago';
   }
 }

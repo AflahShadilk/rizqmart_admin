@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/core/services/repository_providers_page.dart';
@@ -82,7 +82,8 @@ class NotificationBellCubit extends Cubit<NotificationBellState> {
   void clearNotifications() {
     emit(state.copyWith(
       notifications: [],
-      notificationCount: state.unreadChats.length,
+      unreadChats: [],
+      notificationCount: 0,
       lastAddedNotification: null,
       lastAddedChat: null,
     ));

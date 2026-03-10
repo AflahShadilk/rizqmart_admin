@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use
 
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +22,7 @@ import 'package:rizqmartadmin/features/auth/presentation/cubit/products/products
 import 'package:rizqmartadmin/features/auth/presentation/cubit/products/products_layout_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/product_grid_card.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/product_list_card.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/products/widgets/pagination_controls.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -42,22 +43,10 @@ class _ProductsPageState extends State<ProductsPage> {
     _pageCubit = ProductsPageCubit();
     _layoutCubit = ProductsLayoutCubit();
     
-    _scrollController.addListener(_onScroll);
-    
     Future.delayed(Duration.zero, () {
       // ignore: use_build_context_synchronously
       context.read<ProductBloc>().add(const LoadingProductEvent());
     });
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      // Trigger infinite scroll by requesting the next page limit.
-      // This will increment `currentPage` in the Cubit, widening the display slice.
-      // We pass a very large number for `totalItems` because our `enIndex` bounds logic
-      // cleanly handles the maximum length constraint during rendering natively.
-      _pageCubit.nextPage(99999);
-    }
   }
 
   @override
@@ -243,11 +232,21 @@ class _ProductsPageState extends State<ProductsPage> {
                       ? filterProductsbySearch(allProducts, _searchController.text)
                       : pageState.filterProducts.where((p) => allProducts.any((ap) => ap.id == p.id)).toList();
 
-                  // Infinite scroll display logic
+                  // ---------------- Pagination Logic ----------------
                   final totalItems = productsToDisplay.length;
-                  final displayCount = (pageState.currentPage * pageState.itemsPerPage).clamp(0, totalItems);
+                  final totalPages = (totalItems / pageState.itemsPerPage).ceil();
+                  
+                  // Ensure current page is valid after filtering
+                  final validCurrentPage = pageState.currentPage > totalPages 
+                      ? (totalPages > 0 ? totalPages : 1) 
+                      : pageState.currentPage;
+
+                  final startIndex = (validCurrentPage - 1) * pageState.itemsPerPage;
+                  final endIndex = (startIndex + pageState.itemsPerPage).clamp(0, totalItems);
+                  
+                  // ---------------- Paginated Products List ----------------
                   final paginatedProducts = totalItems > 0
-                      ? productsToDisplay.sublist(0, displayCount)
+                      ? productsToDisplay.sublist(startIndex, endIndex)
                       : <AddProductEntity>[];
 
                   return Column(
@@ -574,11 +573,30 @@ class _ProductsPageState extends State<ProductsPage> {
                                     : const Center(
                                         child: Text('No state available'),
                                       ),
-                      ),
-                    ],
-                  );
-                },
-              );
+                        ),
+                        
+                        // ---------------- Pagination Controls ----------------
+                        if (allProducts.isNotEmpty && state is LoadedProductState && paginatedProducts.isNotEmpty)
+                          PaginationControls(
+                            currentPage: validCurrentPage,
+                            totalPages: totalPages,
+                            onNext: () {
+                              _pageCubit.nextPage(totalItems);
+                              _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                            },
+                            onPrevious: () {
+                              _pageCubit.previousPage();
+                              _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                            },
+                            onPageSelected: (page) {
+                              _pageCubit.goToPage(page, totalItems);
+                              _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                            },
+                          ),
+                      ],
+                    );
+                  },
+                );
             },
           ),
         ),

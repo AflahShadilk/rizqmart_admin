@@ -1,4 +1,4 @@
-﻿import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
+import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 
 class ProductsPageState {
   final List<AddProductEntity> filterProducts;
@@ -10,7 +10,7 @@ class ProductsPageState {
     this.filterProducts = const [],
     this.searchQuery = '',
     this.currentPage = 1,
-    this.itemsPerPage = 20,
+    this.itemsPerPage = 10,
   });
 
   ProductsPageState copyWith({
