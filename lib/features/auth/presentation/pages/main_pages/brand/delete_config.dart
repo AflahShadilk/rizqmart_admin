@@ -2,7 +2,7 @@
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+// removed GoogleFonts
 import 'package:rizqmartadmin/features/auth/domain/entities/main/brand_entity.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/product_model.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/brand/brand_bloc.dart';
@@ -47,7 +47,7 @@ void handleDelete(BuildContext context, BrandEntity brandEntity) {
     if (isUsed) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Cannot delete! This category is used in products.'),
+          content: const Text('Cannot delete! This brand is used in products.'),
           backgroundColor: AppColors.matRed,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
@@ -77,16 +77,17 @@ void _showDeleteConfirmDialog(BuildContext context, BrandEntity brandEntity) {
             12.w,
             Text(
               'Delete Brand',
-              style: GoogleFonts.poppins(
+              style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
+                fontFamily: 'Inter',
               ),
             ),
           ],
         ),
         content: Text(
           'Are you sure you want to delete "${brandEntity.name}"? This action cannot be undone.',
-          style: GoogleFonts.poppins(fontSize: 14),
+          style: TextStyle(fontSize: 14, fontFamily: 'Inter'),
         ),
         actions: [
           TextButton(
@@ -99,9 +100,10 @@ void _showDeleteConfirmDialog(BuildContext context, BrandEntity brandEntity) {
             ),
             child: Text(
               'Cancel',
-              style: GoogleFonts.poppins(
+              style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: AppColors.grey.shade700,
+                fontFamily: 'Inter',
               ),
             ),
           ),
@@ -123,7 +125,7 @@ void _showDeleteConfirmDialog(BuildContext context, BrandEntity brandEntity) {
               
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Category deleted successfully'),
+                  content: Text('Brand deleted successfully'),
                   backgroundColor: AppColors.matGreen,
                   behavior: SnackBarBehavior.floating,
                   duration: Duration(seconds: 2),
@@ -132,8 +134,9 @@ void _showDeleteConfirmDialog(BuildContext context, BrandEntity brandEntity) {
             },
             child: Text(
               'Delete',
-              style: GoogleFonts.poppins(
+              style: TextStyle(
                 fontWeight: FontWeight.w600,
+                fontFamily: 'Inter',
               ),
             ),
           ),

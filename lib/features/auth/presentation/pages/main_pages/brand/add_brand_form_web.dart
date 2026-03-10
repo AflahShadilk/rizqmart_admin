@@ -3,7 +3,6 @@
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/services/cloudinary_services.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/image/empty_image_placeholder.dart';
@@ -94,10 +93,11 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                         children: [
                           Text(
                             isEditMode ? 'Edit Brand' : "Add New Brand",
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: AppColors.blackHeading,
+                              fontFamily: 'Inter',
                             ),
                           ),
                           IconButton(
@@ -196,9 +196,10 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                           children: [
                             Text(
                               "Status: ",
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
+                                fontFamily: 'Inter',
                               ),
                             ),
                             Switch(
@@ -208,12 +209,13 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                             ),
                             Text(
                               cubitState.status ? "Active" : "Inactive",
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(
                                 fontSize: 12,
                                 color: cubitState.status
                                     ? AppColors.matGreen
                                     : AppColors.matRed,
                                 fontWeight: FontWeight.w500,
+                                fontFamily: 'Inter',
                               ),
                             ),
                           ],
@@ -234,10 +236,11 @@ class _AddBrandFormWebState extends State<AddBrandFormWeb> {
                             icon: const Icon(Icons.save),
                             label: Text(
                               isEditMode ? 'Update Brand' : "Save Brand",
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(
                                 color: AppColors.black,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
+                                fontFamily: 'Inter',
                               ),
                             ),
                             onPressed: () => submitFunc(cubitState),

@@ -9,9 +9,12 @@ import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/b
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/brand/page/brand_page_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/brand/page/brand_page_cubit_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/add_brand_form_web.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/brand_card_web.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/widgets/brand_grid_card.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/widgets/brand_list_card.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/brand/delete_config.dart';
 import 'package:rizqmartadmin/widgets/grid_list_toggle.dart';
+import 'package:rizqmartadmin/features/auth/presentation/cubit/brand/brand_layout_cubit.dart';
+import 'package:rizqmartadmin/features/auth/presentation/cubit/brand/brand_layout_state.dart';
 
 class BrandPage extends StatefulWidget {
   const BrandPage({super.key});
@@ -23,18 +26,20 @@ class BrandPage extends StatefulWidget {
 class BrandPageState extends State<BrandPage> {
   final TextEditingController searchController = TextEditingController();
   late BrandPageCubit pageCubit;
-  bool isGridView = true;
+  late BrandLayoutCubit layoutCubit;
 
   @override
   void initState() {
     super.initState();
     pageCubit = BrandPageCubit();
+    layoutCubit = BrandLayoutCubit();
   }
 
   @override
   void dispose() {
     searchController.dispose();
     pageCubit.close();
+    layoutCubit.close();
     super.dispose();
   }
 
@@ -75,8 +80,11 @@ class BrandPageState extends State<BrandPage> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return BlocProvider.value(
-      value: pageCubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: pageCubit),
+        BlocProvider.value(value: layoutCubit),
+      ],
       child: BlocConsumer<BrandBloc, BrandState>(
         listener: (context, state) {
           if (state is BrandLoadingSuccessState) {
@@ -100,7 +108,10 @@ class BrandPageState extends State<BrandPage> {
           }
         },
         builder: (context, state) {
-          return Scaffold(
+          return BlocBuilder<BrandLayoutCubit, BrandLayoutState>(
+            builder: (context, layoutState) {
+              final isGridView = layoutState.isGridView;
+              return Scaffold(
             backgroundColor: theme.scaffoldBackgroundColor,
             body: BlocBuilder<BrandPageCubit, BrandPageCubitState>(
               builder: (context, pageState) {
@@ -176,22 +187,19 @@ class BrandPageState extends State<BrandPage> {
 
                   return Column(
                     children: [
-                      // Modern Header Card
+                      // ---------------- Modern Header Card ----------------
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                         margin: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           color: theme.cardTheme.color,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: theme.colorScheme.outline
-                                .withValues(alpha: 0.1),
+                            color: theme.colorScheme.outline.withValues(alpha: 0.1),
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.black
-                                  .withValues(alpha: isDark ? 0.2 : 0.04),
+                              color: AppColors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                               blurRadius: 16,
                               offset: const Offset(0, 4),
                             ),
@@ -205,8 +213,7 @@ class BrandPageState extends State<BrandPage> {
                             final icon = Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: AppColors.indigo
-                                    .withValues(alpha: 0.15),
+                                color: AppColors.indigo.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: const Icon(
@@ -244,9 +251,7 @@ class BrandPageState extends State<BrandPage> {
                             final toggleButtons = GridListToggle(
                               isGridView: isGridView,
                               onToggle: (isGrid) {
-                                setState(() {
-                                  isGridView = isGrid;
-                                });
+                                layoutCubit.toggleView(isGrid);
                               },
                             );
 
@@ -290,7 +295,7 @@ class BrandPageState extends State<BrandPage> {
                         ),
                       ),
 
-                      // Search Bar
+                      // ---------------- Search Bar Section ----------------
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Container(
@@ -298,13 +303,11 @@ class BrandPageState extends State<BrandPage> {
                             color: theme.cardTheme.color,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                              color: theme.colorScheme.outline
-                                  .withValues(alpha: 0.1),
+                              color: theme.colorScheme.outline.withValues(alpha: 0.1),
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.black.withValues(
-                                    alpha: isDark ? 0.1 : 0.02),
+                                color: AppColors.black.withValues(alpha: isDark ? 0.1 : 0.02),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -355,7 +358,7 @@ class BrandPageState extends State<BrandPage> {
                       ),
                       16.h,
 
-                      // Content Area
+                      // ---------------- Main Content Area ----------------
                       Expanded(
                         child: displayBrands.isEmpty
                             ? Center(
@@ -384,7 +387,7 @@ class BrandPageState extends State<BrandPage> {
                             : LayoutBuilder(
                                 builder: (context, constraints) {
                                   if (!isGridView) {
-                                    // List View
+                                    // ---------------- List View ----------------
                                     return ListView.separated(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 24,
@@ -409,7 +412,7 @@ class BrandPageState extends State<BrandPage> {
                                     );
                                   }
 
-                                  // Grid View
+                                  // ---------------- Grid View ----------------
                                   int crossAxisCount = 1;
                                   if (constraints.maxWidth > 1400) {
                                     crossAxisCount = 6;
@@ -491,6 +494,8 @@ class BrandPageState extends State<BrandPage> {
                 }
               },
             ),
+          );
+            },
           );
         },
       ),

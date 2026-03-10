@@ -1,18 +1,18 @@
-﻿
-
-import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rizqmartadmin/features/auth/domain/entities/main/user_entity.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/cubit/users/user_search_cubit.dart';
+import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+import 'package:rizqmartadmin/features/auth/presentation/cubit/user/user_search_cubit.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/users/users_state.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/user/user_card.dart';
-import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/user/user_data_table.dart';
-import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/respnsive_page.dart';
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
-import 'package:rizqmartadmin/widgets/animated_hover_card.dart';
+import 'package:responsive_framework/responsive_framework.dart';
+import 'widgets/user_search_bar.dart';
+import 'widgets/user_stats_cards.dart';
+import 'widgets/user_empty_state.dart';
+import 'widgets/user_error_view.dart';
+import 'widgets/users_desktop_view.dart';
+import 'widgets/users_mobile_view.dart';
 
 class UsersPage extends StatelessWidget {
   const UsersPage({super.key});
@@ -26,23 +26,33 @@ class UsersPage extends StatelessWidget {
   }
 }
 
-class UsersView extends StatelessWidget {
+class UsersView extends StatefulWidget {
   const UsersView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<UsersView> createState() => _UsersViewState();
+}
+
+class _UsersViewState extends State<UsersView> {
+  @override
+  void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) {
+      if (mounted) {
         context.read<UsersBloc>().add(const LoadUsersByRole('user'));
       }
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
+        // ---------------- Users Page Header ----------------
         title: Row(
           children: [
             Container(
@@ -51,10 +61,10 @@ class UsersView extends StatelessWidget {
                 color: AppColors.blue50,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(Icons.people_rounded, color: AppColors.blue700, size: 24),
+              child: const Icon(Icons.people_rounded, color: AppColors.blue700, size: 24),
             ),
             12.w,
-             Text(
+            Text(
               'Users Management',
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodyLarge?.color,
@@ -74,7 +84,7 @@ class UsersView extends StatelessWidget {
               border: Border.all(color: AppColors.blue100),
             ),
             child: IconButton(
-              icon: Icon(Icons.refresh_rounded, color: AppColors.blue700, size: 22),
+              icon: const Icon(Icons.refresh_rounded, color: AppColors.blue700, size: 22),
               onPressed: () => context.read<UsersBloc>().add(const LoadUsersByRole('user')),
               tooltip: 'Refresh Users',
             ),
@@ -91,11 +101,15 @@ class UsersView extends StatelessWidget {
   }
 }
 
+// ---------------- User Search & Stats Section ----------------
 class SearchAndStatsBar extends StatelessWidget {
   const SearchAndStatsBar({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
       decoration: BoxDecoration(
@@ -108,247 +122,35 @@ class SearchAndStatsBar extends StatelessWidget {
           ),
         ],
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          if (Responsive.isMobile(context)) {
-            return const SearchBar();
-          }
-
-          if (constraints.maxWidth < 800) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SearchBar(),
-                16.h,
-                const UserStatsCards(),
-              ],
-            );
-          }
-
-          return Row(
-            children: [
-              const Expanded(
-                flex: 1,
-                child: SearchBar(),
-              ),
-              16.w,
-              const Expanded(
-                flex: 2,
-                child: UserStatsCards(),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class SearchBar extends StatelessWidget {
-  const SearchBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
-    
-    return BlocBuilder<UserSearchCubit, String>(
-      builder: (context, searchQuery) {
-        return Container(
-          constraints: BoxConstraints(
-            maxWidth: isMobile ? double.infinity : 400,
-          ),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: searchQuery.isNotEmpty 
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).dividerColor.withValues(alpha: 0.2),
-              width: searchQuery.isNotEmpty ? 2 : 1,
-            ),
-          ),
-          child: TextField(
-            style: TextStyle(
-              fontSize: 14,
-              color: Theme.of(context).textTheme.bodyLarge?.color,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Inter',
-            ),
-            decoration: InputDecoration(
-              hintText: 'Search users...',
-              hintStyle: TextStyle(
-                color: Theme.of(context).hintColor,
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                fontFamily: 'Inter',
-              ),
-              prefixIcon: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Icon(
-                  Icons.search_rounded,
-                  color: AppColors.grey600,
-                  size: 20,
-                ),
-              ),
-              suffixIcon: searchQuery.isNotEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: IconButton(
-                        icon: Container(
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            color: AppColors.grey300,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.close_rounded,
-                            color: AppColors.grey700,
-                            size: 14,
-                          ),
-                        ),
-                        onPressed: () {
-                          context.read<UserSearchCubit>().clearSearch();
-                          context.read<UsersBloc>().add(const SearchUsers(''));
-                        },
-                      ),
-                    )
-                  : null,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            onChanged: (value) {
-              context.read<UserSearchCubit>().updateSearch(value);
-              context.read<UsersBloc>().add(SearchUsers(value));
-            },
-          ),
-        );
-      },
-    );
-  }
-}
-
-class UserStatsCards extends StatelessWidget {
-  const UserStatsCards({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<UsersBloc, UsersState>(
-      builder: (context, state) {
-        if (state is UsersLoaded) {
-          final totalUsers = state.users.length;
-          final filteredUsers = state.filteredUsers.length;
-          final activeUsers = state.users.where((user) => user.isActive).length;
-
-          return Row(
-            children: [
-              Expanded(
-                child: StatsCard(
-                  icon: Icons.people_rounded,
-                  label: 'Total Users',
-                  value: totalUsers.toString(),
-                  color: AppColors.blue,
-                ),
-              ),
-              12.w,
-              Expanded(
-                child: StatsCard(
-                  icon: Icons.check_circle_rounded,
-                  label: 'Active Users',
-                  value: activeUsers.toString(),
-                  color: AppColors.green,
-                ),
-              ),
-              12.w,
-              Expanded(
-                child: StatsCard(
-                  icon: Icons.filter_list_rounded,
-                  label: 'Filtered',
-                  value: filteredUsers.toString(),
-                  color: AppColors.orange,
-                ),
-              ),
-            ],
-          );
-        }
-        return const SizedBox.shrink();
-      },
-    );
-  }
-}
-
-class StatsCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-
-  const StatsCard({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedHoverCard(
-      color: color.withValues(alpha: 0.05),
-      padding: const EdgeInsets.all(16),
-      borderRadius: BorderRadius.circular(16),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          12.w,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                      height: 1,
-                      fontFamily: 'Inter',
+      child: isMobile
+          ? const UserSearchBar()
+          : (isTablet
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const UserSearchBar(),
+                    16.h,
+                    const UserStatsCards(),
+                  ],
+                )
+              : Row(
+                  children: [
+                    const Expanded(
+                      flex: 1,
+                      child: UserSearchBar(),
                     ),
-                  ),
-                ),
-                4.h,
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(context).textTheme.bodySmall?.color,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Inter',
+                    16.w,
+                    const Expanded(
+                      flex: 2,
+                      child: UserStatsCards(),
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+                  ],
+                )),
     );
   }
 }
 
+// ---------------- Users List Section ----------------
 class UsersBody extends StatelessWidget {
   const UsersBody({super.key});
 
@@ -357,331 +159,64 @@ class UsersBody extends StatelessWidget {
     return BlocBuilder<UsersBloc, UsersState>(
       builder: (context, state) {
         if (state is UsersLoading) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardTheme.color,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.blue.withValues(alpha: 0.1),
-                        blurRadius: 20,
-                        spreadRadius: 5,
-                      ),
-                    ],
-                  ),
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.blue600),
-                    strokeWidth: 3,
-                  ),
-                ),
-                24.h,
-                Text(
-                  'Loading users...',
-                  style: TextStyle(
-                    color: AppColors.grey700,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.3,
-                    fontFamily: 'Inter',
-                  ),
-                ),
-              ],
-            ),
-          );
+          return _buildLoadingState(context);
         }
 
         if (state is UsersError) {
-          return ErrorView(message: state.message);
+          return UserErrorView(message: state.message);
         }
 
         if (state is UsersLoaded) {
           if (state.filteredUsers.isEmpty) {
-            return Center(
-              child: Container(
-                margin: const EdgeInsets.all(32),
-                padding: const EdgeInsets.all(48),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardTheme.color,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.black.withValues(alpha: 0.05),
-                      blurRadius: 20,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: AppColors.blue50,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.people_outline_rounded,
-                        size: 64,
-                        color: AppColors.blue300,
-                      ),
-                    ),
-                    24.h,
-                    Text(
-                      'No users found',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.bodyLarge?.color,
-                        letterSpacing: 0.3,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                    8.h,
-                    Text(
-                      'Try adjusting your search filters',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.grey500,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return const UserEmptyState();
           }
 
-          return Responsive.isMobile(context)
-              ? MobileView(users: state.filteredUsers)
-              : DesktopView(users: state.filteredUsers);
+          final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+          return isMobile
+              ? UsersMobileView(users: state.filteredUsers)
+              : UsersDesktopView(users: state.filteredUsers);
         }
 
         return const SizedBox.shrink();
       },
     );
   }
-}
 
-class ErrorView extends StatelessWidget {
-  final String message;
-
-  const ErrorView({super.key, required this.message});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildLoadingState(BuildContext context) {
     return Center(
-      child: Container(
-        margin: const EdgeInsets.all(32),
-        padding: const EdgeInsets.all(40),
-        constraints: const BoxConstraints(maxWidth: 500),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.08),
-              blurRadius: 30,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.red50,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.error_outline_rounded,
-                size: 56,
-                color: AppColors.red400,
-              ),
-            ),
-            24.h,
-            Text(
-              'Oops! Something went wrong',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).textTheme.bodyLarge?.color,
-                letterSpacing: 0.3,
-                fontFamily: 'Inter',
-              ),
-              textAlign: TextAlign.center,
-            ),
-            12.h,
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                message,
-                style: TextStyle(
-                  color: AppColors.grey600,
-                  fontSize: 15,
-                  height: 1.6,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: 'Inter',
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardTheme.color,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.blue.withValues(alpha: 0.1),
+                  blurRadius: 20,
+                  spreadRadius: 5,
                 ),
-                textAlign: TextAlign.center,
-              ),
+              ],
             ),
-            32.h,
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => context.read<UsersBloc>().add(const LoadUsersByRole('user')),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.blue600,
-                  foregroundColor: AppColors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                  shadowColor: AppColors.blue.withValues(alpha: 0.3),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.refresh_rounded, size: 20),
-                    8.w,
-                    const Text(
-                      'Try Again',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class MobileView extends StatelessWidget {
-  final List<UserEntity> users;
-
-  const MobileView({super.key, required this.users});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          color: Theme.of(context).cardTheme.color,
-          child: const MobileStatsCards(),
-        ),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: users.length,
-            itemBuilder: (context, index) => Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 900),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: UserCard(user: users[index]),
-                ),
-              ),
+            child: const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.blue600),
+              strokeWidth: 3,
             ),
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class MobileStatsCards extends StatelessWidget {
-  const MobileStatsCards({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<UsersBloc, UsersState>(
-      builder: (context, state) {
-        if (state is UsersLoaded) {
-          final totalUsers = state.users.length;
-          final filteredUsers = state.filteredUsers.length;
-          final activeUsers = state.users.where((user) => user.isActive).length;
-
-          return Row(
-            children: [
-              Expanded(
-                child: StatsCard(
-                  icon: Icons.people_rounded,
-                  label: 'Total',
-                  value: totalUsers.toString(),
-                  color: AppColors.blue,
-                ),
-              ),
-              8.w,
-              Expanded(
-                child: StatsCard(
-                  icon: Icons.check_circle_rounded,
-                  label: 'Active',
-                  value: activeUsers.toString(),
-                  color: AppColors.green,
-                ),
-              ),
-              8.w,
-              Expanded(
-                child: StatsCard(
-                  icon: Icons.filter_list_rounded,
-                  label: 'Filtered',
-                  value: filteredUsers.toString(),
-                  color: AppColors.orange,
-                ),
-              ),
-            ],
-          );
-        }
-        return const SizedBox.shrink();
-      },
-    );
-  }
-}
-
-class DesktopView extends StatelessWidget {
-  final List<UserEntity> users;
-
-  const DesktopView({super.key, required this.users});
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
+          24.h,
+          Text(
+            'Loading users...',
+            style: TextStyle(
+              color: AppColors.grey700,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.3,
+              fontFamily: 'Inter',
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: UsersDataTable(users: users),
-        ),
+          ),
+        ],
       ),
     );
   }
