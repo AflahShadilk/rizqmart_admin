@@ -1,17 +1,19 @@
-﻿// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
 import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:rizqmartadmin/features/auth/presentation/validators/email_field_validator.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/forgot%20password%20bloc/auth_bloc.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/forgot%20password%20bloc/auth_event.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/auth/bloc/forgot%20password%20bloc/auth_state.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/page_decoration/respnsive_page.dart';
 import 'package:rizqmartadmin/features/auth/presentation/widgets/form_fields/textformfield.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/auth/widgets/auth_form_container.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/auth/widgets/auth_header.dart';
+import 'package:rizqmartadmin/features/auth/presentation/pages/auth/widgets/auth_submit_button.dart';
 
 class ForgotpasswordScreen extends StatefulWidget {
   const ForgotpasswordScreen({super.key});
@@ -20,14 +22,16 @@ class ForgotpasswordScreen extends StatefulWidget {
   State<ForgotpasswordScreen> createState() => _ForgotpasswordScreenState();
 }
 
-class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
-    with TickerProviderStateMixin {
+class _ForgotpasswordScreenState extends State<ForgotpasswordScreen> with TickerProviderStateMixin {
+  
+  // ---------------- Controllers ----------------
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   final TextEditingController _emailkey = TextEditingController();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
+  // ---------------- Init State ----------------
   @override
   void initState() {
     super.initState();
@@ -40,14 +44,14 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
       CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
 
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero)
-        .animate(
+    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
 
     _animationController.forward();
   }
 
+  // ---------------- Dispose ----------------
   @override
   void dispose() {
     _animationController.dispose();
@@ -57,6 +61,10 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isMobile = Responsive.isMobile(context);
+    
     final EdgeInsets padding;
     if (Responsive.isDesktop(context)) {
       padding = const EdgeInsets.symmetric(horizontal: 120, vertical: 40);
@@ -74,7 +82,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
               content: const Text(
                 'Reset email sent! Check your inbox (and spam folder).',
               ),
-              backgroundColor: AppColors.matGreen[600],
+              backgroundColor: AppColors.matGreen,
               duration: const Duration(seconds: 4),
             ),
           );
@@ -87,25 +95,24 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.error),
-              backgroundColor: AppColors.matRed[600],
+              backgroundColor: AppColors.matRed,
               duration: const Duration(seconds: 4),
             ),
           );
         }
       },
       builder: (context, state) {
-        bool isLoading = state is ForgotPasswordLoading;
+        final bool isLoading = state is ForgotPasswordLoading;
 
         return Scaffold(
           body: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
+              color: theme.scaffoldBackgroundColor,
             ),
             width: double.infinity,
             height: double.infinity,
             child: Stack(
               children: [
-                
                 Positioned(
                   top: -100,
                   right: -100,
@@ -114,7 +121,7 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                     height: 300,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.1),
                     ),
                   ),
                 ),
@@ -126,11 +133,12 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                     height: 250,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
+                      color: colorScheme.secondary.withValues(alpha: 0.1),
                     ),
                   ),
                 ),
-                // Main content
+                
+                // ---------------- Main content ----------------
                 Padding(
                   padding: padding,
                   child: Center(
@@ -139,204 +147,81 @@ class _ForgotpasswordScreenState extends State<ForgotpasswordScreen>
                         opacity: _fadeAnimation,
                         child: SlideTransition(
                           position: _slideAnimation,
-                          child: Container(
-                            constraints: BoxConstraints(
-                              maxWidth: Responsive.isDesktop(context)
-                                  ? 500
-                                  : double.infinity,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).cardTheme.color,
-                              borderRadius: BorderRadius.circular(24),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
-                                  blurRadius: 30,
-                                  spreadRadius: 8,
-                                  offset: const Offset(0, 15),
+                          child: AuthFormContainer(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // ---------------- Forgot Password Header ----------------
+                                const AuthHeader(
+                                  icon: Icons.lock_reset_rounded,
+                                  title: 'Reset Your Password',
+                                ),
+                                
+                                Padding(
+                                  padding: const EdgeInsets.all(32),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'We\'ll send you an email to reset your password. Please check your inbox and spam folder.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: isMobile ? 13 : 14,
+                                          color: theme.textTheme.bodyMedium?.color,
+                                          height: 1.6,
+                                          fontFamily: 'Inter',
+                                        ),
+                                      ),
+                                      28.h,
+                                      
+                                      // ---------------- Email Input Section ----------------
+                                      Form(
+                                        key: _formkey,
+                                        child: TextFormFLogin(
+                                          controller: _emailkey,
+                                          hint: 'Enter your registered email',
+                                          validator: emailValidator,
+                                        ),
+                                      ),
+                                      32.h,
+                                      
+                                      // ---------------- Reset Password Button ----------------
+                                      AuthSubmitButton(
+                                        isLoading: isLoading,
+                                        text: 'Send Reset Link',
+                                        onPressed: () {
+                                          if (_formkey.currentState!.validate()) {
+                                            context.read<ForgotPasswordBloc>().add(
+                                              ForgotPasswordSubmitted(_emailkey.text.trim()),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                      16.h,
+                                      
+                                      // ---------------- Back to Login Link ----------------
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: TextButton(
+                                          onPressed: isLoading ? null : () {
+                                            context.pop();
+                                          },
+                                          child: Text(
+                                            ' Back to Login',
+                                            style: TextStyle(
+                                              fontSize: isMobile ? 12 : 14,
+                                              color: colorScheme.primary,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'Inter',
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(24),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // Header with icon
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 32,
-                                      horizontal: 24,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Theme.of(context).colorScheme.primary,
-                                          Theme.of(context).colorScheme.secondary,
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(16),
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Theme.of(context).cardTheme.color,
-                                          ),
-                                          child: Icon(
-                                            Icons.lock_reset_rounded,
-                                            size: Responsive.isDesktop(context)
-                                                ? 56
-                                                : 48,
-                                            color: Theme.of(context).colorScheme.onPrimary,
-                                          ),
-                                        ),
-                                        16.h,
-                                        Text(
-                                          'Reset Your Password',
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.poppins(
-                                            fontSize: Responsive.isMobile(context)
-                                                ? 20
-                                                : 24,
-                                            fontWeight: FontWeight.w700,
-                                            color: Theme.of(context).colorScheme.onPrimary,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  // Form content
-                                  Padding(
-                                    padding: const EdgeInsets.all(32),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          'We\'ll send you an email to reset your password. Please check your inbox and spam folder.',
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.poppins(
-                                            fontSize:
-                                                Responsive.isMobile(context)
-                                                    ? 13
-                                                    : 14,
-                                            color: Theme.of(context).textTheme.bodyMedium?.color,
-                                            height: 1.6,
-                                          ),
-                                        ),
-                                        28.h,
-                                        Form(
-                                          key: _formkey,
-                                          child: TextFormFLogin(
-                                            controller: _emailkey,
-                                            hint: 'Enter your registered email',
-                                            validator: emailValidator,
-                                            // enabled: !isLoading,
-                                          ),
-                                        ),
-                                        32.h,
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: ElevatedButton(
-                                            style:
-                                                ElevatedButton.styleFrom(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                vertical: 16,
-                                              ),
-                                              shape:
-                                                  RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                                backgroundColor:
-                                                    Theme.of(context).colorScheme.primary,
-                                                elevation: 4,
-                                                disabledBackgroundColor:
-                                                    Theme.of(context).disabledColor,
-                                            ),
-                                            onPressed: isLoading
-                                                ? null
-                                                : () {
-                                                    if (_formkey.currentState!
-                                                        .validate()) {
-                                                      context
-                                                          .read<
-                                                              ForgotPasswordBloc>()
-                                                          .add(
-                                                            ForgotPasswordSubmitted(
-                                                              _emailkey.text
-                                                                  .trim(),
-                                                            ),
-                                                          );
-                                                    }
-                                                  },
-                                            child: isLoading
-                                                ? SizedBox(
-                                                    height: 20,
-                                                    width: 20,
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      valueColor:
-                                                          AlwaysStoppedAnimation<
-                                                              Color>(
-                                                            Theme.of(context).colorScheme.onPrimary,
-                                                          ),
-                                                      strokeWidth: 2.5,
-                                                    ),
-                                                  )
-                                                : Text(
-                                                    'Send Reset Link',
-                                                    style:
-                                                        GoogleFonts.poppins(
-                                                      fontSize:
-                                                          Responsive
-                                                                  .isMobile(
-                                                                context,
-                                                              )
-                                                              ? 14
-                                                              : 16,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Theme.of(context).colorScheme.onPrimary,
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                        16.h,
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: TextButton(
-                                            onPressed:
-                                                isLoading ? null : () {
-                                              context.pop();
-                                            },
-                                            child: Text(
-                                              ' Back to Login',
-                                              style: GoogleFonts.poppins(
-                                                fontSize:
-                                                    Responsive.isMobile(
-                                                            context,
-                                                          )
-                                                        ? 12
-                                                        : 14,
-                                                color: Theme.of(context).colorScheme.primary,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ),
                           ),
                         ),
