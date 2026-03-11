@@ -3,7 +3,6 @@
 .buildlog/
 .packages
 .pub/
-build/
 flutter_export_environment.sh
 
 # Misc
@@ -31,7 +30,6 @@ windows/flutter/generated_*
 .buildlog/
 .packages
 pubspec.lock
-build/
 ios/Pods/
 android/.gradle/
 android/.idea/
