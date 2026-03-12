@@ -1,4 +1,4 @@
-﻿import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/user/delete_user_usecase.dart';
 import 'package:rizqmartadmin/features/auth/domain/usecases/main/user/get_all_users_usecase.dart';
@@ -57,7 +57,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
     final result = await updateUserStatusUseCase(event.userId, event.isActive);
     result.fold(
       (failure) => emit(UsersError(failure.message)),
-      (_) => add(LoadAllUsers()),
+      (_) => add(const LoadUsersByRole('user')),
     );
   }
 
@@ -74,7 +74,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
           'User has been deleted successfully.',
           data: {'type': 'user', 'id': event.userId},
         );
-        add(LoadAllUsers());
+        add(const LoadUsersByRole('user'));
       },
     );
   }
