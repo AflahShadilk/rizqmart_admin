@@ -12,6 +12,7 @@ class PaymentDialogs {
     showDialog(
       context: context,
       builder: (dialogContext) => Dialog(
+        backgroundColor: Theme.of(context).dialogBackgroundColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -102,9 +103,9 @@ class PaymentDialogs {
                       ),
                     ),
                     if (payment.status.toLowerCase() == 'completed')
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12),
-                        child: Expanded(
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 12),
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.pop(dialogContext); // close details modal
@@ -128,60 +129,74 @@ class PaymentDialogs {
   }
 
   static Widget _buildPaymentDetailSection(String title, List<Widget> items) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.grey50,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.grey200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        final isDark = theme.brightness == Brightness.dark;
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isDark ? theme.cardColor : AppColors.grey50,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isDark ? AppColors.borderDark : AppColors.grey200,
             ),
           ),
-          12.h,
-          ...items.asMap().entries.map((entry) {
-            final isLast = entry.key == items.length - 1;
-            return Padding(
-              padding: EdgeInsets.only(bottom: isLast ? 0 : 8),
-              child: entry.value,
-            );
-          }),
-        ],
-      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  color: theme.textTheme.bodyMedium?.color,
+                ),
+              ),
+              12.h,
+              ...items.asMap().entries.map((entry) {
+                final isLast = entry.key == items.length - 1;
+                return Padding(
+                  padding: EdgeInsets.only(bottom: isLast ? 0 : 8),
+                  child: entry.value,
+                );
+              }),
+            ],
+          ),
+        );
+      },
     );
   }
 
   static Widget _buildPaymentDetailItem(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 11,
-            color: AppColors.grey700,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.end,
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.grey,
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 11,
+                color: theme.textTheme.bodySmall?.color ?? AppColors.grey700,
+              ),
             ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
+            Expanded(
+              child: Text(
+                value,
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: theme.textTheme.bodyMedium?.color ?? AppColors.grey,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -193,6 +208,7 @@ class PaymentDialogs {
     showDialog(
       context: context,
       builder: (dialogContext) => Dialog(
+        backgroundColor: Theme.of(context).dialogBackgroundColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),

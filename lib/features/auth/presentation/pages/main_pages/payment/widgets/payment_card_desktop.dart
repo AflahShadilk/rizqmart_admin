@@ -48,7 +48,7 @@ class PaymentCardDesktop extends StatelessWidget {
               ),
               16.w,
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -59,6 +59,7 @@ class PaymentCardDesktop extends StatelessWidget {
                         fontSize: 13,
                         fontFamily: 'Inter',
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     4.h,
                     Text(
@@ -68,11 +69,13 @@ class PaymentCardDesktop extends StatelessWidget {
                         color: AppColors.grey600,
                         fontFamily: 'Inter',
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
               Expanded(
+                flex: 2,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -83,6 +86,7 @@ class PaymentCardDesktop extends StatelessWidget {
                         fontSize: 13,
                         fontFamily: 'Inter',
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     4.h,
                     Text(
@@ -92,11 +96,13 @@ class PaymentCardDesktop extends StatelessWidget {
                         color: AppColors.grey600,
                         fontFamily: 'Inter',
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
               Expanded(
+                flex: 2,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -107,6 +113,7 @@ class PaymentCardDesktop extends StatelessWidget {
                         color: AppColors.grey,
                         fontFamily: 'Inter',
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     4.h,
                     Text(
@@ -121,9 +128,10 @@ class PaymentCardDesktop extends StatelessWidget {
                 ),
               ),
               Expanded(
+                flex: 2,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
+                    horizontal: 8,
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
@@ -159,38 +167,44 @@ class PaymentCardDesktop extends StatelessWidget {
                   ),
                 ),
               ),
-              12.w,
-              SizedBox(
-                width: 100,
-                child: OutlinedButton(
-                  onPressed: () {
-                    PaymentDialogs.showPaymentDetailsModal(context, payment);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                  ),
-                  child: const Text(
-                    'Details',
-                    style: TextStyle(fontSize: 11, fontFamily: 'Inter'),
+              8.w,
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 70, maxWidth: 100),
+                  child: OutlinedButton(
+                    onPressed: () {
+                      PaymentDialogs.showPaymentDetailsModal(context, payment);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                    ),
+                    child: const Text(
+                      'Details',
+                      style: TextStyle(fontSize: 11, fontFamily: 'Inter'),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ),
               if (payment.status.toLowerCase() == 'completed')
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: SizedBox(
-                    width: 100,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        PaymentDialogs.showRefundDialog(context, payment);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.matRed,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                      ),
-                      child: const Text(
-                        'Refund',
-                        style: TextStyle(fontSize: 11, fontFamily: 'Inter'),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 70, maxWidth: 100),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          PaymentDialogs.showRefundDialog(context, payment);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.matRed,
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                        ),
+                        child: const Text(
+                          'Refund',
+                          style: TextStyle(fontSize: 11, fontFamily: 'Inter'),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                   ),
