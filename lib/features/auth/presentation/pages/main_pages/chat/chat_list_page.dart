@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rizqmartadmin/core/constants/appcolor.dart';
@@ -78,7 +78,7 @@ class _ChatListPageState extends State<ChatListPage> {
                   width: 350,
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border(right: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.1))),
+                      border: Border(right: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.1))),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

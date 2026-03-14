@@ -34,7 +34,7 @@ class ChatMessageBubble extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
+              color: Theme.of(context).shadowColor.withOpacity(0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             )
@@ -49,7 +49,7 @@ class ChatMessageBubble extends StatelessWidget {
               isMe ? 'Admin' : 'User',
               style: TextStyle(
                 fontFamily: 'Inter',
-                color: isMe ? AppColors.white.withValues(alpha: 0.7) : AppColors.grey.shade500,
+                color: isMe ? AppColors.white.withOpacity(0.7) : AppColors.grey.shade500,
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
               ),
@@ -68,7 +68,7 @@ class ChatMessageBubble extends StatelessWidget {
               DateFormat('h:mm a').format(message.timestamp),
               style: TextStyle(
                 fontFamily: 'Inter',
-                color: isMe ? AppColors.white.withValues(alpha: 0.7) : AppColors.grey.shade500,
+                color: isMe ? AppColors.white.withOpacity(0.7) : AppColors.grey.shade500,
                 fontSize: 10,
               ),
             ),

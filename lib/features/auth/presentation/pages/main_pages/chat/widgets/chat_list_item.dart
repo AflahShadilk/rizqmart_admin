@@ -37,7 +37,7 @@ class ChatListItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 2),
       decoration: BoxDecoration(
         color: isSelected 
-          ? theme.colorScheme.primary.withValues(alpha: 0.08)
+          ? theme.colorScheme.primary.withOpacity(0.08)
           : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
@@ -57,7 +57,7 @@ class ChatListItem extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isSelected 
                       ? theme.colorScheme.primary 
-                      : theme.colorScheme.primary.withValues(alpha: 0.1),
+                      : theme.colorScheme.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -108,7 +108,7 @@ class ChatListItem extends StatelessWidget {
                         'Order #${chat.id.substring(0, 8).toUpperCase()}',
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          color: theme.colorScheme.primary.withValues(alpha: 0.8),
+                          color: theme.colorScheme.primary.withOpacity(0.8),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),

@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: theme.cardTheme.color,
                         boxShadow: [
                           BoxShadow(
-                            color: theme.shadowColor.withValues(alpha: 0.2),
+                            color: theme.shadowColor.withOpacity(0.2),
                             blurRadius: 30,
                             offset: const Offset(0, 10),
                           ),
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           obscureText: !uiState.isPasswordVisible,
                                           hint: 'Enter your password',
                                           iconn: AntDesign.lock_fill,
-                                          iconnColor: colorScheme.onSurface.withValues(alpha: 0.6),
+                                          iconnColor: colorScheme.onSurface.withOpacity(0.6),
                                           validator: passwordValidator,
                                           suffixIcon: IconButton(
                                             icon: Icon(
@@ -263,11 +263,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                         16.h,
                                         Text(
-                                          "App Version: 2026-03-14 v1.1",
+                                          "App Version: 2026-03-14 v1.2",
                                           style: TextStyle(
                                             fontFamily: 'Inter',
                                             fontSize: 10,
-                                            color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.5),
+                                            color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
                                           ),
                                         ),
                                       ],

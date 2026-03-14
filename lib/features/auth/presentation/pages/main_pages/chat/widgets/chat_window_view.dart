@@ -73,13 +73,13 @@ class _ChatWindowViewState extends State<ChatWindowView> {
           decoration: BoxDecoration(
             color: theme.scaffoldBackgroundColor,
             border: Border(
-              bottom: BorderSide(color: theme.dividerColor.withValues(alpha: 0.1)),
+              bottom: BorderSide(color: theme.dividerColor.withOpacity(0.1)),
             ),
           ),
           child: Row(
             children: [
               CircleAvatar(
-                backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
                 child: Icon(Icons.person, color: theme.colorScheme.primary),
               ),
               const SizedBox(width: 12),
@@ -180,7 +180,7 @@ class _ChatWindowViewState extends State<ChatWindowView> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Row(
         children: [
-          Expanded(child: Divider(color: theme.dividerColor.withValues(alpha: 0.1))),
+          Expanded(child: Divider(color: theme.dividerColor.withOpacity(0.1))),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
@@ -193,7 +193,7 @@ class _ChatWindowViewState extends State<ChatWindowView> {
               ),
             ),
           ),
-          Expanded(child: Divider(color: theme.dividerColor.withValues(alpha: 0.1))),
+          Expanded(child: Divider(color: theme.dividerColor.withOpacity(0.1))),
         ],
       ),
     );

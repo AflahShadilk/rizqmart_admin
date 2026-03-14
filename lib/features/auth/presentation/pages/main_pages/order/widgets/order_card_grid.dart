@@ -35,7 +35,7 @@ class OrderCardGrid extends StatelessWidget {
             end: Alignment.bottomCenter,
             colors: [
               theme.cardTheme.color ?? theme.scaffoldBackgroundColor,
-              statusColor.withValues(alpha: 0.02),
+              statusColor.withOpacity(0.02),
             ],
           ),
         ),
@@ -53,9 +53,9 @@ class OrderCardGrid extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.1),
+                        color: statusColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: statusColor.withValues(alpha: 0.2)),
+                        border: Border.all(color: statusColor.withOpacity(0.2)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -127,12 +127,12 @@ class OrderCardGrid extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8), // reduced from 10
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.matBlue.withValues(alpha: 0.1),
+                      color: AppColors.matBlue.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(Icons.person, size: 18, color: AppColors.matBlue.shade700), // reduced size from 20
+                    child: Icon(Icons.person, size: 18, color: AppColors.matBlue.shade700),
                   ),
                   10.w, // reduced from 12.w
                   Expanded(
@@ -169,9 +169,9 @@ class OrderCardGrid extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16), // reduced vertical padding from 16
               decoration: BoxDecoration(
                 border: Border.symmetric(
-                  horizontal: BorderSide(color: theme.dividerColor.withValues(alpha: 0.05)),
+                  horizontal: BorderSide(color: theme.dividerColor.withOpacity(0.05)),
                 ),
-                color: theme.scaffoldBackgroundColor.withValues(alpha: 0.3),
+                color: theme.scaffoldBackgroundColor.withOpacity(0.3),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -229,8 +229,8 @@ class OrderCardGrid extends StatelessWidget {
                       onPressed: onViewDetails,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.matBlue,
-                        side: BorderSide(color: AppColors.matBlue.withValues(alpha: 0.3)),
-                        padding: const EdgeInsets.symmetric(vertical: 10), // reduced from 14
+                        side: BorderSide(color: AppColors.matBlue.withOpacity(0.3)),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       child: const Text('Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)), // reduced from 13
@@ -239,7 +239,7 @@ class OrderCardGrid extends StatelessWidget {
                   8.w,
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.matBlue.withValues(alpha: 0.1),
+                      color: AppColors.matBlue.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: IconButton(
