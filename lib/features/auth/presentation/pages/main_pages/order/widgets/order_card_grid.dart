@@ -44,7 +44,7 @@ class OrderCardGrid extends StatelessWidget {
           children: [
             // ---------------- Top Section (Status & Date) ----------------
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -104,11 +104,11 @@ class OrderCardGrid extends StatelessWidget {
 
             // ---------------- Order ID ----------------
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'Order #${order.orderNumber}',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 17, // reduced from 20
                   fontWeight: FontWeight.w800,
                   color: theme.textTheme.bodyLarge?.color,
                   height: 1.2,
@@ -119,35 +119,35 @@ class OrderCardGrid extends StatelessWidget {
               ),
             ),
 
-            16.h,
+            10.h,
 
             // ---------------- Customer Info ----------------
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(8), // reduced from 10
                     decoration: BoxDecoration(
                       color: AppColors.matBlue.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(Icons.person, size: 20, color: AppColors.matBlue.shade700),
+                    child: Icon(Icons.person, size: 18, color: AppColors.matBlue.shade700), // reduced size from 20
                   ),
-                  12.w,
+                  10.w, // reduced from 12.w
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Customer',
-                          style: TextStyle(fontSize: 11, color: AppColors.grey.shade500, fontFamily: 'Inter'),
+                          style: TextStyle(fontSize: 10, color: AppColors.grey.shade500, fontFamily: 'Inter'), // reduced size
                         ),
                         2.h,
                         Text(
                           order.userName,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 13, // reduced from 14
                             fontWeight: FontWeight.w600,
                             color: theme.textTheme.bodyMedium?.color,
                             fontFamily: 'Inter',
@@ -166,7 +166,7 @@ class OrderCardGrid extends StatelessWidget {
 
             // ---------------- Stats Row (Items & Total) ----------------
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16), // reduced vertical padding from 16
               decoration: BoxDecoration(
                 border: Border.symmetric(
                   horizontal: BorderSide(color: theme.dividerColor.withValues(alpha: 0.05)),
@@ -181,13 +181,13 @@ class OrderCardGrid extends StatelessWidget {
                     children: [
                       Text(
                         'Items',
-                        style: TextStyle(fontSize: 12, color: AppColors.grey.shade500, fontFamily: 'Inter'),
+                        style: TextStyle(fontSize: 11, color: AppColors.grey.shade500, fontFamily: 'Inter'), // reduced size
                       ),
                       2.h,
                       Text(
                         '${order.itemCount}',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14, // reduced from 16
                           fontWeight: FontWeight.w700,
                           color: theme.textTheme.bodyLarge?.color,
                           fontFamily: 'Inter',
@@ -200,13 +200,13 @@ class OrderCardGrid extends StatelessWidget {
                     children: [
                       Text(
                         'Total',
-                        style: TextStyle(fontSize: 12, color: AppColors.grey.shade500, fontFamily: 'Inter'),
+                        style: TextStyle(fontSize: 11, color: AppColors.grey.shade500, fontFamily: 'Inter'), // reduced size
                       ),
                       2.h,
                       Text(
                         '₹${order.totalAmount.toStringAsFixed(2)}',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16, // reduced from 18
                           fontWeight: FontWeight.w800,
                           color: AppColors.matGreen.shade700,
                           fontFamily: 'Inter',
@@ -230,10 +230,10 @@ class OrderCardGrid extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.matBlue,
                         side: BorderSide(color: AppColors.matBlue.withValues(alpha: 0.3)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 10), // reduced from 14
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
-                      child: const Text('Details', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                      child: const Text('Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)), // reduced from 13
                     ),
                   ),
                   8.w,
@@ -263,10 +263,10 @@ class OrderCardGrid extends StatelessWidget {
                         backgroundColor: AppColors.matGreen,
                         foregroundColor: AppColors.white,
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 10), // reduced from 14
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
-                      child: const Text('Status', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                      child: const Text('Status', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)), // reduced from 13
                     ),
                   ),
                 ],

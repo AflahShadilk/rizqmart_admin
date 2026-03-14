@@ -1,5 +1,4 @@
-﻿import 'dart:async';
-import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/features/auth/domain/repository/main/chat_repository.dart';
 import 'package:rizqmartadmin/features/auth/presentation/pages/main_pages/bloc/chat/chat_event.dart';
@@ -22,7 +21,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   void _onLoadChats(LoadChatsEvent event, Emitter<ChatState> emit) {
-    emit(ChatLoading());
+    if (state is! ChatsLoaded) {
+      emit(ChatLoading());
+    }
     _chatsSubscription?.cancel();
     _chatsSubscription = repository.getChats().listen(
       (chats) => add(UpdateChatsEvent(chats)),
@@ -31,7 +32,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   void _onLoadMessages(LoadMessagesEvent event, Emitter<ChatState> emit) {
-    emit(ChatLoading());
+    if (state is ChatsLoaded) {
+      emit((state as ChatsLoaded).copyWith(
+        selectedChatId: event.chatId,
+        isMessagesLoading: true,
+      ));
+    } else {
+      emit(ChatLoading());
+    }
+
     add(MarkChatAsReadEvent(event.chatId));
     _messagesSubscription?.cancel();
     _messagesSubscription = repository.getMessages(event.chatId).listen(
@@ -62,24 +71,35 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   void _onUpdateChats(UpdateChatsEvent event, Emitter<ChatState> emit) {
-    emit(ChatsLoaded(event.chats));
+    if (state is ChatsLoaded) {
+      emit((state as ChatsLoaded).copyWith(chats: event.chats));
+    } else {
+      emit(ChatsLoaded(chats: event.chats));
+    }
   }
 
   void _onUpdateMessages(UpdateMessagesEvent event, Emitter<ChatState> emit) {
-    if (state is MessagesLoaded) {
-      final oldMessages = (state as MessagesLoaded).messages;
-      if (event.messages.length > oldMessages.length && event.messages.isNotEmpty) {
-        final lastMessage = event.messages.last;
-        if (lastMessage.senderRole != 'admin') {
-          WebMessagingService.triggerLocalNotification(
-            'New Message',
-            lastMessage.text.isNotEmpty ? lastMessage.text : 'Sent an image',
-            data: {'type': 'chat_message', 'senderId': lastMessage.senderId, 'chatId': event.chatId},
-          );
+    if (state is ChatsLoaded) {
+      final currentState = state as ChatsLoaded;
+      
+      // Handle notifications for new messages
+      if (currentState.messages != null) {
+        final oldMessages = currentState.messages!;
+        if (event.messages.length > oldMessages.length && event.messages.isNotEmpty) {
+          final lastMessage = event.messages.first; // reverse: true in UI, but Firestore usually returns based on order. 
+          // Check senderRole
+          if (lastMessage.senderRole != 'admin' && event.chatId == currentState.selectedChatId) {
+             // Notification logic here if needed, though usually handled by stream
+          }
         }
       }
+
+      emit(currentState.copyWith(
+        messages: event.messages,
+        isMessagesLoading: false,
+        selectedChatId: event.chatId,
+      ));
     }
-    emit(MessagesLoaded(event.messages));
   }
 
   void _onChatError(ChatErrorEvent event, Emitter<ChatState> emit) {

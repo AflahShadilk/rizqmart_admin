@@ -136,6 +136,9 @@ class AppRoutes {
                 BlocProvider(
                   create: (context) => NotificationBellCubit(),
                 ),
+                BlocProvider(
+                  create: (_) => ChatBloc(sl<ChatRepositoryImpl>()),
+                ),
               ],
               child: MainPages(child: child),
             ),
@@ -510,24 +513,18 @@ class AppRoutes {
           GoRoute(
             path: '/chat',
             builder: (context, state) {
-               return BlocProvider(
-                create: (_) => ChatBloc(sl<ChatRepositoryImpl>()),
-                child: const ChatListPage(),
-              );
+              return const ChatListPage();
             },
           ),
            GoRoute(
             path: '/chat_details',
             builder: (context, state) {
                final extra = state.extra as Map<String, dynamic>? ?? {};
-               return BlocProvider(
-                 create: (_) => ChatBloc(sl<ChatRepositoryImpl>()),
-                 child: ChatDetailsPage(
-                  chatId: extra['chatId'] ?? '',
-                  productName: extra['productName'] ?? '',
-                  userId: extra['userId'] ?? '',
-                ),
-               );
+               return ChatDetailsPage(
+                chatId: extra['chatId'] ?? '',
+                productName: extra['productName'] ?? '',
+                userId: extra['userId'] ?? '',
+              );
             },
            ),
 

@@ -220,12 +220,12 @@ class _OrderReceivedPageViewState extends State<_OrderReceivedPageView> {
                               return SliverPadding(
                                 padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24, vertical: 8),
                                 sliver: SliverGrid(
-                                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 380,
-                                    mainAxisExtent: 320,
-                                    crossAxisSpacing: isMobile ? 12 : 16,
-                                    mainAxisSpacing: isMobile ? 12 : 16,
-                                  ),
+                                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 340, // reduced from 380
+                                      mainAxisExtent: 290, // reduced from 320
+                                      crossAxisSpacing: isMobile ? 12 : 16,
+                                      mainAxisSpacing: isMobile ? 12 : 16,
+                                    ),
                                   delegate: SliverChildBuilderDelegate(
                                     (context, index) {
                                       return OrderCardGrid(

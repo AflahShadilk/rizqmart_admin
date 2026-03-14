@@ -1,4 +1,4 @@
-﻿import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rizqmartadmin/core/services/web_messaging_service.dart';
 import 'package:rizqmartadmin/features/auth/domain/entities/main/order_recieved_entity.dart';
 import 'dart:async';
@@ -45,6 +45,9 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
   }
 
   StreamSubscription? _orderSubscription;
+
+  // cached list of all orders for local filtering
+  List<OrderReceivedEntity> _allOrders = [];
 
   void _subscribeToNewOrders() {
     _orderSubscription?.cancel();
@@ -108,6 +111,7 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
         }
       }
     }
+    _allOrders = List.from(event.orders);
     emit(NewOrdersLoaded(orders: event.orders));
   }
 
@@ -125,20 +129,33 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
     final result = await getNewOrdersUseCase.call();
     result.fold(
       (failure) => emit(OrderReceivedError(message: failure.message)),
-      (orders) => emit(NewOrdersLoaded(orders: orders)),
+      (orders) {
+        _allOrders = List.from(orders);
+        emit(NewOrdersLoaded(orders: orders));
+      },
     );
   }
 
+  // filter orders locally from cached list instead of querying Firestore
   Future<void> _onFetchByStatus(
     FetchOrdersByStatusEvent event,
     Emitter<OrderReceivedState> emit,
   ) async {
-    emit(const OrderReceivedLoading());
-    final result = await getOrdersByStatusUseCase.call(event.status);
-    result.fold(
-      (failure) => emit(OrderReceivedError(message: failure.message)),
-      (orders) => emit(OrdersByStatusLoaded(orders: orders, status: event.status)),
-    );
+    if (_allOrders.isEmpty) {
+      emit(const OrderReceivedLoading());
+      final result = await getNewOrdersUseCase.call();
+      result.fold(
+        (failure) => emit(OrderReceivedError(message: failure.message)),
+        (orders) {
+          _allOrders = List.from(orders);
+        },
+      );
+      if (_allOrders.isEmpty) return;
+    }
+    final filtered = _allOrders
+        .where((o) => o.orderStatus.toLowerCase() == event.status.toLowerCase())
+        .toList();
+    emit(OrdersByStatusLoaded(orders: filtered, status: event.status));
   }
 
   Future<void> _onUpdateStatus(
@@ -151,14 +168,9 @@ class OrderReceivedBloc extends Bloc<OrderReceivedEvent, OrderReceivedState> {
         event.status.toLowerCase() == 'rejected' ||
         event.status.toLowerCase() == 'return') {
       if (refillOrderStockUseCase != null) {
-        OrderReceivedEntity? orderToRefill;
-        if (state is NewOrdersLoaded) {
-          final matchingOrders = (state as NewOrdersLoaded).orders.where((o) => o.orderId == event.orderId);
-          orderToRefill = matchingOrders.isNotEmpty ? matchingOrders.first : null;
-        } else if (state is OrdersByStatusLoaded) {
-          final matchingOrders = (state as OrdersByStatusLoaded).orders.where((o) => o.orderId == event.orderId);
-          orderToRefill = matchingOrders.isNotEmpty ? matchingOrders.first : null;
-        }
+        // find the order from cached list for stock refill
+        final matchingOrders = _allOrders.where((o) => o.orderId == event.orderId);
+        OrderReceivedEntity? orderToRefill = matchingOrders.isNotEmpty ? matchingOrders.first : null;
 
         if (orderToRefill != null) {
           await refillOrderStockUseCase!.call(orderToRefill);

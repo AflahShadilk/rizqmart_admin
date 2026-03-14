@@ -1,4 +1,4 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rizqmartadmin/features/auth/data/model/order_received_model.dart';
 
 abstract class OrderReceivedDataSource {
@@ -19,9 +19,9 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
   @override
   Future<List<OrderReceivedModel>> getNewOrders() async {
     try {
+      // fetch all orders for admin orders received page
       final snapshot = await firestore
           .collection('orders')
-          .where('paymentStatus', isEqualTo: 'succeeded')
           .orderBy('createdAt', descending: true)
           .get();
 
@@ -37,9 +37,9 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
 
   @override
   Stream<List<OrderReceivedModel>> getNewOrdersStream() {
+    // stream all orders for real-time updates
     return firestore
         .collection('orders')
-        .where('paymentStatus', isEqualTo: 'succeeded')
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
@@ -57,7 +57,8 @@ class OrderReceivedDataSourceImpl implements OrderReceivedDataSource {
       final snapshot = await firestore
           .collection('orders')
           .where('orderStatus', isEqualTo: status)  
-          .where('paymentStatus', isEqualTo: 'succeeded')
+          // fetch only orders with confirmed payment
+          .where('paymentStatus', isEqualTo: 'success')
           .orderBy('createdAt', descending: true)
           .get();
 

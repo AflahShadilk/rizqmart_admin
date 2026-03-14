@@ -65,7 +65,7 @@ class ChatMessageBubble extends StatelessWidget {
             ),
             4.h,
             Text(
-              DateFormat('dd MMM, h:mm a').format(message.timestamp),
+              DateFormat('h:mm a').format(message.timestamp),
               style: TextStyle(
                 fontFamily: 'Inter',
                 color: isMe ? AppColors.white.withValues(alpha: 0.7) : AppColors.grey.shade500,
