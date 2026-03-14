@@ -262,6 +262,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                           },
                                         ),
                                         16.h,
+                                        Text(
+                                          "App Version: 2026-03-14 v1.1",
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontSize: 10,
+                                            color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.5),
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
