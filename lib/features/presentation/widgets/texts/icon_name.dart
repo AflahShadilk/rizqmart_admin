@@ -1,0 +1,51 @@
+﻿
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:rizqmartadmin/core/theme/appcolor.dart';
+
+class IconRizq extends StatelessWidget {
+  const IconRizq({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset("assets/icons_and_images/appIcon.png");
+  }
+}
+
+class RizqMartName extends StatelessWidget {
+  const RizqMartName({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'RIZQ',
+            style: GoogleFonts.poppins(
+              color: AppColors.black,
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+            ),
+          ),
+          
+          
+          Text(
+            ' MART',
+            style: GoogleFonts.poppins(
+              color: AppColors.orange,
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

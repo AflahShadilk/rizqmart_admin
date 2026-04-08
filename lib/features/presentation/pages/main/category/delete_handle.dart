@@ -1,0 +1,137 @@
+﻿import 'package:rizqmartadmin/core/utils/extensions/sized_box_extension.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:rizqmartadmin/core/theme/appcolor.dart';
+import 'package:rizqmartadmin/features/domain/entities/main/category_model.dart';
+import 'package:rizqmartadmin/features/domain/entities/main/product_model.dart';
+import 'package:rizqmartadmin/features/presentation/bloc/main/category/category_bloc.dart';
+import 'package:rizqmartadmin/features/presentation/bloc/main/category/category_event.dart';
+import 'package:rizqmartadmin/features/presentation/bloc/main/product/product_bloc.dart';
+import 'package:rizqmartadmin/features/presentation/bloc/main/product/product_event.dart';
+import 'package:rizqmartadmin/features/presentation/bloc/main/product/product_state.dart';
+
+// ---------------- Delete Category Action ----------------
+void handleDeleteCategory(BuildContext context, CategoryModel category) {
+  try {
+    final productBloc = context.read<ProductBloc>();
+    final productState = productBloc.state;
+
+    List<AddProductEntity> products = [];
+
+    if (productState is LoadingProductState) {
+      productBloc.add(const LoadingProductEvent());
+      return;
+    }
+
+    if (productState is LoadedProductState) {
+      products = productState.product;
+    }
+
+    bool isUsed = false;
+
+    if (products.isNotEmpty) {
+      isUsed = products.any((product) {
+        return product.category == category.name;
+      });
+    }
+
+    if (isUsed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cannot delete! This category is used in products.'),
+          backgroundColor: AppColors.matRed,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    } else {
+      showDeleteConfirmDialog(context, category);
+    }
+  } catch (e) {
+    showDeleteConfirmDialog(context, category);
+  }
+}
+
+// ---------------- Delete Confirmation Dialog ----------------
+void showDeleteConfirmDialog(BuildContext context, CategoryModel category) {
+  final categoryBloc = context.read<CategoryBloc>();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext dialogContext) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: AppColors.matOrange.shade700),
+            12.w,
+            Text(
+              'Delete Category',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to delete "${category.name}"? This action cannot be undone.',
+          style: GoogleFonts.poppins(fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 12,
+              ),
+            ),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+                color: AppColors.grey.shade700,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.red,
+              foregroundColor: AppColors.white,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 12,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () {
+              categoryBloc.add(DeleteCategoryEvent(category.id));
+              Navigator.pop(dialogContext);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Category deleted successfully'),
+                  backgroundColor: AppColors.matGreen,
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            child: Text(
+              'Delete',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}

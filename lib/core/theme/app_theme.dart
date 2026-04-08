@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rizqmartadmin/core/constants/appcolor.dart';
+import 'package:rizqmartadmin/core/theme/appcolor.dart';
 
 class AppTheme {
   static const Color _primaryLight = AppColors.teal;
