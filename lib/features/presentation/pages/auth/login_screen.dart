@@ -1,5 +1,6 @@
-// ignore_for_file: use_build_context_synchronously
+﻿// ignore_for_file: use_build_context_synchronously, deprecated_member_use
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -162,6 +163,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
+                                        // ---------------- Demo Credentials Box ----------------
+                                        _buildDemoCredentialsBox(context),
+                                        16.h,
+
                                         // ---------------- Email Field ----------------
                                         TextFormFLogin(
                                           controller: _emailKey,
@@ -286,6 +291,134 @@ class _LoginScreenState extends State<LoginScreen> {
             },
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildDemoCredentialsBox(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colorScheme.primary.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: colorScheme.primary.withOpacity(0.15),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.info_outline_rounded,
+                size: 16,
+                color: colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                "Demo Credentials (Click to Autofill & Copy)",
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          _buildCredentialRow(
+            context: context,
+            label: "Email",
+            value: "shadilpml@gmail.com",
+            icon: AntDesign.mail_fill,
+            onTap: () {
+              _emailKey.text = "shadilpml@gmail.com";
+              Clipboard.setData(const ClipboardData(text: "shadilpml@gmail.com"));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Email copied & autofilled!"),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          _buildCredentialRow(
+            context: context,
+            label: "Password",
+            value: "Rizq@12345",
+            icon: AntDesign.lock_fill,
+            onTap: () {
+              _passwordKey.text = "Rizq@12345";
+              Clipboard.setData(const ClipboardData(text: "Rizq@12345"));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Password copied & autofilled!"),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCredentialRow({
+    required BuildContext context,
+    required String label,
+    required String value,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: theme.cardTheme.color,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: colorScheme.outline.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 14,
+                color: colorScheme.primary.withOpacity(0.8),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  "$label: $value",
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: colorScheme.onSurface.withOpacity(0.8),
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.copy_all_rounded,
+                size: 16,
+                color: colorScheme.primary.withOpacity(0.7),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
