@@ -4,7 +4,8 @@
 .packages
 .pub/
 flutter_export_environment.sh
-
+# Flutter build output
+build/
 # Misc
 *.lock
 *.log
